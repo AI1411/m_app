@@ -10,6 +10,7 @@ import (
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 
+	"github.com/AI1411/m_app/gen/interest/v1/interestv1connect"
 	"github.com/AI1411/m_app/gen/prefecture/v1/prefecturev1connect"
 	"github.com/AI1411/m_app/gen/region/v1/regionv1connect"
 	"github.com/AI1411/m_app/gen/user/v1/userv1connect"
@@ -61,6 +62,11 @@ var Module = fx.Options(
 		func(sqlHandler *db.SqlHandler) datastore.RegionRepository {
 			return datastore.NewRegionRepository(sqlHandler)
 		},
+
+		// InterestRepository
+		func(sqlHandler *db.SqlHandler) datastore.InterestRepository {
+			return datastore.NewInterestRepository(sqlHandler)
+		},
 	),
 
 	// ユースケースの依存関係
@@ -70,6 +76,9 @@ var Module = fx.Options(
 
 		// RegionUseCase
 		usecase.NewRegionUseCase,
+
+		// InterestUseCase
+		usecase.NewInterestUseCase,
 	),
 
 	// ハンドラーの依存関係
@@ -83,8 +92,11 @@ var Module = fx.Options(
 		// RegionHandler
 		handler.NewRegionHandler,
 
+		// InterestHandler
+		handler.NewInterestHandler,
+
 		// HTTPサーバーのセットアップ
-		func(userHandler handler.UserHandler, prefectureHandler handler.PrefectureHandler, regionHandler handler.RegionHandler) *http.ServeMux {
+		func(userHandler handler.UserHandler, prefectureHandler handler.PrefectureHandler, regionHandler handler.RegionHandler, interestHandler handler.InterestHandler) *http.ServeMux {
 			mux := http.NewServeMux()
 
 			// ユーザーサービスのハンドラー登録
@@ -98,6 +110,10 @@ var Module = fx.Options(
 			// リージョンサービスのハンドラー登録
 			regionPath, regionHttpHandler := regionv1connect.NewRegionServiceHandler(regionHandler)
 			mux.Handle(regionPath, regionHttpHandler)
+
+			// 興味・関心サービスのハンドラー登録
+			interestPath, interestHttpHandler := interestv1connect.NewInterestServiceHandler(interestHandler)
+			mux.Handle(interestPath, interestHttpHandler)
 
 			return mux
 		},

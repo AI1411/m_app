@@ -44,10 +44,6 @@ func main() {
 			gen.FieldRelateModel(field.BelongsTo, "Education", model.Education{}, nil),
 		),
 		g.GenerateModel(
-			model.TableNameInterest,
-			gen.FieldRelateModel(field.HasMany, "UserInterests", model.UserInterest{}, nil),
-		),
-		g.GenerateModel(
 			model.TableNameUserInterest,
 			gen.FieldRelateModel(field.BelongsTo, "User", model.User{}, nil),
 			gen.FieldRelateModel(field.BelongsTo, "Interest", model.Interest{}, nil),

@@ -37,11 +37,6 @@ func newInterest(db *gorm.DB, opts ...gen.DOOption) interest {
 	_interest.CreatedAt = field.NewTime(tableName, "created_at")
 	_interest.UpdatedAt = field.NewTime(tableName, "updated_at")
 	_interest.DeletedAt = field.NewField(tableName, "deleted_at")
-	_interest.UserInterests = interestHasManyUserInterests{
-		db: db.Session(&gorm.Session{}),
-
-		RelationField: field.NewRelation("UserInterests", "model.UserInterest"),
-	}
 
 	_interest.fillFieldMap()
 
@@ -51,17 +46,16 @@ func newInterest(db *gorm.DB, opts ...gen.DOOption) interest {
 type interest struct {
 	interestDo
 
-	ALL           field.Asterisk
-	ID            field.Int32
-	Name          field.String
-	DisplayName   field.String
-	CategoryID    field.Int32
-	IconURL       field.String
-	SortOrder     field.Int32
-	CreatedAt     field.Time
-	UpdatedAt     field.Time
-	DeletedAt     field.Field
-	UserInterests interestHasManyUserInterests
+	ALL         field.Asterisk
+	ID          field.Int32
+	Name        field.String
+	DisplayName field.String
+	CategoryID  field.Int32
+	IconURL     field.String
+	SortOrder   field.Int32
+	CreatedAt   field.Time
+	UpdatedAt   field.Time
+	DeletedAt   field.Field
 
 	fieldMap map[string]field.Expr
 }
@@ -103,7 +97,7 @@ func (i *interest) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (i *interest) fillFieldMap() {
-	i.fieldMap = make(map[string]field.Expr, 10)
+	i.fieldMap = make(map[string]field.Expr, 9)
 	i.fieldMap["id"] = i.ID
 	i.fieldMap["name"] = i.Name
 	i.fieldMap["display_name"] = i.DisplayName
@@ -113,101 +107,16 @@ func (i *interest) fillFieldMap() {
 	i.fieldMap["created_at"] = i.CreatedAt
 	i.fieldMap["updated_at"] = i.UpdatedAt
 	i.fieldMap["deleted_at"] = i.DeletedAt
-
 }
 
 func (i interest) clone(db *gorm.DB) interest {
 	i.interestDo.ReplaceConnPool(db.Statement.ConnPool)
-	i.UserInterests.db = db.Session(&gorm.Session{Initialized: true})
-	i.UserInterests.db.Statement.ConnPool = db.Statement.ConnPool
 	return i
 }
 
 func (i interest) replaceDB(db *gorm.DB) interest {
 	i.interestDo.ReplaceDB(db)
-	i.UserInterests.db = db.Session(&gorm.Session{})
 	return i
-}
-
-type interestHasManyUserInterests struct {
-	db *gorm.DB
-
-	field.RelationField
-}
-
-func (a interestHasManyUserInterests) Where(conds ...field.Expr) *interestHasManyUserInterests {
-	if len(conds) == 0 {
-		return &a
-	}
-
-	exprs := make([]clause.Expression, 0, len(conds))
-	for _, cond := range conds {
-		exprs = append(exprs, cond.BeCond().(clause.Expression))
-	}
-	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
-	return &a
-}
-
-func (a interestHasManyUserInterests) WithContext(ctx context.Context) *interestHasManyUserInterests {
-	a.db = a.db.WithContext(ctx)
-	return &a
-}
-
-func (a interestHasManyUserInterests) Session(session *gorm.Session) *interestHasManyUserInterests {
-	a.db = a.db.Session(session)
-	return &a
-}
-
-func (a interestHasManyUserInterests) Model(m *model.Interest) *interestHasManyUserInterestsTx {
-	return &interestHasManyUserInterestsTx{a.db.Model(m).Association(a.Name())}
-}
-
-func (a interestHasManyUserInterests) Unscoped() *interestHasManyUserInterests {
-	a.db = a.db.Unscoped()
-	return &a
-}
-
-type interestHasManyUserInterestsTx struct{ tx *gorm.Association }
-
-func (a interestHasManyUserInterestsTx) Find() (result []*model.UserInterest, err error) {
-	return result, a.tx.Find(&result)
-}
-
-func (a interestHasManyUserInterestsTx) Append(values ...*model.UserInterest) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Append(targetValues...)
-}
-
-func (a interestHasManyUserInterestsTx) Replace(values ...*model.UserInterest) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Replace(targetValues...)
-}
-
-func (a interestHasManyUserInterestsTx) Delete(values ...*model.UserInterest) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Delete(targetValues...)
-}
-
-func (a interestHasManyUserInterestsTx) Clear() error {
-	return a.tx.Clear()
-}
-
-func (a interestHasManyUserInterestsTx) Count() int64 {
-	return a.tx.Count()
-}
-
-func (a interestHasManyUserInterestsTx) Unscoped() *interestHasManyUserInterestsTx {
-	a.tx = a.tx.Unscoped()
-	return &a
 }
 
 type interestDo struct{ gen.DO }

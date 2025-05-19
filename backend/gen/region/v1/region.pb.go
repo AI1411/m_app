@@ -28,6 +28,7 @@ type Region struct {
 	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	NameEn        string                 `protobuf:"bytes,3,opt,name=name_en,json=nameEn,proto3" json:"name_en,omitempty"`
 	SortOrder     int32                  `protobuf:"varint,4,opt,name=sort_order,json=sortOrder,proto3" json:"sort_order,omitempty"`
+	Prefectures   []*Prefecture          `protobuf:"bytes,5,rep,name=prefectures,proto3" json:"prefectures,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -90,6 +91,90 @@ func (x *Region) GetSortOrder() int32 {
 	return 0
 }
 
+func (x *Region) GetPrefectures() []*Prefecture {
+	if x != nil {
+		return x.Prefectures
+	}
+	return nil
+}
+
+// 都道府県情報（リージョン内で使用）
+type Prefecture struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Code          int32                  `protobuf:"varint,2,opt,name=code,proto3" json:"code,omitempty"`
+	Name          string                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	NameEn        string                 `protobuf:"bytes,4,opt,name=name_en,json=nameEn,proto3" json:"name_en,omitempty"`
+	RegionId      int32                  `protobuf:"varint,5,opt,name=region_id,json=regionId,proto3" json:"region_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Prefecture) Reset() {
+	*x = Prefecture{}
+	mi := &file_region_v1_region_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Prefecture) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Prefecture) ProtoMessage() {}
+
+func (x *Prefecture) ProtoReflect() protoreflect.Message {
+	mi := &file_region_v1_region_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Prefecture.ProtoReflect.Descriptor instead.
+func (*Prefecture) Descriptor() ([]byte, []int) {
+	return file_region_v1_region_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *Prefecture) GetId() int32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *Prefecture) GetCode() int32 {
+	if x != nil {
+		return x.Code
+	}
+	return 0
+}
+
+func (x *Prefecture) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Prefecture) GetNameEn() string {
+	if x != nil {
+		return x.NameEn
+	}
+	return ""
+}
+
+func (x *Prefecture) GetRegionId() int32 {
+	if x != nil {
+		return x.RegionId
+	}
+	return 0
+}
+
 // リージョン一覧取得リクエスト
 type ListRegionsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -99,7 +184,7 @@ type ListRegionsRequest struct {
 
 func (x *ListRegionsRequest) Reset() {
 	*x = ListRegionsRequest{}
-	mi := &file_region_v1_region_proto_msgTypes[1]
+	mi := &file_region_v1_region_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -111,7 +196,7 @@ func (x *ListRegionsRequest) String() string {
 func (*ListRegionsRequest) ProtoMessage() {}
 
 func (x *ListRegionsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_region_v1_region_proto_msgTypes[1]
+	mi := &file_region_v1_region_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -124,7 +209,7 @@ func (x *ListRegionsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRegionsRequest.ProtoReflect.Descriptor instead.
 func (*ListRegionsRequest) Descriptor() ([]byte, []int) {
-	return file_region_v1_region_proto_rawDescGZIP(), []int{1}
+	return file_region_v1_region_proto_rawDescGZIP(), []int{2}
 }
 
 // リージョン一覧取得レスポンス
@@ -137,7 +222,7 @@ type ListRegionsResponse struct {
 
 func (x *ListRegionsResponse) Reset() {
 	*x = ListRegionsResponse{}
-	mi := &file_region_v1_region_proto_msgTypes[2]
+	mi := &file_region_v1_region_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -149,7 +234,7 @@ func (x *ListRegionsResponse) String() string {
 func (*ListRegionsResponse) ProtoMessage() {}
 
 func (x *ListRegionsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_region_v1_region_proto_msgTypes[2]
+	mi := &file_region_v1_region_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -162,7 +247,7 @@ func (x *ListRegionsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRegionsResponse.ProtoReflect.Descriptor instead.
 func (*ListRegionsResponse) Descriptor() ([]byte, []int) {
-	return file_region_v1_region_proto_rawDescGZIP(), []int{2}
+	return file_region_v1_region_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *ListRegionsResponse) GetRegions() []*Region {
@@ -176,13 +261,21 @@ var File_region_v1_region_proto protoreflect.FileDescriptor
 
 const file_region_v1_region_proto_rawDesc = "" +
 	"\n" +
-	"\x16region/v1/region.proto\x12\tregion.v1\"d\n" +
+	"\x16region/v1/region.proto\x12\tregion.v1\"\x9d\x01\n" +
 	"\x06Region\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x17\n" +
 	"\aname_en\x18\x03 \x01(\tR\x06nameEn\x12\x1d\n" +
 	"\n" +
-	"sort_order\x18\x04 \x01(\x05R\tsortOrder\"\x14\n" +
+	"sort_order\x18\x04 \x01(\x05R\tsortOrder\x127\n" +
+	"\vprefectures\x18\x05 \x03(\v2\x15.region.v1.PrefectureR\vprefectures\"z\n" +
+	"\n" +
+	"Prefecture\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x12\n" +
+	"\x04code\x18\x02 \x01(\x05R\x04code\x12\x12\n" +
+	"\x04name\x18\x03 \x01(\tR\x04name\x12\x17\n" +
+	"\aname_en\x18\x04 \x01(\tR\x06nameEn\x12\x1b\n" +
+	"\tregion_id\x18\x05 \x01(\x05R\bregionId\"\x14\n" +
 	"\x12ListRegionsRequest\"B\n" +
 	"\x13ListRegionsResponse\x12+\n" +
 	"\aregions\x18\x01 \x03(\v2\x11.region.v1.RegionR\aregions2_\n" +
@@ -203,21 +296,23 @@ func file_region_v1_region_proto_rawDescGZIP() []byte {
 	return file_region_v1_region_proto_rawDescData
 }
 
-var file_region_v1_region_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_region_v1_region_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_region_v1_region_proto_goTypes = []any{
 	(*Region)(nil),              // 0: region.v1.Region
-	(*ListRegionsRequest)(nil),  // 1: region.v1.ListRegionsRequest
-	(*ListRegionsResponse)(nil), // 2: region.v1.ListRegionsResponse
+	(*Prefecture)(nil),          // 1: region.v1.Prefecture
+	(*ListRegionsRequest)(nil),  // 2: region.v1.ListRegionsRequest
+	(*ListRegionsResponse)(nil), // 3: region.v1.ListRegionsResponse
 }
 var file_region_v1_region_proto_depIdxs = []int32{
-	0, // 0: region.v1.ListRegionsResponse.regions:type_name -> region.v1.Region
-	1, // 1: region.v1.RegionService.ListRegions:input_type -> region.v1.ListRegionsRequest
-	2, // 2: region.v1.RegionService.ListRegions:output_type -> region.v1.ListRegionsResponse
-	2, // [2:3] is the sub-list for method output_type
-	1, // [1:2] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	1, // 0: region.v1.Region.prefectures:type_name -> region.v1.Prefecture
+	0, // 1: region.v1.ListRegionsResponse.regions:type_name -> region.v1.Region
+	2, // 2: region.v1.RegionService.ListRegions:input_type -> region.v1.ListRegionsRequest
+	3, // 3: region.v1.RegionService.ListRegions:output_type -> region.v1.ListRegionsResponse
+	3, // [3:4] is the sub-list for method output_type
+	2, // [2:3] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_region_v1_region_proto_init() }
@@ -231,7 +326,7 @@ func file_region_v1_region_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_region_v1_region_proto_rawDesc), len(file_region_v1_region_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
