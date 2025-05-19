@@ -1,0 +1,124 @@
+syntax = "proto3";
+
+package grpc.user.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/AI1411/m_app/gen/grpc/user/v1;userv1";
+
+// ユーザー情報取得リクエスト
+message GetUserRequest {
+  string id = 1;
+}
+
+// ユーザー情報レスポンス
+message GetUserResponse {
+  User user = 1;
+}
+
+// ユーザー検索リクエスト
+message SearchUsersRequest {
+  int32 page = 1;
+  int32 page_size = 2;
+  optional string gender = 3;
+  optional int32 min_age = 4;
+  optional int32 max_age = 5;
+  optional string location = 6;
+  repeated string interests = 7;
+}
+
+// ユーザー検索レスポンス
+message SearchUsersResponse {
+  repeated UserPreview users = 1;
+  int32 total_count = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+}
+
+// ユーザー作成リクエスト
+message CreateUserRequest {
+  string email = 1;
+  string password = 2;
+  string name = 3;
+  string nickname = 4;
+  google.protobuf.Timestamp birth_date = 5;
+  string gender = 6;
+  string location = 7;
+  string about_me = 8;
+  repeated string interests = 9;
+  string looking_for = 10;
+}
+
+// ユーザー作成レスポンス
+message CreateUserResponse {
+  string id = 1;
+}
+
+// ユーザー更新リクエスト
+message UpdateUserRequest {
+  string id = 1;
+  optional string name = 2;
+  optional string nickname = 3;
+  optional string profile_image_url = 4;
+  optional string about_me = 5;
+  optional string location = 6;
+  optional string job_title = 7;
+  optional string company = 8;
+  optional string education = 9;
+  repeated string interests = 10;
+  optional string looking_for = 11;
+}
+
+// ユーザー更新レスポンス
+message UpdateUserResponse {
+  bool success = 1;
+}
+
+// ユーザー情報（完全版）
+message User {
+  string id = 1;
+  string email = 2;
+  string name = 3;
+  string nickname = 4;
+  google.protobuf.Timestamp birth_date = 5;
+  int32 age = 6;  // 計算フィールド
+  string gender = 7;
+  string profile_image_url = 8;
+  string about_me = 9;
+  string location = 10;
+  string job_title = 11;
+  string company = 12;
+  string education = 13;
+  repeated string interests = 14;
+  string looking_for = 15;
+  google.protobuf.Timestamp last_active = 16;
+  bool is_verified = 17;
+  bool is_premium = 18;
+  google.protobuf.Timestamp created_at = 19;
+}
+
+// ユーザープレビュー（検索結果用の簡易版）
+message UserPreview {
+  string id = 1;
+  string name = 2;
+  string nickname = 3;
+  int32 age = 4;
+  string gender = 5;
+  string profile_image_url = 6;
+  string location = 7;
+  repeated string interests = 8;
+}
+
+service UserService {
+  // ユーザー情報取得
+  rpc GetUser(GetUserRequest) returns (GetUserResponse) {}
+
+  // ユーザー検索
+  rpc SearchUsers(SearchUsersRequest) returns (SearchUsersResponse) {}
+
+  // ユーザー作成
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {}
+
+  // ユーザー更新
+  rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse) {}
+}
