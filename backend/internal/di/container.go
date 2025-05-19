@@ -10,7 +10,7 @@ import (
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 
-	"github.com/AI1411/m_app/gen/grpc/user/v1/userv1connect"
+	"github.com/AI1411/m_app/gen/user/v1/userv1connect"
 	"github.com/AI1411/m_app/internal/handler"
 	"github.com/AI1411/m_app/internal/infra/db"
 	"github.com/AI1411/m_app/internal/infra/repository/datastore"
