@@ -1,10 +1,12 @@
 syntax = "proto3";
 
-package grpc.user.v1;
+package user.v1;
 
 import "google/protobuf/timestamp.proto";
+import "prefecture/v1/prefecture.proto";
+import "education/v1/education.proto";
 
-option go_package = "github.com/AI1411/m_app/gen/grpc/user/v1;userv1";
+option go_package = "github.com/AI1411/m_app/gen/proto/user/v1;userv1";
 
 // ユーザー情報取得リクエスト
 message GetUserRequest {
@@ -23,8 +25,10 @@ message SearchUsersRequest {
   optional string gender = 3;
   optional int32 min_age = 4;
   optional int32 max_age = 5;
-  optional string location = 6;
-  repeated string interests = 7;
+  optional int32 prefecture_id = 6; // 都道府県IDで検索
+  optional int32 region_id = 7; // リージョンIDで検索
+  repeated string interests = 8;
+  optional int32 education_id = 9; // 学歴IDで検索
 }
 
 // ユーザー検索レスポンス
@@ -43,10 +47,13 @@ message CreateUserRequest {
   string nickname = 4;
   google.protobuf.Timestamp birth_date = 5;
   string gender = 6;
-  string location = 7;
+  int32 prefecture_id = 7; // 都道府県ID
   string about_me = 8;
   repeated string interests = 9;
   string looking_for = 10;
+  string job_title = 11; // 職業・職種
+  string company = 12; // 会社名・組織名
+  int32 education_id = 13; // 学歴ID
 }
 
 // ユーザー作成レスポンス
@@ -61,10 +68,10 @@ message UpdateUserRequest {
   optional string nickname = 3;
   optional string profile_image_url = 4;
   optional string about_me = 5;
-  optional string location = 6;
+  optional int32 prefecture_id = 6; // 都道府県ID
   optional string job_title = 7;
   optional string company = 8;
-  optional string education = 9;
+  optional int32 education_id = 9; // 学歴ID
   repeated string interests = 10;
   optional string looking_for = 11;
 }
@@ -85,16 +92,17 @@ message User {
   string gender = 7;
   string profile_image_url = 8;
   string about_me = 9;
-  string location = 10;
+  prefecture.v1.Prefecture prefecture = 10; // 都道府県情報
   string job_title = 11;
   string company = 12;
-  string education = 13;
+  education.v1.Education education = 13; // 学歴情報
   repeated string interests = 14;
   string looking_for = 15;
   google.protobuf.Timestamp last_active = 16;
   bool is_verified = 17;
   bool is_premium = 18;
   google.protobuf.Timestamp created_at = 19;
+  google.protobuf.Timestamp updated_at = 20; // 更新日時を追加
 }
 
 // ユーザープレビュー（検索結果用の簡易版）
@@ -105,8 +113,10 @@ message UserPreview {
   int32 age = 4;
   string gender = 5;
   string profile_image_url = 6;
-  string location = 7;
+  prefecture.v1.Prefecture prefecture = 7; // 都道府県情報
   repeated string interests = 8;
+  string job_title = 9; // 職業情報を追加
+  education.v1.Education education = 10; // 学歴情報を追加
 }
 
 service UserService {

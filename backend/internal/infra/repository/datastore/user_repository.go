@@ -39,7 +39,7 @@ func (r *userRepository) GetUserByID(ctx context.Context, id string) (*model.Use
 // SearchUsers はユーザーを検索します
 func (r *userRepository) SearchUsers(ctx context.Context) ([]*model.User, error) {
 	var users []*model.User
-	result := r.sqlHandler.Conn.Find(&users)
+	result := r.sqlHandler.Conn.Preload("UserInterests").Find(&users)
 	if result.Error != nil {
 		return nil, result.Error
 	}

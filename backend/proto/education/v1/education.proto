@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package education.v1;
+
+option go_package = "github.com/AI1411/m_app/gen/proto/education/v1;educationv1";
+
+// 学歴情報
+message Education {
+  int32 id = 1;
+  string name = 2;
+  int32 sort_order = 3;
+}
+
+// 学歴一覧取得リクエスト
+message ListEducationsRequest {}
+
+// 学歴一覧取得レスポンス
+message ListEducationsResponse {
+  repeated Education educations = 1;
+}
+
+service EducationService {
+  // 学歴一覧取得
+  rpc ListEducations(ListEducationsRequest) returns (ListEducationsResponse) {}
+}

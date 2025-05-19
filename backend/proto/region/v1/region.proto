@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package region.v1;
+
+option go_package = "github.com/AI1411/m_app/gen/proto/region/v1;regionv1";
+
+// リージョン（地域）情報
+message Region {
+  int32 id = 1;
+  string name = 2;
+  string name_en = 3;
+  int32 sort_order = 4;
+}
+
+// リージョン一覧取得リクエスト
+message ListRegionsRequest {}
+
+// リージョン一覧取得レスポンス
+message ListRegionsResponse {
+  repeated Region regions = 1;
+}
+
+service RegionService {
+  // リージョン一覧取得
+  rpc ListRegions(ListRegionsRequest) returns (ListRegionsResponse) {}
+}

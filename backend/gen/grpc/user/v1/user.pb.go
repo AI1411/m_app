@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.6
 // 	protoc        (unknown)
-// source: grpc/user/v1/user.proto
+// source: proto/user/v1/user.proto
 
 package userv1
 
@@ -900,11 +900,11 @@ var File_grpc_user_v1_user_proto protoreflect.FileDescriptor
 
 const file_grpc_user_v1_user_proto_rawDesc = "" +
 	"\n" +
-	"\x17grpc/user/v1/user.proto\x12\fgrpc.user.v1\x1a\x1fgoogle/protobuf/timestamp.proto\" \n" +
+	"\x17grpc/user/v1/user.proto\x12\fproto.user.v1\x1a\x1fgoogle/protobuf/timestamp.proto\" \n" +
 	"\x0eGetUserRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"9\n" +
 	"\x0fGetUserResponse\x12&\n" +
-	"\x04user\x18\x01 \x01(\v2\x12.grpc.user.v1.UserR\x04user\"\x8d\x02\n" +
+	"\x04user\x18\x01 \x01(\v2\x12.proto.user.v1.UserR\x04user\"\x8d\x02\n" +
 	"\x12SearchUsersRequest\x12\x12\n" +
 	"\x04page\x18\x01 \x01(\x05R\x04page\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1b\n" +
@@ -920,7 +920,7 @@ const file_grpc_user_v1_user_proto_rawDesc = "" +
 	"\b_max_ageB\v\n" +
 	"\t_location\"\x98\x01\n" +
 	"\x13SearchUsersResponse\x12/\n" +
-	"\x05users\x18\x01 \x03(\v2\x19.grpc.user.v1.UserPreviewR\x05users\x12\x1f\n" +
+	"\x05users\x18\x01 \x03(\v2\x19.proto.user.v1.UserPreviewR\x05users\x12\x1f\n" +
 	"\vtotal_count\x18\x02 \x01(\x05R\n" +
 	"totalCount\x12\x12\n" +
 	"\x04page\x18\x03 \x01(\x05R\x04page\x12\x1b\n" +
@@ -1006,12 +1006,12 @@ const file_grpc_user_v1_user_proto_rawDesc = "" +
 	"\blocation\x18\a \x01(\tR\blocation\x12\x1c\n" +
 	"\tinterests\x18\b \x03(\tR\tinterests2\xd3\x02\n" +
 	"\vUserService\x12H\n" +
-	"\aGetUser\x12\x1c.grpc.user.v1.GetUserRequest\x1a\x1d.grpc.user.v1.GetUserResponse\"\x00\x12T\n" +
-	"\vSearchUsers\x12 .grpc.user.v1.SearchUsersRequest\x1a!.grpc.user.v1.SearchUsersResponse\"\x00\x12Q\n" +
+	"\aGetUser\x12\x1c.proto.user.v1.GetUserRequest\x1a\x1d.proto.user.v1.GetUserResponse\"\x00\x12T\n" +
+	"\vSearchUsers\x12 .proto.user.v1.SearchUsersRequest\x1a!.proto.user.v1.SearchUsersResponse\"\x00\x12Q\n" +
 	"\n" +
-	"CreateUser\x12\x1f.grpc.user.v1.CreateUserRequest\x1a .grpc.user.v1.CreateUserResponse\"\x00\x12Q\n" +
+	"CreateUser\x12\x1f.proto.user.v1.CreateUserRequest\x1a .proto.user.v1.CreateUserResponse\"\x00\x12Q\n" +
 	"\n" +
-	"UpdateUser\x12\x1f.grpc.user.v1.UpdateUserRequest\x1a .grpc.user.v1.UpdateUserResponse\"\x00B1Z/github.com/AI1411/m_app/gen/grpc/user/v1;userv1b\x06proto3"
+	"UpdateUser\x12\x1f.proto.user.v1.UpdateUserRequest\x1a .proto.user.v1.UpdateUserResponse\"\x00B1Z/github.com/AI1411/m_app/gen/proto/user/v1;userv1b\x06proto3"
 
 var (
 	file_grpc_user_v1_user_proto_rawDescOnce sync.Once
@@ -1027,33 +1027,33 @@ func file_grpc_user_v1_user_proto_rawDescGZIP() []byte {
 
 var file_grpc_user_v1_user_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_grpc_user_v1_user_proto_goTypes = []any{
-	(*GetUserRequest)(nil),        // 0: grpc.user.v1.GetUserRequest
-	(*GetUserResponse)(nil),       // 1: grpc.user.v1.GetUserResponse
-	(*SearchUsersRequest)(nil),    // 2: grpc.user.v1.SearchUsersRequest
-	(*SearchUsersResponse)(nil),   // 3: grpc.user.v1.SearchUsersResponse
-	(*CreateUserRequest)(nil),     // 4: grpc.user.v1.CreateUserRequest
-	(*CreateUserResponse)(nil),    // 5: grpc.user.v1.CreateUserResponse
-	(*UpdateUserRequest)(nil),     // 6: grpc.user.v1.UpdateUserRequest
-	(*UpdateUserResponse)(nil),    // 7: grpc.user.v1.UpdateUserResponse
-	(*User)(nil),                  // 8: grpc.user.v1.User
-	(*UserPreview)(nil),           // 9: grpc.user.v1.UserPreview
+	(*GetUserRequest)(nil),        // 0: proto.user.v1.GetUserRequest
+	(*GetUserResponse)(nil),       // 1: proto.user.v1.GetUserResponse
+	(*SearchUsersRequest)(nil),    // 2: proto.user.v1.SearchUsersRequest
+	(*SearchUsersResponse)(nil),   // 3: proto.user.v1.SearchUsersResponse
+	(*CreateUserRequest)(nil),     // 4: proto.user.v1.CreateUserRequest
+	(*CreateUserResponse)(nil),    // 5: proto.user.v1.CreateUserResponse
+	(*UpdateUserRequest)(nil),     // 6: proto.user.v1.UpdateUserRequest
+	(*UpdateUserResponse)(nil),    // 7: proto.user.v1.UpdateUserResponse
+	(*User)(nil),                  // 8: proto.user.v1.User
+	(*UserPreview)(nil),           // 9: proto.user.v1.UserPreview
 	(*timestamppb.Timestamp)(nil), // 10: google.protobuf.Timestamp
 }
 var file_grpc_user_v1_user_proto_depIdxs = []int32{
-	8,  // 0: grpc.user.v1.GetUserResponse.user:type_name -> grpc.user.v1.User
-	9,  // 1: grpc.user.v1.SearchUsersResponse.users:type_name -> grpc.user.v1.UserPreview
-	10, // 2: grpc.user.v1.CreateUserRequest.birth_date:type_name -> google.protobuf.Timestamp
-	10, // 3: grpc.user.v1.User.birth_date:type_name -> google.protobuf.Timestamp
-	10, // 4: grpc.user.v1.User.last_active:type_name -> google.protobuf.Timestamp
-	10, // 5: grpc.user.v1.User.created_at:type_name -> google.protobuf.Timestamp
-	0,  // 6: grpc.user.v1.UserService.GetUser:input_type -> grpc.user.v1.GetUserRequest
-	2,  // 7: grpc.user.v1.UserService.SearchUsers:input_type -> grpc.user.v1.SearchUsersRequest
-	4,  // 8: grpc.user.v1.UserService.CreateUser:input_type -> grpc.user.v1.CreateUserRequest
-	6,  // 9: grpc.user.v1.UserService.UpdateUser:input_type -> grpc.user.v1.UpdateUserRequest
-	1,  // 10: grpc.user.v1.UserService.GetUser:output_type -> grpc.user.v1.GetUserResponse
-	3,  // 11: grpc.user.v1.UserService.SearchUsers:output_type -> grpc.user.v1.SearchUsersResponse
-	5,  // 12: grpc.user.v1.UserService.CreateUser:output_type -> grpc.user.v1.CreateUserResponse
-	7,  // 13: grpc.user.v1.UserService.UpdateUser:output_type -> grpc.user.v1.UpdateUserResponse
+	8,  // 0: proto.user.v1.GetUserResponse.user:type_name -> proto.user.v1.User
+	9,  // 1: proto.user.v1.SearchUsersResponse.users:type_name -> proto.user.v1.UserPreview
+	10, // 2: proto.user.v1.CreateUserRequest.birth_date:type_name -> google.protobuf.Timestamp
+	10, // 3: proto.user.v1.User.birth_date:type_name -> google.protobuf.Timestamp
+	10, // 4: proto.user.v1.User.last_active:type_name -> google.protobuf.Timestamp
+	10, // 5: proto.user.v1.User.created_at:type_name -> google.protobuf.Timestamp
+	0,  // 6: proto.user.v1.UserService.GetUser:input_type -> proto.user.v1.GetUserRequest
+	2,  // 7: proto.user.v1.UserService.SearchUsers:input_type -> proto.user.v1.SearchUsersRequest
+	4,  // 8: proto.user.v1.UserService.CreateUser:input_type -> proto.user.v1.CreateUserRequest
+	6,  // 9: proto.user.v1.UserService.UpdateUser:input_type -> proto.user.v1.UpdateUserRequest
+	1,  // 10: proto.user.v1.UserService.GetUser:output_type -> proto.user.v1.GetUserResponse
+	3,  // 11: proto.user.v1.UserService.SearchUsers:output_type -> proto.user.v1.SearchUsersResponse
+	5,  // 12: proto.user.v1.UserService.CreateUser:output_type -> proto.user.v1.CreateUserResponse
+	7,  // 13: proto.user.v1.UserService.UpdateUser:output_type -> proto.user.v1.UpdateUserResponse
 	10, // [10:14] is the sub-list for method output_type
 	6,  // [6:10] is the sub-list for method input_type
 	6,  // [6:6] is the sub-list for extension type_name

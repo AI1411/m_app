@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package prefecture.v1;
+
+import "region/v1/region.proto";
+
+option go_package = "github.com/AI1411/m_app/gen/proto/prefecture/v1;prefecturev1";
+
+// 都道府県情報
+message Prefecture {
+  int32 id = 1;
+  int32 code = 2;
+  string name = 3;
+  string name_en = 4;
+  int32 region_id = 5;
+  region.v1.Region region = 6; // 完全修飾名を使用
+}
+
+// 都道府県一覧取得リクエスト
+message ListPrefecturesRequest {
+  optional int32 region_id = 1; // 特定のリージョンのみ取得する場合
+}
+
+// 都道府県一覧取得レスポンス
+message ListPrefecturesResponse {
+  repeated Prefecture prefectures = 1;
+}
+
+service PrefectureService {
+  // 都道府県一覧取得
+  rpc ListPrefectures(ListPrefecturesRequest) returns (ListPrefecturesResponse) {}
+}

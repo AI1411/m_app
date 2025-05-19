@@ -68,7 +68,6 @@ func (h *userHandler) SearchUsers(
 		userPreviews = append(userPreviews, &userv1.UserPreview{
 			Id:   user.ID,
 			Name: user.Name,
-			// 他のフィールドをmodelからDTOに変換
 		})
 	}
 
