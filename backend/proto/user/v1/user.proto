@@ -122,13 +122,10 @@ message UserPreview {
 service UserService {
   // ユーザー情報取得
   rpc GetUser(GetUserRequest) returns (GetUserResponse) {}
-
   // ユーザー検索
   rpc SearchUsers(SearchUsersRequest) returns (SearchUsersResponse) {}
-
   // ユーザー作成
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {}
-
   // ユーザー更新
   rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse) {}
 }

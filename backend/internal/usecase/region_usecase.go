@@ -11,6 +11,9 @@ import (
 type RegionUseCase interface {
 	ListRegions(ctx context.Context) ([]*model.Region, error)
 	ListRegionsWithPrefectures(ctx context.Context) ([]*model.Region, []*model.Prefecture, error)
+	GetRegionByID(ctx context.Context, id int32) (*model.Region, error)
+	CreateRegion(ctx context.Context, region *model.Region) (*model.Region, error)
+	UpdateRegion(ctx context.Context, region *model.Region) (*model.Region, error)
 }
 
 // regionUseCase はRegionUseCaseインターフェースの実装
@@ -41,4 +44,31 @@ func (u *regionUseCase) ListRegionsWithPrefectures(ctx context.Context) ([]*mode
 		return nil, nil, err
 	}
 	return regions, prefectures, nil
+}
+
+// GetRegionByID はリージョンIDからリージョンを取得します
+func (u *regionUseCase) GetRegionByID(ctx context.Context, id int32) (*model.Region, error) {
+	region, err := u.regionRepo.GetRegionByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return region, nil
+}
+
+// CreateRegion は新しいリージョンを作成します
+func (u *regionUseCase) CreateRegion(ctx context.Context, region *model.Region) (*model.Region, error) {
+	createdRegion, err := u.regionRepo.CreateRegion(ctx, region)
+	if err != nil {
+		return nil, err
+	}
+	return createdRegion, nil
+}
+
+// UpdateRegion はリージョンを更新します
+func (u *regionUseCase) UpdateRegion(ctx context.Context, region *model.Region) (*model.Region, error) {
+	updatedRegion, err := u.regionRepo.UpdateRegion(ctx, region)
+	if err != nil {
+		return nil, err
+	}
+	return updatedRegion, nil
 }

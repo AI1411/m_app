@@ -36,12 +36,26 @@ const (
 	// RegionServiceListRegionsProcedure is the fully-qualified name of the RegionService's ListRegions
 	// RPC.
 	RegionServiceListRegionsProcedure = "/region.v1.RegionService/ListRegions"
+	// RegionServiceGetRegionProcedure is the fully-qualified name of the RegionService's GetRegion RPC.
+	RegionServiceGetRegionProcedure = "/region.v1.RegionService/GetRegion"
+	// RegionServiceCreateRegionProcedure is the fully-qualified name of the RegionService's
+	// CreateRegion RPC.
+	RegionServiceCreateRegionProcedure = "/region.v1.RegionService/CreateRegion"
+	// RegionServiceUpdateRegionProcedure is the fully-qualified name of the RegionService's
+	// UpdateRegion RPC.
+	RegionServiceUpdateRegionProcedure = "/region.v1.RegionService/UpdateRegion"
 )
 
 // RegionServiceClient is a client for the region.v1.RegionService service.
 type RegionServiceClient interface {
 	// リージョン一覧取得
 	ListRegions(context.Context, *connect.Request[v1.ListRegionsRequest]) (*connect.Response[v1.ListRegionsResponse], error)
+	// リージョン詳細取得
+	GetRegion(context.Context, *connect.Request[v1.GetRegionRequest]) (*connect.Response[v1.GetRegionResponse], error)
+	// リージョン作成
+	CreateRegion(context.Context, *connect.Request[v1.CreateRegionRequest]) (*connect.Response[v1.CreateRegionResponse], error)
+	// リージョン更新
+	UpdateRegion(context.Context, *connect.Request[v1.UpdateRegionRequest]) (*connect.Response[v1.UpdateRegionResponse], error)
 }
 
 // NewRegionServiceClient constructs a client for the region.v1.RegionService service. By default,
@@ -61,12 +75,33 @@ func NewRegionServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			connect.WithSchema(regionServiceMethods.ByName("ListRegions")),
 			connect.WithClientOptions(opts...),
 		),
+		getRegion: connect.NewClient[v1.GetRegionRequest, v1.GetRegionResponse](
+			httpClient,
+			baseURL+RegionServiceGetRegionProcedure,
+			connect.WithSchema(regionServiceMethods.ByName("GetRegion")),
+			connect.WithClientOptions(opts...),
+		),
+		createRegion: connect.NewClient[v1.CreateRegionRequest, v1.CreateRegionResponse](
+			httpClient,
+			baseURL+RegionServiceCreateRegionProcedure,
+			connect.WithSchema(regionServiceMethods.ByName("CreateRegion")),
+			connect.WithClientOptions(opts...),
+		),
+		updateRegion: connect.NewClient[v1.UpdateRegionRequest, v1.UpdateRegionResponse](
+			httpClient,
+			baseURL+RegionServiceUpdateRegionProcedure,
+			connect.WithSchema(regionServiceMethods.ByName("UpdateRegion")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // regionServiceClient implements RegionServiceClient.
 type regionServiceClient struct {
-	listRegions *connect.Client[v1.ListRegionsRequest, v1.ListRegionsResponse]
+	listRegions  *connect.Client[v1.ListRegionsRequest, v1.ListRegionsResponse]
+	getRegion    *connect.Client[v1.GetRegionRequest, v1.GetRegionResponse]
+	createRegion *connect.Client[v1.CreateRegionRequest, v1.CreateRegionResponse]
+	updateRegion *connect.Client[v1.UpdateRegionRequest, v1.UpdateRegionResponse]
 }
 
 // ListRegions calls region.v1.RegionService.ListRegions.
@@ -74,10 +109,31 @@ func (c *regionServiceClient) ListRegions(ctx context.Context, req *connect.Requ
 	return c.listRegions.CallUnary(ctx, req)
 }
 
+// GetRegion calls region.v1.RegionService.GetRegion.
+func (c *regionServiceClient) GetRegion(ctx context.Context, req *connect.Request[v1.GetRegionRequest]) (*connect.Response[v1.GetRegionResponse], error) {
+	return c.getRegion.CallUnary(ctx, req)
+}
+
+// CreateRegion calls region.v1.RegionService.CreateRegion.
+func (c *regionServiceClient) CreateRegion(ctx context.Context, req *connect.Request[v1.CreateRegionRequest]) (*connect.Response[v1.CreateRegionResponse], error) {
+	return c.createRegion.CallUnary(ctx, req)
+}
+
+// UpdateRegion calls region.v1.RegionService.UpdateRegion.
+func (c *regionServiceClient) UpdateRegion(ctx context.Context, req *connect.Request[v1.UpdateRegionRequest]) (*connect.Response[v1.UpdateRegionResponse], error) {
+	return c.updateRegion.CallUnary(ctx, req)
+}
+
 // RegionServiceHandler is an implementation of the region.v1.RegionService service.
 type RegionServiceHandler interface {
 	// リージョン一覧取得
 	ListRegions(context.Context, *connect.Request[v1.ListRegionsRequest]) (*connect.Response[v1.ListRegionsResponse], error)
+	// リージョン詳細取得
+	GetRegion(context.Context, *connect.Request[v1.GetRegionRequest]) (*connect.Response[v1.GetRegionResponse], error)
+	// リージョン作成
+	CreateRegion(context.Context, *connect.Request[v1.CreateRegionRequest]) (*connect.Response[v1.CreateRegionResponse], error)
+	// リージョン更新
+	UpdateRegion(context.Context, *connect.Request[v1.UpdateRegionRequest]) (*connect.Response[v1.UpdateRegionResponse], error)
 }
 
 // NewRegionServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -93,10 +149,34 @@ func NewRegionServiceHandler(svc RegionServiceHandler, opts ...connect.HandlerOp
 		connect.WithSchema(regionServiceMethods.ByName("ListRegions")),
 		connect.WithHandlerOptions(opts...),
 	)
+	regionServiceGetRegionHandler := connect.NewUnaryHandler(
+		RegionServiceGetRegionProcedure,
+		svc.GetRegion,
+		connect.WithSchema(regionServiceMethods.ByName("GetRegion")),
+		connect.WithHandlerOptions(opts...),
+	)
+	regionServiceCreateRegionHandler := connect.NewUnaryHandler(
+		RegionServiceCreateRegionProcedure,
+		svc.CreateRegion,
+		connect.WithSchema(regionServiceMethods.ByName("CreateRegion")),
+		connect.WithHandlerOptions(opts...),
+	)
+	regionServiceUpdateRegionHandler := connect.NewUnaryHandler(
+		RegionServiceUpdateRegionProcedure,
+		svc.UpdateRegion,
+		connect.WithSchema(regionServiceMethods.ByName("UpdateRegion")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/region.v1.RegionService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case RegionServiceListRegionsProcedure:
 			regionServiceListRegionsHandler.ServeHTTP(w, r)
+		case RegionServiceGetRegionProcedure:
+			regionServiceGetRegionHandler.ServeHTTP(w, r)
+		case RegionServiceCreateRegionProcedure:
+			regionServiceCreateRegionHandler.ServeHTTP(w, r)
+		case RegionServiceUpdateRegionProcedure:
+			regionServiceUpdateRegionHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -108,4 +188,16 @@ type UnimplementedRegionServiceHandler struct{}
 
 func (UnimplementedRegionServiceHandler) ListRegions(context.Context, *connect.Request[v1.ListRegionsRequest]) (*connect.Response[v1.ListRegionsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("region.v1.RegionService.ListRegions is not implemented"))
+}
+
+func (UnimplementedRegionServiceHandler) GetRegion(context.Context, *connect.Request[v1.GetRegionRequest]) (*connect.Response[v1.GetRegionResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("region.v1.RegionService.GetRegion is not implemented"))
+}
+
+func (UnimplementedRegionServiceHandler) CreateRegion(context.Context, *connect.Request[v1.CreateRegionRequest]) (*connect.Response[v1.CreateRegionResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("region.v1.RegionService.CreateRegion is not implemented"))
+}
+
+func (UnimplementedRegionServiceHandler) UpdateRegion(context.Context, *connect.Request[v1.UpdateRegionRequest]) (*connect.Response[v1.UpdateRegionResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("region.v1.RegionService.UpdateRegion is not implemented"))
 }

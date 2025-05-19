@@ -30,7 +30,43 @@ message ListRegionsResponse {
   repeated Region regions = 1;
 }
 
+// リージョン詳細取得リクエスト
+message GetRegionRequest {
+  int32 id = 1;
+}
+
+// リージョン詳細取得レスポンス
+message GetRegionResponse {
+  Region region = 1;
+}
+
+// リージョン作成リクエスト
+message CreateRegionRequest {
+  Region region = 1;
+}
+
+// リージョン作成レスポンス
+message CreateRegionResponse {
+  Region region = 1;
+}
+
+// リージョン更新リクエスト
+message UpdateRegionRequest {
+  Region region = 1;
+}
+
+// リージョン更新レスポンス
+message UpdateRegionResponse {
+  Region region = 1;
+}
+
 service RegionService {
   // リージョン一覧取得
   rpc ListRegions(ListRegionsRequest) returns (ListRegionsResponse) {}
+  // リージョン詳細取得
+  rpc GetRegion(GetRegionRequest) returns (GetRegionResponse) {}
+  // リージョン作成
+  rpc CreateRegion(CreateRegionRequest) returns (CreateRegionResponse) {}
+  // リージョン更新
+  rpc UpdateRegion(UpdateRegionRequest) returns (UpdateRegionResponse) {}
 }
