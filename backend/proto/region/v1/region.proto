@@ -10,6 +10,16 @@ message Region {
   string name = 2;
   string name_en = 3;
   int32 sort_order = 4;
+  repeated Prefecture prefectures = 5;
+}
+
+// 都道府県情報（リージョン内で使用）
+message Prefecture {
+  int32 id = 1;
+  int32 code = 2;
+  string name = 3;
+  string name_en = 4;
+  int32 region_id = 5;
 }
 
 // リージョン一覧取得リクエスト

@@ -11,6 +11,7 @@ import (
 	"golang.org/x/net/http2/h2c"
 
 	"github.com/AI1411/m_app/gen/prefecture/v1/prefecturev1connect"
+	"github.com/AI1411/m_app/gen/region/v1/regionv1connect"
 	"github.com/AI1411/m_app/gen/user/v1/userv1connect"
 	"github.com/AI1411/m_app/internal/handler"
 	"github.com/AI1411/m_app/internal/infra/db"
@@ -50,12 +51,25 @@ var Module = fx.Options(
 		func(sqlHandler *db.SqlHandler) datastore.UserRepository {
 			return datastore.NewUserRepository(sqlHandler)
 		},
+
+		// PrefectureRepository
+		func(sqlHandler *db.SqlHandler) datastore.PrefectureRepository {
+			return datastore.NewPrefectureRepository(sqlHandler)
+		},
+
+		// RegionRepository
+		func(sqlHandler *db.SqlHandler) datastore.RegionRepository {
+			return datastore.NewRegionRepository(sqlHandler)
+		},
 	),
 
 	// ユースケースの依存関係
 	fx.Provide(
 		// UserUseCase
 		usecase.NewUserUseCase,
+
+		// RegionUseCase
+		usecase.NewRegionUseCase,
 	),
 
 	// ハンドラーの依存関係
@@ -66,8 +80,11 @@ var Module = fx.Options(
 		// PrefectureHandler
 		handler.NewPrefectureHandler,
 
+		// RegionHandler
+		handler.NewRegionHandler,
+
 		// HTTPサーバーのセットアップ
-		func(userHandler handler.UserHandler, prefectureHandler handler.PrefectureHandler) *http.ServeMux {
+		func(userHandler handler.UserHandler, prefectureHandler handler.PrefectureHandler, regionHandler handler.RegionHandler) *http.ServeMux {
 			mux := http.NewServeMux()
 
 			// ユーザーサービスのハンドラー登録
@@ -77,6 +94,10 @@ var Module = fx.Options(
 			// 都道府県サービスのハンドラー登録
 			prefecturePath, prefectureHttpHandler := prefecturev1connect.NewPrefectureServiceHandler(prefectureHandler)
 			mux.Handle(prefecturePath, prefectureHttpHandler)
+
+			// リージョンサービスのハンドラー登録
+			regionPath, regionHttpHandler := regionv1connect.NewRegionServiceHandler(regionHandler)
+			mux.Handle(regionPath, regionHttpHandler)
 
 			return mux
 		},
