@@ -11,3 +11,8 @@ generate-models:
 	@rm -rf ./internal/domain/query/*.gen.go ./internal/domain/model/*.gen.go
 	@go run ./cmd/gormgen/generate_all/main.go
 	@go run ./cmd/gormgen/generate_associations/main.go
+seed:
+	@echo "seeding..."
+	@docker cp ./migrations/seed.sql db:/seed.sql
+	@docker exec -it db psql -U myuser -d m_app -f /seed.sql
+	@echo "seeding done"

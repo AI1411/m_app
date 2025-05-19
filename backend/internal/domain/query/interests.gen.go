@@ -55,7 +55,7 @@ type interest struct {
 	ID            field.Int32
 	Name          field.String
 	DisplayName   field.String
-	CategoryID    field.Int32 // 趣味のカテゴリID（categoriesテーブルへの参照）
+	CategoryID    field.Int32
 	IconURL       field.String
 	SortOrder     field.Int32
 	CreatedAt     field.Time

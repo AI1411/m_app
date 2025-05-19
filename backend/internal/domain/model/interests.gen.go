@@ -17,7 +17,7 @@ type Interest struct {
 	ID            int32          `gorm:"column:id;type:integer;primaryKey;autoIncrement:true" json:"id"`
 	Name          string         `gorm:"column:name;type:character varying(100);not null;index:idx_interests_name,priority:1" json:"name"`
 	DisplayName   string         `gorm:"column:display_name;type:character varying(100);not null" json:"display_name"`
-	CategoryID    *int32         `gorm:"column:category_id;type:integer;index:idx_interests_category,priority:1;index:idx_interests_category_id,priority:1;comment:趣味のカテゴリID（categoriesテーブルへの参照）" json:"category_id"` // 趣味のカテゴリID（categoriesテーブルへの参照）
+	CategoryID    *int32         `gorm:"column:category_id;type:integer;index:idx_interests_category,priority:1" json:"category_id"`
 	IconURL       *string        `gorm:"column:icon_url;type:character varying(255)" json:"icon_url"`
 	SortOrder     int32          `gorm:"column:sort_order;type:integer;not null" json:"sort_order"`
 	CreatedAt     time.Time      `gorm:"column:created_at;type:timestamp with time zone;not null;default:now()" json:"created_at"`

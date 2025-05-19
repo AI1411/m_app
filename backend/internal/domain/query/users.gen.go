@@ -37,11 +37,10 @@ func newUser(db *gorm.DB, opts ...gen.DOOption) user {
 	_user.Gender = field.NewString(tableName, "gender")
 	_user.ProfileImageURL = field.NewString(tableName, "profile_image_url")
 	_user.AboutMe = field.NewString(tableName, "about_me")
-	_user.Location = field.NewString(tableName, "location")
 	_user.JobTitle = field.NewString(tableName, "job_title")
 	_user.Company = field.NewString(tableName, "company")
-	_user.Education = field.NewString(tableName, "education")
-	_user.Interests = field.NewString(tableName, "interests")
+	_user.EducationID = field.NewInt32(tableName, "education_id")
+	_user.PrefectureID = field.NewInt32(tableName, "prefecture_id")
 	_user.LookingFor = field.NewString(tableName, "looking_for")
 	_user.LastActive = field.NewTime(tableName, "last_active")
 	_user.IsVerified = field.NewBool(tableName, "is_verified")
@@ -49,7 +48,6 @@ func newUser(db *gorm.DB, opts ...gen.DOOption) user {
 	_user.CreatedAt = field.NewTime(tableName, "created_at")
 	_user.UpdatedAt = field.NewTime(tableName, "updated_at")
 	_user.DeletedAt = field.NewField(tableName, "deleted_at")
-	_user.EducationID = field.NewInt32(tableName, "education_id")
 	_user.UserInterests = userHasManyUserInterests{
 		db: db.Session(&gorm.Session{}),
 
@@ -74,11 +72,10 @@ type user struct {
 	Gender          field.String // 性別（マッチング条件として使用）
 	ProfileImageURL field.String // プロフィール画像のURL
 	AboutMe         field.String // 自己紹介文
-	Location        field.String // 居住地（都市名など）
 	JobTitle        field.String // 職業・職種
 	Company         field.String // 会社名・組織名
-	Education       field.String // 学歴
-	Interests       field.String // 興味・関心（配列形式）
+	EducationID     field.Int32  // 学歴ID
+	PrefectureID    field.Int32  // 都道府県ID
 	LookingFor      field.String // 求めている関係性の説明
 	LastActive      field.Time   // 最終アクティブ日時
 	IsVerified      field.Bool   // アカウント認証済みフラグ
@@ -86,7 +83,6 @@ type user struct {
 	CreatedAt       field.Time   // レコード作成日時
 	UpdatedAt       field.Time   // レコード更新日時
 	DeletedAt       field.Field  // 論理削除日時（NULLは有効なレコードを示す）
-	EducationID     field.Int32
 	UserInterests   userHasManyUserInterests
 
 	fieldMap map[string]field.Expr
@@ -113,11 +109,10 @@ func (u *user) updateTableName(table string) *user {
 	u.Gender = field.NewString(table, "gender")
 	u.ProfileImageURL = field.NewString(table, "profile_image_url")
 	u.AboutMe = field.NewString(table, "about_me")
-	u.Location = field.NewString(table, "location")
 	u.JobTitle = field.NewString(table, "job_title")
 	u.Company = field.NewString(table, "company")
-	u.Education = field.NewString(table, "education")
-	u.Interests = field.NewString(table, "interests")
+	u.EducationID = field.NewInt32(table, "education_id")
+	u.PrefectureID = field.NewInt32(table, "prefecture_id")
 	u.LookingFor = field.NewString(table, "looking_for")
 	u.LastActive = field.NewTime(table, "last_active")
 	u.IsVerified = field.NewBool(table, "is_verified")
@@ -125,7 +120,6 @@ func (u *user) updateTableName(table string) *user {
 	u.CreatedAt = field.NewTime(table, "created_at")
 	u.UpdatedAt = field.NewTime(table, "updated_at")
 	u.DeletedAt = field.NewField(table, "deleted_at")
-	u.EducationID = field.NewInt32(table, "education_id")
 
 	u.fillFieldMap()
 
@@ -142,7 +136,7 @@ func (u *user) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (u *user) fillFieldMap() {
-	u.fieldMap = make(map[string]field.Expr, 23)
+	u.fieldMap = make(map[string]field.Expr, 21)
 	u.fieldMap["id"] = u.ID
 	u.fieldMap["email"] = u.Email
 	u.fieldMap["password_hash"] = u.PasswordHash
@@ -152,11 +146,10 @@ func (u *user) fillFieldMap() {
 	u.fieldMap["gender"] = u.Gender
 	u.fieldMap["profile_image_url"] = u.ProfileImageURL
 	u.fieldMap["about_me"] = u.AboutMe
-	u.fieldMap["location"] = u.Location
 	u.fieldMap["job_title"] = u.JobTitle
 	u.fieldMap["company"] = u.Company
-	u.fieldMap["education"] = u.Education
-	u.fieldMap["interests"] = u.Interests
+	u.fieldMap["education_id"] = u.EducationID
+	u.fieldMap["prefecture_id"] = u.PrefectureID
 	u.fieldMap["looking_for"] = u.LookingFor
 	u.fieldMap["last_active"] = u.LastActive
 	u.fieldMap["is_verified"] = u.IsVerified
@@ -164,7 +157,6 @@ func (u *user) fillFieldMap() {
 	u.fieldMap["created_at"] = u.CreatedAt
 	u.fieldMap["updated_at"] = u.UpdatedAt
 	u.fieldMap["deleted_at"] = u.DeletedAt
-	u.fieldMap["education_id"] = u.EducationID
 
 }
 

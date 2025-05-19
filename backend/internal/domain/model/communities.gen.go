@@ -21,12 +21,12 @@ type Community struct {
 	ProfileImageURL *string        `gorm:"column:profile_image_url;type:character varying(255);comment:コミュニティのプロフィール画像URL" json:"profile_image_url"`                                              // コミュニティのプロフィール画像URL
 	CoverImageURL   *string        `gorm:"column:cover_image_url;type:character varying(255);comment:コミュニティのカバー画像URL" json:"cover_image_url"`                                                     // コミュニティのカバー画像URL
 	CategoryID      *int32         `gorm:"column:category_id;type:integer;index:idx_communities_category_id,priority:1;comment:コミュニティのカテゴリID" json:"category_id"`                                 // コミュニティのカテゴリID
+	PrefectureID    *int32         `gorm:"column:prefecture_id;type:integer;index:idx_communities_prefecture_id,priority:1;comment:関連する都道府県ID" json:"prefecture_id"`                              // 関連する都道府県ID
 	IsPrivate       bool           `gorm:"column:is_private;type:boolean;not null;index:idx_communities_is_private,priority:1;comment:プライベートコミュニティフラグ（参加に承認が必要）" json:"is_private"`               // プライベートコミュニティフラグ（参加に承認が必要）
 	IsVerified      bool           `gorm:"column:is_verified;type:boolean;not null;comment:公式コミュニティフラグ" json:"is_verified"`                                                                       // 公式コミュニティフラグ
 	MemberCount     int32          `gorm:"column:member_count;type:integer;not null;comment:メンバー数（キャッシュ）" json:"member_count"`                                                                    // メンバー数（キャッシュ）
 	CreatorID       *string        `gorm:"column:creator_id;type:uuid;index:idx_communities_creator_id,priority:1;comment:コミュニティ作成者のユーザーID" json:"creator_id"`                                    // コミュニティ作成者のユーザーID
 	Rules           *string        `gorm:"column:rules;type:text;comment:コミュニティルール" json:"rules"`                                                                                                 // コミュニティルール
-	Location        *string        `gorm:"column:location;type:character varying(100);comment:コミュニティの地域（オプション）" json:"location"`                                                                  // コミュニティの地域（オプション）
 	WebsiteURL      *string        `gorm:"column:website_url;type:character varying(255);comment:コミュニティの外部ウェブサイト（オプション）" json:"website_url"`                                                      // コミュニティの外部ウェブサイト（オプション）
 	CreatedAt       time.Time      `gorm:"column:created_at;type:timestamp with time zone;not null;index:idx_communities_created_at,priority:1;default:now();comment:レコード作成日時" json:"created_at"` // レコード作成日時
 	UpdatedAt       time.Time      `gorm:"column:updated_at;type:timestamp with time zone;not null;default:now();comment:レコード更新日時" json:"updated_at"`                                             // レコード更新日時

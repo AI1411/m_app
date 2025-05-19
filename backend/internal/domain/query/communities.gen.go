@@ -35,12 +35,12 @@ func newCommunity(db *gorm.DB, opts ...gen.DOOption) community {
 	_community.ProfileImageURL = field.NewString(tableName, "profile_image_url")
 	_community.CoverImageURL = field.NewString(tableName, "cover_image_url")
 	_community.CategoryID = field.NewInt32(tableName, "category_id")
+	_community.PrefectureID = field.NewInt32(tableName, "prefecture_id")
 	_community.IsPrivate = field.NewBool(tableName, "is_private")
 	_community.IsVerified = field.NewBool(tableName, "is_verified")
 	_community.MemberCount = field.NewInt32(tableName, "member_count")
 	_community.CreatorID = field.NewString(tableName, "creator_id")
 	_community.Rules = field.NewString(tableName, "rules")
-	_community.Location = field.NewString(tableName, "location")
 	_community.WebsiteURL = field.NewString(tableName, "website_url")
 	_community.CreatedAt = field.NewTime(tableName, "created_at")
 	_community.UpdatedAt = field.NewTime(tableName, "updated_at")
@@ -62,12 +62,12 @@ type community struct {
 	ProfileImageURL field.String // コミュニティのプロフィール画像URL
 	CoverImageURL   field.String // コミュニティのカバー画像URL
 	CategoryID      field.Int32  // コミュニティのカテゴリID
+	PrefectureID    field.Int32  // 関連する都道府県ID
 	IsPrivate       field.Bool   // プライベートコミュニティフラグ（参加に承認が必要）
 	IsVerified      field.Bool   // 公式コミュニティフラグ
 	MemberCount     field.Int32  // メンバー数（キャッシュ）
 	CreatorID       field.String // コミュニティ作成者のユーザーID
 	Rules           field.String // コミュニティルール
-	Location        field.String // コミュニティの地域（オプション）
 	WebsiteURL      field.String // コミュニティの外部ウェブサイト（オプション）
 	CreatedAt       field.Time   // レコード作成日時
 	UpdatedAt       field.Time   // レコード更新日時
@@ -95,12 +95,12 @@ func (c *community) updateTableName(table string) *community {
 	c.ProfileImageURL = field.NewString(table, "profile_image_url")
 	c.CoverImageURL = field.NewString(table, "cover_image_url")
 	c.CategoryID = field.NewInt32(table, "category_id")
+	c.PrefectureID = field.NewInt32(table, "prefecture_id")
 	c.IsPrivate = field.NewBool(table, "is_private")
 	c.IsVerified = field.NewBool(table, "is_verified")
 	c.MemberCount = field.NewInt32(table, "member_count")
 	c.CreatorID = field.NewString(table, "creator_id")
 	c.Rules = field.NewString(table, "rules")
-	c.Location = field.NewString(table, "location")
 	c.WebsiteURL = field.NewString(table, "website_url")
 	c.CreatedAt = field.NewTime(table, "created_at")
 	c.UpdatedAt = field.NewTime(table, "updated_at")
@@ -129,12 +129,12 @@ func (c *community) fillFieldMap() {
 	c.fieldMap["profile_image_url"] = c.ProfileImageURL
 	c.fieldMap["cover_image_url"] = c.CoverImageURL
 	c.fieldMap["category_id"] = c.CategoryID
+	c.fieldMap["prefecture_id"] = c.PrefectureID
 	c.fieldMap["is_private"] = c.IsPrivate
 	c.fieldMap["is_verified"] = c.IsVerified
 	c.fieldMap["member_count"] = c.MemberCount
 	c.fieldMap["creator_id"] = c.CreatorID
 	c.fieldMap["rules"] = c.Rules
-	c.fieldMap["location"] = c.Location
 	c.fieldMap["website_url"] = c.WebsiteURL
 	c.fieldMap["created_at"] = c.CreatedAt
 	c.fieldMap["updated_at"] = c.UpdatedAt

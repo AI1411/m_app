@@ -19,23 +19,21 @@ type User struct {
 	PasswordHash    string         `gorm:"column:password_hash;type:character varying(255);not null;comment:パスワードのハッシュ値（平文保存は不可）" json:"password_hash"`                                                                 // パスワードのハッシュ値（平文保存は不可）
 	Name            string         `gorm:"column:name;type:character varying(100);not null;comment:ユーザーの本名" json:"name"`                                                                                                // ユーザーの本名
 	Nickname        *string        `gorm:"column:nickname;type:character varying(50);comment:ユーザーのニックネーム（表示名）" json:"nickname"`                                                                                         // ユーザーのニックネーム（表示名）
-	BirthDate       time.Time      `gorm:"column:birth_date;type:date;not null;index:idx_users_location_birth_date,priority:1;index:idx_users_gender_birth_date,priority:1;comment:生年月日" json:"birth_date"`             // 生年月日
+	BirthDate       time.Time      `gorm:"column:birth_date;type:date;not null;index:idx_users_gender_birth_date,priority:1;comment:生年月日" json:"birth_date"`                                                            // 生年月日
 	Gender          string         `gorm:"column:gender;type:character varying(20);not null;index:idx_users_gender_birth_date,priority:2;comment:性別（マッチング条件として使用）" json:"gender"`                                       // 性別（マッチング条件として使用）
 	ProfileImageURL *string        `gorm:"column:profile_image_url;type:character varying(255);comment:プロフィール画像のURL" json:"profile_image_url"`                                                                          // プロフィール画像のURL
 	AboutMe         *string        `gorm:"column:about_me;type:text;comment:自己紹介文" json:"about_me"`                                                                                                                     // 自己紹介文
-	Location        *string        `gorm:"column:location;type:character varying(100);index:idx_users_location_birth_date,priority:2;comment:居住地（都市名など）" json:"location"`                                               // 居住地（都市名など）
 	JobTitle        *string        `gorm:"column:job_title;type:character varying(100);comment:職業・職種" json:"job_title"`                                                                                                 // 職業・職種
 	Company         *string        `gorm:"column:company;type:character varying(100);comment:会社名・組織名" json:"company"`                                                                                                   // 会社名・組織名
-	Education       *string        `gorm:"column:education;type:character varying(100);comment:学歴" json:"education"`                                                                                                    // 学歴
-	Interests       *string        `gorm:"column:interests;type:text[];index:idx_users_interests,priority:1;comment:興味・関心（配列形式）" json:"interests"`                                                                      // 興味・関心（配列形式）
+	EducationID     *int32         `gorm:"column:education_id;type:integer;index:idx_users_education_id,priority:1;comment:学歴ID" json:"education_id"`                                                                   // 学歴ID
+	PrefectureID    *int32         `gorm:"column:prefecture_id;type:integer;index:idx_users_prefecture_id,priority:1;comment:都道府県ID" json:"prefecture_id"`                                                              // 都道府県ID
 	LookingFor      *string        `gorm:"column:looking_for;type:text;comment:求めている関係性の説明" json:"looking_for"`                                                                                                         // 求めている関係性の説明
-	LastActive      *time.Time     `gorm:"column:last_active;type:timestamp with time zone;index:idx_users_premium_last_active,priority:2;index:idx_users_last_active,priority:1;comment:最終アクティブ日時" json:"last_active"` // 最終アクティブ日時
+	LastActive      *time.Time     `gorm:"column:last_active;type:timestamp with time zone;index:idx_users_last_active,priority:1;index:idx_users_premium_last_active,priority:2;comment:最終アクティブ日時" json:"last_active"` // 最終アクティブ日時
 	IsVerified      *bool          `gorm:"column:is_verified;type:boolean;comment:アカウント認証済みフラグ" json:"is_verified"`                                                                                                     // アカウント認証済みフラグ
 	IsPremium       *bool          `gorm:"column:is_premium;type:boolean;index:idx_users_premium_last_active,priority:1;comment:プレミアムアカウントフラグ" json:"is_premium"`                                                       // プレミアムアカウントフラグ
 	CreatedAt       time.Time      `gorm:"column:created_at;type:timestamp with time zone;not null;default:now();comment:レコード作成日時" json:"created_at"`                                                                   // レコード作成日時
 	UpdatedAt       time.Time      `gorm:"column:updated_at;type:timestamp with time zone;not null;default:now();comment:レコード更新日時" json:"updated_at"`                                                                   // レコード更新日時
 	DeletedAt       gorm.DeletedAt `gorm:"column:deleted_at;type:timestamp with time zone;index:idx_users_deleted_at,priority:1;comment:論理削除日時（NULLは有効なレコードを示す）" json:"deleted_at"`                                     // 論理削除日時（NULLは有効なレコードを示す）
-	EducationID     *int32         `gorm:"column:education_id;type:integer;index:idx_users_education_id,priority:1" json:"education_id"`
 	UserInterests   []UserInterest `json:"user_interests"`
 }
 
