@@ -31,13 +31,14 @@ var Module = fx.Options(
 		},
 
 		// データベース接続
-		func() (*db.SqlHandler, error) {
+		func(log *logger.Logger) (*db.SqlHandler, error) {
 			return db.NewSqlHandler(
 				"myuser",     // 環境変数から取得するのが理想的
 				"mypassword", // 環境変数から取得するのが理想的
 				"localhost",  // 環境変数から取得するのが理想的
 				"5432",       // 環境変数から取得するのが理想的
 				"m_app",      // 環境変数から取得するのが理想的
+				log,          // アプリケーションのロガーを渡す
 			)
 		},
 	),
