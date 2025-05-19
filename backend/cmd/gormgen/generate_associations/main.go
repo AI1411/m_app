@@ -61,6 +61,10 @@ func main() {
 			model.TableNameCategory,
 			gen.FieldRelateModel(field.HasMany, "Interests", model.Interest{}, nil),
 		),
+		g.GenerateModel(
+			model.TableNameCommunity,
+			gen.FieldRelateModel(field.Many2Many, "Members", model.CommunityMember{}, nil),
+		),
 	}
 
 	g.ApplyBasic(allModels...)

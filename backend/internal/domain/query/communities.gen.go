@@ -38,6 +38,11 @@ func newCommunity(db *gorm.DB, opts ...gen.DOOption) community {
 	_community.CreatedAt = field.NewTime(tableName, "created_at")
 	_community.UpdatedAt = field.NewTime(tableName, "updated_at")
 	_community.DeletedAt = field.NewField(tableName, "deleted_at")
+	_community.Members = communityManyToManyMembers{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("Members", "model.CommunityMember"),
+	}
 
 	_community.fillFieldMap()
 
@@ -58,6 +63,7 @@ type community struct {
 	CreatedAt       field.Time   // レコード作成日時
 	UpdatedAt       field.Time   // レコード更新日時
 	DeletedAt       field.Field  // 論理削除日時（NULLは有効なレコードを示す）
+	Members         communityManyToManyMembers
 
 	fieldMap map[string]field.Expr
 }
@@ -100,7 +106,7 @@ func (c *community) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (c *community) fillFieldMap() {
-	c.fieldMap = make(map[string]field.Expr, 10)
+	c.fieldMap = make(map[string]field.Expr, 11)
 	c.fieldMap["id"] = c.ID
 	c.fieldMap["name"] = c.Name
 	c.fieldMap["description"] = c.Description
@@ -111,16 +117,101 @@ func (c *community) fillFieldMap() {
 	c.fieldMap["created_at"] = c.CreatedAt
 	c.fieldMap["updated_at"] = c.UpdatedAt
 	c.fieldMap["deleted_at"] = c.DeletedAt
+
 }
 
 func (c community) clone(db *gorm.DB) community {
 	c.communityDo.ReplaceConnPool(db.Statement.ConnPool)
+	c.Members.db = db.Session(&gorm.Session{Initialized: true})
+	c.Members.db.Statement.ConnPool = db.Statement.ConnPool
 	return c
 }
 
 func (c community) replaceDB(db *gorm.DB) community {
 	c.communityDo.ReplaceDB(db)
+	c.Members.db = db.Session(&gorm.Session{})
 	return c
+}
+
+type communityManyToManyMembers struct {
+	db *gorm.DB
+
+	field.RelationField
+}
+
+func (a communityManyToManyMembers) Where(conds ...field.Expr) *communityManyToManyMembers {
+	if len(conds) == 0 {
+		return &a
+	}
+
+	exprs := make([]clause.Expression, 0, len(conds))
+	for _, cond := range conds {
+		exprs = append(exprs, cond.BeCond().(clause.Expression))
+	}
+	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
+	return &a
+}
+
+func (a communityManyToManyMembers) WithContext(ctx context.Context) *communityManyToManyMembers {
+	a.db = a.db.WithContext(ctx)
+	return &a
+}
+
+func (a communityManyToManyMembers) Session(session *gorm.Session) *communityManyToManyMembers {
+	a.db = a.db.Session(session)
+	return &a
+}
+
+func (a communityManyToManyMembers) Model(m *model.Community) *communityManyToManyMembersTx {
+	return &communityManyToManyMembersTx{a.db.Model(m).Association(a.Name())}
+}
+
+func (a communityManyToManyMembers) Unscoped() *communityManyToManyMembers {
+	a.db = a.db.Unscoped()
+	return &a
+}
+
+type communityManyToManyMembersTx struct{ tx *gorm.Association }
+
+func (a communityManyToManyMembersTx) Find() (result []*model.CommunityMember, err error) {
+	return result, a.tx.Find(&result)
+}
+
+func (a communityManyToManyMembersTx) Append(values ...*model.CommunityMember) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Append(targetValues...)
+}
+
+func (a communityManyToManyMembersTx) Replace(values ...*model.CommunityMember) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Replace(targetValues...)
+}
+
+func (a communityManyToManyMembersTx) Delete(values ...*model.CommunityMember) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Delete(targetValues...)
+}
+
+func (a communityManyToManyMembersTx) Clear() error {
+	return a.tx.Clear()
+}
+
+func (a communityManyToManyMembersTx) Count() int64 {
+	return a.tx.Count()
+}
+
+func (a communityManyToManyMembersTx) Unscoped() *communityManyToManyMembersTx {
+	a.tx = a.tx.Unscoped()
+	return &a
 }
 
 type communityDo struct{ gen.DO }
