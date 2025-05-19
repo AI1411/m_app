@@ -49,6 +49,27 @@ func (h *communityHandler) GetCommunity(
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
+	// ユーザー情報のログ出力
+	if community.CreatorID != nil && community.User.ID != "" {
+		h.logger.Info("creator user info",
+			"user_id", community.User.ID,
+			"name", community.User.Name,
+			"nickname", community.User.Nickname,
+			"profile_image_url", community.User.ProfileImageURL)
+	}
+
+	// コミュニティメンバー情報のログ出力
+	if len(community.CommunityMembers) > 0 {
+		for i, member := range community.CommunityMembers {
+			h.logger.Info("community member info",
+				"index", i,
+				"user_id", member.UserID,
+				"role", member.Role,
+				"is_approved", member.IsApproved,
+				"joined_at", member.JoinedAt)
+		}
+	}
+
 	h.logger.Info("community retrieved successfully", "community_id", community.ID)
 	return connect.NewResponse(&communityv1.GetCommunityResponse{
 		Community: convertToCommunityProto(community),
@@ -228,6 +249,38 @@ func convertToCommunityProto(community *model.Community) *communityv1.Community 
 	}
 	if community.CreatorID != nil {
 		proto.CreatorId = community.CreatorID
+	}
+
+	// クリエイターユーザー情報の設定
+	if community.CreatorID != nil && community.User.ID != "" {
+		proto.Creator = &communityv1.User{
+			Id:   community.User.ID,
+			Name: community.User.Name,
+		}
+
+		if community.User.Nickname != nil {
+			proto.Creator.Nickname = community.User.Nickname
+		}
+		if community.User.ProfileImageURL != nil {
+			proto.Creator.ProfileImageUrl = community.User.ProfileImageURL
+		}
+		if community.User.AboutMe != nil {
+			proto.Creator.AboutMe = community.User.AboutMe
+		}
+	}
+
+	// コミュニティメンバー情報の設定
+	if len(community.CommunityMembers) > 0 {
+		proto.Members = make([]*communityv1.CommunityMember, 0, len(community.CommunityMembers))
+		for _, member := range community.CommunityMembers {
+			protoMember := &communityv1.CommunityMember{
+				UserId:     member.UserID,
+				Role:       member.Role,
+				IsApproved: member.IsApproved,
+				JoinedAt:   timestamppb.New(member.JoinedAt),
+			}
+			proto.Members = append(proto.Members, protoMember)
+		}
 	}
 
 	return proto

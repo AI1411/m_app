@@ -7,6 +7,23 @@ import "prefecture/v1/prefecture.proto";
 
 option go_package = "github.com/AI1411/m_app/gen/proto/community/v1;communityv1";
 
+// ユーザー情報
+message User {
+  string id = 1;
+  string name = 2;
+  optional string nickname = 3;
+  optional string profile_image_url = 4;
+  optional string about_me = 5;
+}
+
+// コミュニティメンバー情報
+message CommunityMember {
+  string user_id = 1;
+  string role = 2;
+  bool is_approved = 3;
+  google.protobuf.Timestamp joined_at = 4;
+}
+
 // コミュニティ情報
 message Community {
   string id = 1;
@@ -18,6 +35,8 @@ message Community {
   optional string creator_id = 14;
   google.protobuf.Timestamp created_at = 17;
   google.protobuf.Timestamp updated_at = 18;
+  User creator = 19;
+  repeated CommunityMember members = 20;
 }
 
 // カテゴリ情報

@@ -23,6 +23,152 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// ユーザー情報
+type User struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	Id              string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name            string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Nickname        *string                `protobuf:"bytes,3,opt,name=nickname,proto3,oneof" json:"nickname,omitempty"`
+	ProfileImageUrl *string                `protobuf:"bytes,4,opt,name=profile_image_url,json=profileImageUrl,proto3,oneof" json:"profile_image_url,omitempty"`
+	AboutMe         *string                `protobuf:"bytes,5,opt,name=about_me,json=aboutMe,proto3,oneof" json:"about_me,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *User) Reset() {
+	*x = User{}
+	mi := &file_community_v1_community_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *User) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*User) ProtoMessage() {}
+
+func (x *User) ProtoReflect() protoreflect.Message {
+	mi := &file_community_v1_community_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use User.ProtoReflect.Descriptor instead.
+func (*User) Descriptor() ([]byte, []int) {
+	return file_community_v1_community_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *User) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *User) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *User) GetNickname() string {
+	if x != nil && x.Nickname != nil {
+		return *x.Nickname
+	}
+	return ""
+}
+
+func (x *User) GetProfileImageUrl() string {
+	if x != nil && x.ProfileImageUrl != nil {
+		return *x.ProfileImageUrl
+	}
+	return ""
+}
+
+func (x *User) GetAboutMe() string {
+	if x != nil && x.AboutMe != nil {
+		return *x.AboutMe
+	}
+	return ""
+}
+
+// コミュニティメンバー情報
+type CommunityMember struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Role          string                 `protobuf:"bytes,2,opt,name=role,proto3" json:"role,omitempty"`
+	IsApproved    bool                   `protobuf:"varint,3,opt,name=is_approved,json=isApproved,proto3" json:"is_approved,omitempty"`
+	JoinedAt      *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=joined_at,json=joinedAt,proto3" json:"joined_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CommunityMember) Reset() {
+	*x = CommunityMember{}
+	mi := &file_community_v1_community_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CommunityMember) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CommunityMember) ProtoMessage() {}
+
+func (x *CommunityMember) ProtoReflect() protoreflect.Message {
+	mi := &file_community_v1_community_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CommunityMember.ProtoReflect.Descriptor instead.
+func (*CommunityMember) Descriptor() ([]byte, []int) {
+	return file_community_v1_community_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *CommunityMember) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *CommunityMember) GetRole() string {
+	if x != nil {
+		return x.Role
+	}
+	return ""
+}
+
+func (x *CommunityMember) GetIsApproved() bool {
+	if x != nil {
+		return x.IsApproved
+	}
+	return false
+}
+
+func (x *CommunityMember) GetJoinedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.JoinedAt
+	}
+	return nil
+}
+
 // コミュニティ情報
 type Community struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
@@ -35,13 +181,15 @@ type Community struct {
 	CreatorId       *string                `protobuf:"bytes,14,opt,name=creator_id,json=creatorId,proto3,oneof" json:"creator_id,omitempty"`
 	CreatedAt       *timestamppb.Timestamp `protobuf:"bytes,17,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	UpdatedAt       *timestamppb.Timestamp `protobuf:"bytes,18,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	Creator         *User                  `protobuf:"bytes,19,opt,name=creator,proto3" json:"creator,omitempty"`
+	Members         []*CommunityMember     `protobuf:"bytes,20,rep,name=members,proto3" json:"members,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
 
 func (x *Community) Reset() {
 	*x = Community{}
-	mi := &file_community_v1_community_proto_msgTypes[0]
+	mi := &file_community_v1_community_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -53,7 +201,7 @@ func (x *Community) String() string {
 func (*Community) ProtoMessage() {}
 
 func (x *Community) ProtoReflect() protoreflect.Message {
-	mi := &file_community_v1_community_proto_msgTypes[0]
+	mi := &file_community_v1_community_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -66,7 +214,7 @@ func (x *Community) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Community.ProtoReflect.Descriptor instead.
 func (*Community) Descriptor() ([]byte, []int) {
-	return file_community_v1_community_proto_rawDescGZIP(), []int{0}
+	return file_community_v1_community_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *Community) GetId() string {
@@ -132,6 +280,20 @@ func (x *Community) GetUpdatedAt() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *Community) GetCreator() *User {
+	if x != nil {
+		return x.Creator
+	}
+	return nil
+}
+
+func (x *Community) GetMembers() []*CommunityMember {
+	if x != nil {
+		return x.Members
+	}
+	return nil
+}
+
 // カテゴリ情報
 type Category struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -148,7 +310,7 @@ type Category struct {
 
 func (x *Category) Reset() {
 	*x = Category{}
-	mi := &file_community_v1_community_proto_msgTypes[1]
+	mi := &file_community_v1_community_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -160,7 +322,7 @@ func (x *Category) String() string {
 func (*Category) ProtoMessage() {}
 
 func (x *Category) ProtoReflect() protoreflect.Message {
-	mi := &file_community_v1_community_proto_msgTypes[1]
+	mi := &file_community_v1_community_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -173,7 +335,7 @@ func (x *Category) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Category.ProtoReflect.Descriptor instead.
 func (*Category) Descriptor() ([]byte, []int) {
-	return file_community_v1_community_proto_rawDescGZIP(), []int{1}
+	return file_community_v1_community_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *Category) GetId() int32 {
@@ -239,7 +401,7 @@ type CommunityPreview struct {
 
 func (x *CommunityPreview) Reset() {
 	*x = CommunityPreview{}
-	mi := &file_community_v1_community_proto_msgTypes[2]
+	mi := &file_community_v1_community_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -251,7 +413,7 @@ func (x *CommunityPreview) String() string {
 func (*CommunityPreview) ProtoMessage() {}
 
 func (x *CommunityPreview) ProtoReflect() protoreflect.Message {
-	mi := &file_community_v1_community_proto_msgTypes[2]
+	mi := &file_community_v1_community_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -264,7 +426,7 @@ func (x *CommunityPreview) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CommunityPreview.ProtoReflect.Descriptor instead.
 func (*CommunityPreview) Descriptor() ([]byte, []int) {
-	return file_community_v1_community_proto_rawDescGZIP(), []int{2}
+	return file_community_v1_community_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *CommunityPreview) GetId() string {
@@ -312,7 +474,7 @@ type GetCommunityRequest struct {
 
 func (x *GetCommunityRequest) Reset() {
 	*x = GetCommunityRequest{}
-	mi := &file_community_v1_community_proto_msgTypes[3]
+	mi := &file_community_v1_community_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -324,7 +486,7 @@ func (x *GetCommunityRequest) String() string {
 func (*GetCommunityRequest) ProtoMessage() {}
 
 func (x *GetCommunityRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_community_v1_community_proto_msgTypes[3]
+	mi := &file_community_v1_community_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -337,7 +499,7 @@ func (x *GetCommunityRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCommunityRequest.ProtoReflect.Descriptor instead.
 func (*GetCommunityRequest) Descriptor() ([]byte, []int) {
-	return file_community_v1_community_proto_rawDescGZIP(), []int{3}
+	return file_community_v1_community_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *GetCommunityRequest) GetId() string {
@@ -357,7 +519,7 @@ type GetCommunityResponse struct {
 
 func (x *GetCommunityResponse) Reset() {
 	*x = GetCommunityResponse{}
-	mi := &file_community_v1_community_proto_msgTypes[4]
+	mi := &file_community_v1_community_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -369,7 +531,7 @@ func (x *GetCommunityResponse) String() string {
 func (*GetCommunityResponse) ProtoMessage() {}
 
 func (x *GetCommunityResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_community_v1_community_proto_msgTypes[4]
+	mi := &file_community_v1_community_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -382,7 +544,7 @@ func (x *GetCommunityResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCommunityResponse.ProtoReflect.Descriptor instead.
 func (*GetCommunityResponse) Descriptor() ([]byte, []int) {
-	return file_community_v1_community_proto_rawDescGZIP(), []int{4}
+	return file_community_v1_community_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *GetCommunityResponse) GetCommunity() *Community {
@@ -405,7 +567,7 @@ type SearchCommunitiesRequest struct {
 
 func (x *SearchCommunitiesRequest) Reset() {
 	*x = SearchCommunitiesRequest{}
-	mi := &file_community_v1_community_proto_msgTypes[5]
+	mi := &file_community_v1_community_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -417,7 +579,7 @@ func (x *SearchCommunitiesRequest) String() string {
 func (*SearchCommunitiesRequest) ProtoMessage() {}
 
 func (x *SearchCommunitiesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_community_v1_community_proto_msgTypes[5]
+	mi := &file_community_v1_community_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -430,7 +592,7 @@ func (x *SearchCommunitiesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchCommunitiesRequest.ProtoReflect.Descriptor instead.
 func (*SearchCommunitiesRequest) Descriptor() ([]byte, []int) {
-	return file_community_v1_community_proto_rawDescGZIP(), []int{5}
+	return file_community_v1_community_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *SearchCommunitiesRequest) GetPage() int32 {
@@ -474,7 +636,7 @@ type SearchCommunitiesResponse struct {
 
 func (x *SearchCommunitiesResponse) Reset() {
 	*x = SearchCommunitiesResponse{}
-	mi := &file_community_v1_community_proto_msgTypes[6]
+	mi := &file_community_v1_community_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -486,7 +648,7 @@ func (x *SearchCommunitiesResponse) String() string {
 func (*SearchCommunitiesResponse) ProtoMessage() {}
 
 func (x *SearchCommunitiesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_community_v1_community_proto_msgTypes[6]
+	mi := &file_community_v1_community_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -499,7 +661,7 @@ func (x *SearchCommunitiesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchCommunitiesResponse.ProtoReflect.Descriptor instead.
 func (*SearchCommunitiesResponse) Descriptor() ([]byte, []int) {
-	return file_community_v1_community_proto_rawDescGZIP(), []int{6}
+	return file_community_v1_community_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *SearchCommunitiesResponse) GetCommunities() []*CommunityPreview {
@@ -545,7 +707,7 @@ type CreateCommunityRequest struct {
 
 func (x *CreateCommunityRequest) Reset() {
 	*x = CreateCommunityRequest{}
-	mi := &file_community_v1_community_proto_msgTypes[7]
+	mi := &file_community_v1_community_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -557,7 +719,7 @@ func (x *CreateCommunityRequest) String() string {
 func (*CreateCommunityRequest) ProtoMessage() {}
 
 func (x *CreateCommunityRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_community_v1_community_proto_msgTypes[7]
+	mi := &file_community_v1_community_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -570,7 +732,7 @@ func (x *CreateCommunityRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateCommunityRequest.ProtoReflect.Descriptor instead.
 func (*CreateCommunityRequest) Descriptor() ([]byte, []int) {
-	return file_community_v1_community_proto_rawDescGZIP(), []int{7}
+	return file_community_v1_community_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *CreateCommunityRequest) GetName() string {
@@ -625,7 +787,7 @@ type CreateCommunityResponse struct {
 
 func (x *CreateCommunityResponse) Reset() {
 	*x = CreateCommunityResponse{}
-	mi := &file_community_v1_community_proto_msgTypes[8]
+	mi := &file_community_v1_community_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -637,7 +799,7 @@ func (x *CreateCommunityResponse) String() string {
 func (*CreateCommunityResponse) ProtoMessage() {}
 
 func (x *CreateCommunityResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_community_v1_community_proto_msgTypes[8]
+	mi := &file_community_v1_community_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -650,7 +812,7 @@ func (x *CreateCommunityResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateCommunityResponse.ProtoReflect.Descriptor instead.
 func (*CreateCommunityResponse) Descriptor() ([]byte, []int) {
-	return file_community_v1_community_proto_rawDescGZIP(), []int{8}
+	return file_community_v1_community_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *CreateCommunityResponse) GetId() string {
@@ -675,7 +837,7 @@ type UpdateCommunityRequest struct {
 
 func (x *UpdateCommunityRequest) Reset() {
 	*x = UpdateCommunityRequest{}
-	mi := &file_community_v1_community_proto_msgTypes[9]
+	mi := &file_community_v1_community_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -687,7 +849,7 @@ func (x *UpdateCommunityRequest) String() string {
 func (*UpdateCommunityRequest) ProtoMessage() {}
 
 func (x *UpdateCommunityRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_community_v1_community_proto_msgTypes[9]
+	mi := &file_community_v1_community_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -700,7 +862,7 @@ func (x *UpdateCommunityRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateCommunityRequest.ProtoReflect.Descriptor instead.
 func (*UpdateCommunityRequest) Descriptor() ([]byte, []int) {
-	return file_community_v1_community_proto_rawDescGZIP(), []int{9}
+	return file_community_v1_community_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *UpdateCommunityRequest) GetId() string {
@@ -755,7 +917,7 @@ type UpdateCommunityResponse struct {
 
 func (x *UpdateCommunityResponse) Reset() {
 	*x = UpdateCommunityResponse{}
-	mi := &file_community_v1_community_proto_msgTypes[10]
+	mi := &file_community_v1_community_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -767,7 +929,7 @@ func (x *UpdateCommunityResponse) String() string {
 func (*UpdateCommunityResponse) ProtoMessage() {}
 
 func (x *UpdateCommunityResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_community_v1_community_proto_msgTypes[10]
+	mi := &file_community_v1_community_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -780,7 +942,7 @@ func (x *UpdateCommunityResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateCommunityResponse.ProtoReflect.Descriptor instead.
 func (*UpdateCommunityResponse) Descriptor() ([]byte, []int) {
-	return file_community_v1_community_proto_rawDescGZIP(), []int{10}
+	return file_community_v1_community_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *UpdateCommunityResponse) GetSuccess() bool {
@@ -800,7 +962,7 @@ type DeleteCommunityRequest struct {
 
 func (x *DeleteCommunityRequest) Reset() {
 	*x = DeleteCommunityRequest{}
-	mi := &file_community_v1_community_proto_msgTypes[11]
+	mi := &file_community_v1_community_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -812,7 +974,7 @@ func (x *DeleteCommunityRequest) String() string {
 func (*DeleteCommunityRequest) ProtoMessage() {}
 
 func (x *DeleteCommunityRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_community_v1_community_proto_msgTypes[11]
+	mi := &file_community_v1_community_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -825,7 +987,7 @@ func (x *DeleteCommunityRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteCommunityRequest.ProtoReflect.Descriptor instead.
 func (*DeleteCommunityRequest) Descriptor() ([]byte, []int) {
-	return file_community_v1_community_proto_rawDescGZIP(), []int{11}
+	return file_community_v1_community_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *DeleteCommunityRequest) GetId() string {
@@ -845,7 +1007,7 @@ type DeleteCommunityResponse struct {
 
 func (x *DeleteCommunityResponse) Reset() {
 	*x = DeleteCommunityResponse{}
-	mi := &file_community_v1_community_proto_msgTypes[12]
+	mi := &file_community_v1_community_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -857,7 +1019,7 @@ func (x *DeleteCommunityResponse) String() string {
 func (*DeleteCommunityResponse) ProtoMessage() {}
 
 func (x *DeleteCommunityResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_community_v1_community_proto_msgTypes[12]
+	mi := &file_community_v1_community_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -870,7 +1032,7 @@ func (x *DeleteCommunityResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteCommunityResponse.ProtoReflect.Descriptor instead.
 func (*DeleteCommunityResponse) Descriptor() ([]byte, []int) {
-	return file_community_v1_community_proto_rawDescGZIP(), []int{12}
+	return file_community_v1_community_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *DeleteCommunityResponse) GetSuccess() bool {
@@ -884,7 +1046,22 @@ var File_community_v1_community_proto protoreflect.FileDescriptor
 
 const file_community_v1_community_proto_rawDesc = "" +
 	"\n" +
-	"\x1ccommunity/v1/community.proto\x12\fcommunity.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1eprefecture/v1/prefecture.proto\"\xb6\x03\n" +
+	"\x1ccommunity/v1/community.proto\x12\fcommunity.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1eprefecture/v1/prefecture.proto\"\xcc\x01\n" +
+	"\x04User\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x1f\n" +
+	"\bnickname\x18\x03 \x01(\tH\x00R\bnickname\x88\x01\x01\x12/\n" +
+	"\x11profile_image_url\x18\x04 \x01(\tH\x01R\x0fprofileImageUrl\x88\x01\x01\x12\x1e\n" +
+	"\babout_me\x18\x05 \x01(\tH\x02R\aaboutMe\x88\x01\x01B\v\n" +
+	"\t_nicknameB\x14\n" +
+	"\x12_profile_image_urlB\v\n" +
+	"\t_about_me\"\x98\x01\n" +
+	"\x0fCommunityMember\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x12\n" +
+	"\x04role\x18\x02 \x01(\tR\x04role\x12\x1f\n" +
+	"\vis_approved\x18\x03 \x01(\bR\n" +
+	"isApproved\x127\n" +
+	"\tjoined_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\bjoinedAt\"\x9d\x04\n" +
 	"\tCommunity\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12%\n" +
@@ -898,7 +1075,9 @@ const file_community_v1_community_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\x11 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\x12 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAtB\x0e\n" +
+	"updated_at\x18\x12 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x12,\n" +
+	"\acreator\x18\x13 \x01(\v2\x12.community.v1.UserR\acreator\x127\n" +
+	"\amembers\x18\x14 \x03(\v2\x1d.community.v1.CommunityMemberR\amembersB\x0e\n" +
 	"\f_descriptionB\x14\n" +
 	"\x12_profile_image_urlB\x12\n" +
 	"\x10_cover_image_urlB\r\n" +
@@ -997,43 +1176,48 @@ func file_community_v1_community_proto_rawDescGZIP() []byte {
 	return file_community_v1_community_proto_rawDescData
 }
 
-var file_community_v1_community_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
+var file_community_v1_community_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
 var file_community_v1_community_proto_goTypes = []any{
-	(*Community)(nil),                 // 0: community.v1.Community
-	(*Category)(nil),                  // 1: community.v1.Category
-	(*CommunityPreview)(nil),          // 2: community.v1.CommunityPreview
-	(*GetCommunityRequest)(nil),       // 3: community.v1.GetCommunityRequest
-	(*GetCommunityResponse)(nil),      // 4: community.v1.GetCommunityResponse
-	(*SearchCommunitiesRequest)(nil),  // 5: community.v1.SearchCommunitiesRequest
-	(*SearchCommunitiesResponse)(nil), // 6: community.v1.SearchCommunitiesResponse
-	(*CreateCommunityRequest)(nil),    // 7: community.v1.CreateCommunityRequest
-	(*CreateCommunityResponse)(nil),   // 8: community.v1.CreateCommunityResponse
-	(*UpdateCommunityRequest)(nil),    // 9: community.v1.UpdateCommunityRequest
-	(*UpdateCommunityResponse)(nil),   // 10: community.v1.UpdateCommunityResponse
-	(*DeleteCommunityRequest)(nil),    // 11: community.v1.DeleteCommunityRequest
-	(*DeleteCommunityResponse)(nil),   // 12: community.v1.DeleteCommunityResponse
-	(*timestamppb.Timestamp)(nil),     // 13: google.protobuf.Timestamp
+	(*User)(nil),                      // 0: community.v1.User
+	(*CommunityMember)(nil),           // 1: community.v1.CommunityMember
+	(*Community)(nil),                 // 2: community.v1.Community
+	(*Category)(nil),                  // 3: community.v1.Category
+	(*CommunityPreview)(nil),          // 4: community.v1.CommunityPreview
+	(*GetCommunityRequest)(nil),       // 5: community.v1.GetCommunityRequest
+	(*GetCommunityResponse)(nil),      // 6: community.v1.GetCommunityResponse
+	(*SearchCommunitiesRequest)(nil),  // 7: community.v1.SearchCommunitiesRequest
+	(*SearchCommunitiesResponse)(nil), // 8: community.v1.SearchCommunitiesResponse
+	(*CreateCommunityRequest)(nil),    // 9: community.v1.CreateCommunityRequest
+	(*CreateCommunityResponse)(nil),   // 10: community.v1.CreateCommunityResponse
+	(*UpdateCommunityRequest)(nil),    // 11: community.v1.UpdateCommunityRequest
+	(*UpdateCommunityResponse)(nil),   // 12: community.v1.UpdateCommunityResponse
+	(*DeleteCommunityRequest)(nil),    // 13: community.v1.DeleteCommunityRequest
+	(*DeleteCommunityResponse)(nil),   // 14: community.v1.DeleteCommunityResponse
+	(*timestamppb.Timestamp)(nil),     // 15: google.protobuf.Timestamp
 }
 var file_community_v1_community_proto_depIdxs = []int32{
-	13, // 0: community.v1.Community.created_at:type_name -> google.protobuf.Timestamp
-	13, // 1: community.v1.Community.updated_at:type_name -> google.protobuf.Timestamp
-	0,  // 2: community.v1.GetCommunityResponse.community:type_name -> community.v1.Community
-	2,  // 3: community.v1.SearchCommunitiesResponse.communities:type_name -> community.v1.CommunityPreview
-	3,  // 4: community.v1.CommunityService.GetCommunity:input_type -> community.v1.GetCommunityRequest
-	5,  // 5: community.v1.CommunityService.SearchCommunities:input_type -> community.v1.SearchCommunitiesRequest
-	7,  // 6: community.v1.CommunityService.CreateCommunity:input_type -> community.v1.CreateCommunityRequest
-	9,  // 7: community.v1.CommunityService.UpdateCommunity:input_type -> community.v1.UpdateCommunityRequest
-	11, // 8: community.v1.CommunityService.DeleteCommunity:input_type -> community.v1.DeleteCommunityRequest
-	4,  // 9: community.v1.CommunityService.GetCommunity:output_type -> community.v1.GetCommunityResponse
-	6,  // 10: community.v1.CommunityService.SearchCommunities:output_type -> community.v1.SearchCommunitiesResponse
-	8,  // 11: community.v1.CommunityService.CreateCommunity:output_type -> community.v1.CreateCommunityResponse
-	10, // 12: community.v1.CommunityService.UpdateCommunity:output_type -> community.v1.UpdateCommunityResponse
-	12, // 13: community.v1.CommunityService.DeleteCommunity:output_type -> community.v1.DeleteCommunityResponse
-	9,  // [9:14] is the sub-list for method output_type
-	4,  // [4:9] is the sub-list for method input_type
-	4,  // [4:4] is the sub-list for extension type_name
-	4,  // [4:4] is the sub-list for extension extendee
-	0,  // [0:4] is the sub-list for field type_name
+	15, // 0: community.v1.CommunityMember.joined_at:type_name -> google.protobuf.Timestamp
+	15, // 1: community.v1.Community.created_at:type_name -> google.protobuf.Timestamp
+	15, // 2: community.v1.Community.updated_at:type_name -> google.protobuf.Timestamp
+	0,  // 3: community.v1.Community.creator:type_name -> community.v1.User
+	1,  // 4: community.v1.Community.members:type_name -> community.v1.CommunityMember
+	2,  // 5: community.v1.GetCommunityResponse.community:type_name -> community.v1.Community
+	4,  // 6: community.v1.SearchCommunitiesResponse.communities:type_name -> community.v1.CommunityPreview
+	5,  // 7: community.v1.CommunityService.GetCommunity:input_type -> community.v1.GetCommunityRequest
+	7,  // 8: community.v1.CommunityService.SearchCommunities:input_type -> community.v1.SearchCommunitiesRequest
+	9,  // 9: community.v1.CommunityService.CreateCommunity:input_type -> community.v1.CreateCommunityRequest
+	11, // 10: community.v1.CommunityService.UpdateCommunity:input_type -> community.v1.UpdateCommunityRequest
+	13, // 11: community.v1.CommunityService.DeleteCommunity:input_type -> community.v1.DeleteCommunityRequest
+	6,  // 12: community.v1.CommunityService.GetCommunity:output_type -> community.v1.GetCommunityResponse
+	8,  // 13: community.v1.CommunityService.SearchCommunities:output_type -> community.v1.SearchCommunitiesResponse
+	10, // 14: community.v1.CommunityService.CreateCommunity:output_type -> community.v1.CreateCommunityResponse
+	12, // 15: community.v1.CommunityService.UpdateCommunity:output_type -> community.v1.UpdateCommunityResponse
+	14, // 16: community.v1.CommunityService.DeleteCommunity:output_type -> community.v1.DeleteCommunityResponse
+	12, // [12:17] is the sub-list for method output_type
+	7,  // [7:12] is the sub-list for method input_type
+	7,  // [7:7] is the sub-list for extension type_name
+	7,  // [7:7] is the sub-list for extension extendee
+	0,  // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_community_v1_community_proto_init() }
@@ -1042,18 +1226,19 @@ func file_community_v1_community_proto_init() {
 		return
 	}
 	file_community_v1_community_proto_msgTypes[0].OneofWrappers = []any{}
-	file_community_v1_community_proto_msgTypes[1].OneofWrappers = []any{}
 	file_community_v1_community_proto_msgTypes[2].OneofWrappers = []any{}
-	file_community_v1_community_proto_msgTypes[5].OneofWrappers = []any{}
+	file_community_v1_community_proto_msgTypes[3].OneofWrappers = []any{}
+	file_community_v1_community_proto_msgTypes[4].OneofWrappers = []any{}
 	file_community_v1_community_proto_msgTypes[7].OneofWrappers = []any{}
 	file_community_v1_community_proto_msgTypes[9].OneofWrappers = []any{}
+	file_community_v1_community_proto_msgTypes[11].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_community_v1_community_proto_rawDesc), len(file_community_v1_community_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   13,
+			NumMessages:   15,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
