@@ -13,6 +13,7 @@ import (
 	"github.com/AI1411/m_app/gen/user/v1/userv1connect"
 	"github.com/AI1411/m_app/internal/handler"
 	"github.com/AI1411/m_app/internal/infra/db"
+	"github.com/AI1411/m_app/internal/infra/logger"
 	"github.com/AI1411/m_app/internal/infra/repository/datastore"
 	"github.com/AI1411/m_app/internal/usecase"
 )
@@ -21,6 +22,14 @@ import (
 var Module = fx.Options(
 	// インフラストラクチャの依存関係
 	fx.Provide(
+		// ロガーの設定
+		func() *logger.Logger {
+			cfg := logger.DefaultConfig()
+			// ログの形式はJSONで
+			cfg.JSON = true
+			return logger.New(cfg)
+		},
+
 		// データベース接続
 		func() (*db.SqlHandler, error) {
 			return db.NewSqlHandler(
@@ -70,12 +79,14 @@ var Module = fx.Options(
 	),
 
 	// アプリケーションのライフサイクル
-	fx.Invoke(func(lifecycle fx.Lifecycle, server *http.Server) {
+	fx.Invoke(func(lifecycle fx.Lifecycle, server *http.Server, log *logger.Logger) {
 		lifecycle.Append(fx.Hook{
 			OnStart: func(ctx context.Context) error {
 				// サーバーの起動
+				log.Info("starting HTTP server", "address", server.Addr)
 				go func() {
 					if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+						log.LogError(err, "server error")
 						panic(err)
 					}
 				}()
@@ -83,6 +94,7 @@ var Module = fx.Options(
 			},
 			OnStop: func(ctx context.Context) error {
 				// サーバーのグレースフルシャットダウン
+				log.Info("shutting down HTTP server")
 				return server.Shutdown(ctx)
 			},
 		})

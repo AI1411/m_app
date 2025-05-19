@@ -9,7 +9,6 @@ import (
 func main() {
 	app := fx.New(
 		di.Module,
-		fx.NopLogger,
 	)
 
 	app.Run()
