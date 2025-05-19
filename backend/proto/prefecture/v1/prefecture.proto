@@ -26,7 +26,19 @@ message ListPrefecturesResponse {
   repeated Prefecture prefectures = 1;
 }
 
+// 都道府県詳細取得リクエスト
+message GetPrefectureRequest {
+  int32 id = 1; // 都道府県ID
+}
+
+// 都道府県詳細取得レスポンス
+message GetPrefectureResponse {
+  Prefecture prefecture = 1; // 都道府県情報
+}
+
 service PrefectureService {
   // 都道府県一覧取得
   rpc ListPrefectures(ListPrefecturesRequest) returns (ListPrefecturesResponse) {}
+  // 都道府県情報取得
+  rpc GetPrefecture(GetPrefectureRequest) returns (GetPrefectureResponse) {}
 }

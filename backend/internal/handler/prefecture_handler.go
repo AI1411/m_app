@@ -33,6 +33,7 @@ func (Prefecture) TableName() string {
 // PrefectureHandler は都道府県関連APIのハンドラーインターフェース
 type PrefectureHandler interface {
 	ListPrefectures(context.Context, *connect.Request[prefecturev1.ListPrefecturesRequest]) (*connect.Response[prefecturev1.ListPrefecturesResponse], error)
+	GetPrefecture(context.Context, *connect.Request[prefecturev1.GetPrefectureRequest]) (*connect.Response[prefecturev1.GetPrefectureResponse], error)
 }
 
 // prefectureHandler はPrefectureHandlerインターフェースの実装
@@ -88,5 +89,57 @@ func (h *prefectureHandler) ListPrefectures(
 	h.logger.Info("prefectures retrieved successfully", "count", len(prefectureProtos))
 	return connect.NewResponse(&prefecturev1.ListPrefecturesResponse{
 		Prefectures: prefectureProtos,
+	}), nil
+}
+
+// GetPrefecture は都道府県詳細取得APIを処理します
+func (h *prefectureHandler) GetPrefecture(
+	ctx context.Context,
+	req *connect.Request[prefecturev1.GetPrefectureRequest],
+) (*connect.Response[prefecturev1.GetPrefectureResponse], error) {
+	h.logger.Info("GetPrefecture called", "headers", req.Header(), "prefecture_id", req.Msg.Id)
+
+	var prefecture Prefecture
+	err := h.sqlHandler.Conn.Model(&Prefecture{}).
+		Where("id = ?", req.Msg.Id).
+		First(&prefecture).Error
+	if err != nil {
+		h.logger.LogError(err, "failed to get prefecture", "prefecture_id", req.Msg.Id)
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	// 関連する地域情報を取得
+	var region struct {
+		ID        int32  `gorm:"column:id"`
+		Name      string `gorm:"column:name"`
+		NameEn    string `gorm:"column:name_en"`
+		SortOrder int32  `gorm:"column:sort_order"`
+	}
+	err = h.sqlHandler.Conn.Table("regions").
+		Select("id, name, name_en, sort_order").
+		Where("id = ?", prefecture.RegionID).
+		First(&region).Error
+	if err != nil {
+		h.logger.LogError(err, "failed to get region for prefecture", "region_id", prefecture.RegionID)
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	prefectureProto := &prefecturev1.Prefecture{
+		Id:       prefecture.ID,
+		Code:     int32(prefecture.Code),
+		Name:     prefecture.Name,
+		NameEn:   prefecture.NameEn,
+		RegionId: prefecture.RegionID,
+		Region: &regionv1.Region{
+			Id:        region.ID,
+			Name:      region.Name,
+			NameEn:    region.NameEn,
+			SortOrder: region.SortOrder,
+		},
+	}
+
+	h.logger.Info("prefecture retrieved successfully", "prefecture_id", prefecture.ID)
+	return connect.NewResponse(&prefecturev1.GetPrefectureResponse{
+		Prefecture: prefectureProto,
 	}), nil
 }

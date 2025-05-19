@@ -36,12 +36,17 @@ const (
 	// PrefectureServiceListPrefecturesProcedure is the fully-qualified name of the PrefectureService's
 	// ListPrefectures RPC.
 	PrefectureServiceListPrefecturesProcedure = "/prefecture.v1.PrefectureService/ListPrefectures"
+	// PrefectureServiceGetPrefectureProcedure is the fully-qualified name of the PrefectureService's
+	// GetPrefecture RPC.
+	PrefectureServiceGetPrefectureProcedure = "/prefecture.v1.PrefectureService/GetPrefecture"
 )
 
 // PrefectureServiceClient is a client for the prefecture.v1.PrefectureService service.
 type PrefectureServiceClient interface {
 	// 都道府県一覧取得
 	ListPrefectures(context.Context, *connect.Request[v1.ListPrefecturesRequest]) (*connect.Response[v1.ListPrefecturesResponse], error)
+	// 都道府県情報取得
+	GetPrefecture(context.Context, *connect.Request[v1.GetPrefectureRequest]) (*connect.Response[v1.GetPrefectureResponse], error)
 }
 
 // NewPrefectureServiceClient constructs a client for the prefecture.v1.PrefectureService service.
@@ -61,12 +66,19 @@ func NewPrefectureServiceClient(httpClient connect.HTTPClient, baseURL string, o
 			connect.WithSchema(prefectureServiceMethods.ByName("ListPrefectures")),
 			connect.WithClientOptions(opts...),
 		),
+		getPrefecture: connect.NewClient[v1.GetPrefectureRequest, v1.GetPrefectureResponse](
+			httpClient,
+			baseURL+PrefectureServiceGetPrefectureProcedure,
+			connect.WithSchema(prefectureServiceMethods.ByName("GetPrefecture")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // prefectureServiceClient implements PrefectureServiceClient.
 type prefectureServiceClient struct {
 	listPrefectures *connect.Client[v1.ListPrefecturesRequest, v1.ListPrefecturesResponse]
+	getPrefecture   *connect.Client[v1.GetPrefectureRequest, v1.GetPrefectureResponse]
 }
 
 // ListPrefectures calls prefecture.v1.PrefectureService.ListPrefectures.
@@ -74,10 +86,17 @@ func (c *prefectureServiceClient) ListPrefectures(ctx context.Context, req *conn
 	return c.listPrefectures.CallUnary(ctx, req)
 }
 
+// GetPrefecture calls prefecture.v1.PrefectureService.GetPrefecture.
+func (c *prefectureServiceClient) GetPrefecture(ctx context.Context, req *connect.Request[v1.GetPrefectureRequest]) (*connect.Response[v1.GetPrefectureResponse], error) {
+	return c.getPrefecture.CallUnary(ctx, req)
+}
+
 // PrefectureServiceHandler is an implementation of the prefecture.v1.PrefectureService service.
 type PrefectureServiceHandler interface {
 	// 都道府県一覧取得
 	ListPrefectures(context.Context, *connect.Request[v1.ListPrefecturesRequest]) (*connect.Response[v1.ListPrefecturesResponse], error)
+	// 都道府県情報取得
+	GetPrefecture(context.Context, *connect.Request[v1.GetPrefectureRequest]) (*connect.Response[v1.GetPrefectureResponse], error)
 }
 
 // NewPrefectureServiceHandler builds an HTTP handler from the service implementation. It returns
@@ -93,10 +112,18 @@ func NewPrefectureServiceHandler(svc PrefectureServiceHandler, opts ...connect.H
 		connect.WithSchema(prefectureServiceMethods.ByName("ListPrefectures")),
 		connect.WithHandlerOptions(opts...),
 	)
+	prefectureServiceGetPrefectureHandler := connect.NewUnaryHandler(
+		PrefectureServiceGetPrefectureProcedure,
+		svc.GetPrefecture,
+		connect.WithSchema(prefectureServiceMethods.ByName("GetPrefecture")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/prefecture.v1.PrefectureService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case PrefectureServiceListPrefecturesProcedure:
 			prefectureServiceListPrefecturesHandler.ServeHTTP(w, r)
+		case PrefectureServiceGetPrefectureProcedure:
+			prefectureServiceGetPrefectureHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -108,4 +135,8 @@ type UnimplementedPrefectureServiceHandler struct{}
 
 func (UnimplementedPrefectureServiceHandler) ListPrefectures(context.Context, *connect.Request[v1.ListPrefecturesRequest]) (*connect.Response[v1.ListPrefecturesResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("prefecture.v1.PrefectureService.ListPrefectures is not implemented"))
+}
+
+func (UnimplementedPrefectureServiceHandler) GetPrefecture(context.Context, *connect.Request[v1.GetPrefectureRequest]) (*connect.Response[v1.GetPrefectureResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("prefecture.v1.PrefectureService.GetPrefecture is not implemented"))
 }

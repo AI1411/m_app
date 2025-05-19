@@ -197,6 +197,96 @@ func (x *ListPrefecturesResponse) GetPrefectures() []*Prefecture {
 	return nil
 }
 
+// 都道府県詳細取得リクエスト
+type GetPrefectureRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"` // 都道府県ID
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetPrefectureRequest) Reset() {
+	*x = GetPrefectureRequest{}
+	mi := &file_prefecture_v1_prefecture_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetPrefectureRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPrefectureRequest) ProtoMessage() {}
+
+func (x *GetPrefectureRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_prefecture_v1_prefecture_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPrefectureRequest.ProtoReflect.Descriptor instead.
+func (*GetPrefectureRequest) Descriptor() ([]byte, []int) {
+	return file_prefecture_v1_prefecture_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *GetPrefectureRequest) GetId() int32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+// 都道府県詳細取得レスポンス
+type GetPrefectureResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Prefecture    *Prefecture            `protobuf:"bytes,1,opt,name=prefecture,proto3" json:"prefecture,omitempty"` // 都道府県情報
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetPrefectureResponse) Reset() {
+	*x = GetPrefectureResponse{}
+	mi := &file_prefecture_v1_prefecture_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetPrefectureResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPrefectureResponse) ProtoMessage() {}
+
+func (x *GetPrefectureResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_prefecture_v1_prefecture_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPrefectureResponse.ProtoReflect.Descriptor instead.
+func (*GetPrefectureResponse) Descriptor() ([]byte, []int) {
+	return file_prefecture_v1_prefecture_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *GetPrefectureResponse) GetPrefecture() *Prefecture {
+	if x != nil {
+		return x.Prefecture
+	}
+	return nil
+}
+
 var File_prefecture_v1_prefecture_proto protoreflect.FileDescriptor
 
 const file_prefecture_v1_prefecture_proto_rawDesc = "" +
@@ -215,9 +305,16 @@ const file_prefecture_v1_prefecture_proto_rawDesc = "" +
 	"\n" +
 	"_region_id\"V\n" +
 	"\x17ListPrefecturesResponse\x12;\n" +
-	"\vprefectures\x18\x01 \x03(\v2\x19.prefecture.v1.PrefectureR\vprefectures2w\n" +
+	"\vprefectures\x18\x01 \x03(\v2\x19.prefecture.v1.PrefectureR\vprefectures\"&\n" +
+	"\x14GetPrefectureRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x05R\x02id\"R\n" +
+	"\x15GetPrefectureResponse\x129\n" +
+	"\n" +
+	"prefecture\x18\x01 \x01(\v2\x19.prefecture.v1.PrefectureR\n" +
+	"prefecture2\xd5\x01\n" +
 	"\x11PrefectureService\x12b\n" +
-	"\x0fListPrefectures\x12%.prefecture.v1.ListPrefecturesRequest\x1a&.prefecture.v1.ListPrefecturesResponse\"\x00B\xb1\x01\n" +
+	"\x0fListPrefectures\x12%.prefecture.v1.ListPrefecturesRequest\x1a&.prefecture.v1.ListPrefecturesResponse\"\x00\x12\\\n" +
+	"\rGetPrefecture\x12#.prefecture.v1.GetPrefectureRequest\x1a$.prefecture.v1.GetPrefectureResponse\"\x00B\xb1\x01\n" +
 	"\x11com.prefecture.v1B\x0fPrefectureProtoP\x01Z6github.com/AI1411/m_app/gen/prefecture/v1;prefecturev1\xa2\x02\x03PXX\xaa\x02\rPrefecture.V1\xca\x02\rPrefecture\\V1\xe2\x02\x19Prefecture\\V1\\GPBMetadata\xea\x02\x0ePrefecture::V1b\x06proto3"
 
 var (
@@ -232,23 +329,28 @@ func file_prefecture_v1_prefecture_proto_rawDescGZIP() []byte {
 	return file_prefecture_v1_prefecture_proto_rawDescData
 }
 
-var file_prefecture_v1_prefecture_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_prefecture_v1_prefecture_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_prefecture_v1_prefecture_proto_goTypes = []any{
 	(*Prefecture)(nil),              // 0: prefecture.v1.Prefecture
 	(*ListPrefecturesRequest)(nil),  // 1: prefecture.v1.ListPrefecturesRequest
 	(*ListPrefecturesResponse)(nil), // 2: prefecture.v1.ListPrefecturesResponse
-	(*v1.Region)(nil),               // 3: region.v1.Region
+	(*GetPrefectureRequest)(nil),    // 3: prefecture.v1.GetPrefectureRequest
+	(*GetPrefectureResponse)(nil),   // 4: prefecture.v1.GetPrefectureResponse
+	(*v1.Region)(nil),               // 5: region.v1.Region
 }
 var file_prefecture_v1_prefecture_proto_depIdxs = []int32{
-	3, // 0: prefecture.v1.Prefecture.region:type_name -> region.v1.Region
+	5, // 0: prefecture.v1.Prefecture.region:type_name -> region.v1.Region
 	0, // 1: prefecture.v1.ListPrefecturesResponse.prefectures:type_name -> prefecture.v1.Prefecture
-	1, // 2: prefecture.v1.PrefectureService.ListPrefectures:input_type -> prefecture.v1.ListPrefecturesRequest
-	2, // 3: prefecture.v1.PrefectureService.ListPrefectures:output_type -> prefecture.v1.ListPrefecturesResponse
-	3, // [3:4] is the sub-list for method output_type
-	2, // [2:3] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	0, // 2: prefecture.v1.GetPrefectureResponse.prefecture:type_name -> prefecture.v1.Prefecture
+	1, // 3: prefecture.v1.PrefectureService.ListPrefectures:input_type -> prefecture.v1.ListPrefecturesRequest
+	3, // 4: prefecture.v1.PrefectureService.GetPrefecture:input_type -> prefecture.v1.GetPrefectureRequest
+	2, // 5: prefecture.v1.PrefectureService.ListPrefectures:output_type -> prefecture.v1.ListPrefecturesResponse
+	4, // 6: prefecture.v1.PrefectureService.GetPrefecture:output_type -> prefecture.v1.GetPrefectureResponse
+	5, // [5:7] is the sub-list for method output_type
+	3, // [3:5] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_prefecture_v1_prefecture_proto_init() }
@@ -263,7 +365,7 @@ func file_prefecture_v1_prefecture_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_prefecture_v1_prefecture_proto_rawDesc), len(file_prefecture_v1_prefecture_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

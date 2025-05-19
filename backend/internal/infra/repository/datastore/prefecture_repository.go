@@ -10,6 +10,7 @@ import (
 // PrefectureRepository は都道府県データへのアクセスを提供するインターフェース
 type PrefectureRepository interface {
 	ListPrefectures(ctx context.Context, regionID *int32) ([]*model.Prefecture, error)
+	GetPrefecture(ctx context.Context, id int32) (*model.Prefecture, error)
 }
 
 // prefectureRepository はPrefectureRepositoryインターフェースの実装
@@ -39,4 +40,28 @@ func (r *prefectureRepository) ListPrefectures(ctx context.Context, regionID *in
 	}
 
 	return prefectures, nil
+}
+
+// GetPrefecture は指定されたIDの都道府県を取得します
+func (r *prefectureRepository) GetPrefecture(ctx context.Context, id int32) (*model.Prefecture, error) {
+	var prefecture model.Prefecture
+	err := r.sqlHandler.Conn.Model(&model.Prefecture{}).
+		Where("id = ?", id).
+		First(&prefecture).Error
+	if err != nil {
+		return nil, err
+	}
+
+	// 関連する地域情報を取得
+	var region model.Region
+	err = r.sqlHandler.Conn.Model(&model.Region{}).
+		Where("id = ?", prefecture.RegionID).
+		First(&region).Error
+	if err != nil {
+		return nil, err
+	}
+
+	prefecture.Region = region
+
+	return &prefecture, nil
 }

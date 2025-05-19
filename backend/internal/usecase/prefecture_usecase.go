@@ -10,6 +10,7 @@ import (
 // PrefectureUseCase は都道府県関連のビジネスロジックを提供するインターフェース
 type PrefectureUseCase interface {
 	ListPrefectures(ctx context.Context, regionID *int32) ([]*model.Prefecture, error)
+	GetPrefecture(ctx context.Context, id int32) (*model.Prefecture, error)
 }
 
 // prefectureUseCase はPrefectureUseCaseインターフェースの実装
@@ -31,4 +32,13 @@ func (u *prefectureUseCase) ListPrefectures(ctx context.Context, regionID *int32
 		return nil, err
 	}
 	return prefectures, nil
+}
+
+// GetPrefecture は指定されたIDの都道府県を取得します
+func (u *prefectureUseCase) GetPrefecture(ctx context.Context, id int32) (*model.Prefecture, error) {
+	prefecture, err := u.prefectureRepo.GetPrefecture(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return prefecture, nil
 }
