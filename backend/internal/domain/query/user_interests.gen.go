@@ -43,12 +43,6 @@ func newUserInterest(db *gorm.DB, opts ...gen.DOOption) userInterest {
 		RelationField: field.NewRelation("Interest", "model.Interest"),
 	}
 
-	_userInterest.Category = userInterestBelongsToCategory{
-		db: db.Session(&gorm.Session{}),
-
-		RelationField: field.NewRelation("Category", "model.Category"),
-	}
-
 	_userInterest.fillFieldMap()
 
 	return _userInterest
@@ -64,8 +58,6 @@ type userInterest struct {
 	User       userInterestBelongsToUser
 
 	Interest userInterestBelongsToInterest
-
-	Category userInterestBelongsToCategory
 
 	fieldMap map[string]field.Expr
 }
@@ -101,7 +93,7 @@ func (u *userInterest) GetFieldByName(fieldName string) (field.OrderExpr, bool) 
 }
 
 func (u *userInterest) fillFieldMap() {
-	u.fieldMap = make(map[string]field.Expr, 6)
+	u.fieldMap = make(map[string]field.Expr, 5)
 	u.fieldMap["user_id"] = u.UserID
 	u.fieldMap["interest_id"] = u.InterestID
 	u.fieldMap["created_at"] = u.CreatedAt
@@ -114,8 +106,6 @@ func (u userInterest) clone(db *gorm.DB) userInterest {
 	u.User.db.Statement.ConnPool = db.Statement.ConnPool
 	u.Interest.db = db.Session(&gorm.Session{Initialized: true})
 	u.Interest.db.Statement.ConnPool = db.Statement.ConnPool
-	u.Category.db = db.Session(&gorm.Session{Initialized: true})
-	u.Category.db.Statement.ConnPool = db.Statement.ConnPool
 	return u
 }
 
@@ -123,7 +113,6 @@ func (u userInterest) replaceDB(db *gorm.DB) userInterest {
 	u.userInterestDo.ReplaceDB(db)
 	u.User.db = db.Session(&gorm.Session{})
 	u.Interest.db = db.Session(&gorm.Session{})
-	u.Category.db = db.Session(&gorm.Session{})
 	return u
 }
 
@@ -285,87 +274,6 @@ func (a userInterestBelongsToInterestTx) Count() int64 {
 }
 
 func (a userInterestBelongsToInterestTx) Unscoped() *userInterestBelongsToInterestTx {
-	a.tx = a.tx.Unscoped()
-	return &a
-}
-
-type userInterestBelongsToCategory struct {
-	db *gorm.DB
-
-	field.RelationField
-}
-
-func (a userInterestBelongsToCategory) Where(conds ...field.Expr) *userInterestBelongsToCategory {
-	if len(conds) == 0 {
-		return &a
-	}
-
-	exprs := make([]clause.Expression, 0, len(conds))
-	for _, cond := range conds {
-		exprs = append(exprs, cond.BeCond().(clause.Expression))
-	}
-	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
-	return &a
-}
-
-func (a userInterestBelongsToCategory) WithContext(ctx context.Context) *userInterestBelongsToCategory {
-	a.db = a.db.WithContext(ctx)
-	return &a
-}
-
-func (a userInterestBelongsToCategory) Session(session *gorm.Session) *userInterestBelongsToCategory {
-	a.db = a.db.Session(session)
-	return &a
-}
-
-func (a userInterestBelongsToCategory) Model(m *model.UserInterest) *userInterestBelongsToCategoryTx {
-	return &userInterestBelongsToCategoryTx{a.db.Model(m).Association(a.Name())}
-}
-
-func (a userInterestBelongsToCategory) Unscoped() *userInterestBelongsToCategory {
-	a.db = a.db.Unscoped()
-	return &a
-}
-
-type userInterestBelongsToCategoryTx struct{ tx *gorm.Association }
-
-func (a userInterestBelongsToCategoryTx) Find() (result *model.Category, err error) {
-	return result, a.tx.Find(&result)
-}
-
-func (a userInterestBelongsToCategoryTx) Append(values ...*model.Category) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Append(targetValues...)
-}
-
-func (a userInterestBelongsToCategoryTx) Replace(values ...*model.Category) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Replace(targetValues...)
-}
-
-func (a userInterestBelongsToCategoryTx) Delete(values ...*model.Category) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Delete(targetValues...)
-}
-
-func (a userInterestBelongsToCategoryTx) Clear() error {
-	return a.tx.Clear()
-}
-
-func (a userInterestBelongsToCategoryTx) Count() int64 {
-	return a.tx.Count()
-}
-
-func (a userInterestBelongsToCategoryTx) Unscoped() *userInterestBelongsToCategoryTx {
 	a.tx = a.tx.Unscoped()
 	return &a
 }

@@ -33,6 +33,7 @@ func (r *communityRepository) GetCommunityByID(ctx context.Context, id string) (
 	var community model.Community
 	result := r.sqlHandler.Conn.
 		Where("id = ?", id).
+		Preload("CommunityMembers").
 		First(&community)
 	if result.Error != nil {
 		return nil, result.Error

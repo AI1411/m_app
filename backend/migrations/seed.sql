@@ -1,5 +1,7 @@
 TRUNCATE TABLE users CASCADE;
 TRUNCATE TABLE user_interests CASCADE;
+TRUNCATE TABLE communities CASCADE;
+TRUNCATE TABLE community_members CASCADE;
 -- ダミーユーザーデータの挿入
 INSERT INTO users (email,
                    password_hash,
@@ -119,3 +121,179 @@ VALUES ((SELECT id FROM users WHERE email = 'tanaka.taro@example.com'), 1),
        ((SELECT id FROM users WHERE email = 'watanabe.hiroshi@example.com'), 13),
        ((SELECT id FROM users WHERE email = 'watanabe.hiroshi@example.com'), 14),
        ((SELECT id FROM users WHERE email = 'watanabe.hiroshi@example.com'), 15);
+
+-- ダミーコミュニティデータの挿入
+INSERT INTO communities (
+    name,
+    description,
+    profile_image_url,
+    cover_image_url,
+    is_private,
+    creator_id
+)
+VALUES
+-- コミュニティ1: 公開コミュニティ、テック関連
+(
+    'テックエンスージアスト',
+    'プログラミングやテクノロジーについて語り合うコミュニティです。初心者から上級者まで歓迎します。',
+    'https://example.com/community/tech_enthusiasts.jpg',
+    'https://example.com/community/tech_cover.jpg',
+    FALSE,
+    (SELECT id FROM users WHERE email = 'tanaka.taro@example.com')
+),
+-- コミュニティ2: 公開コミュニティ、アート関連
+(
+    'クリエイティブアーティスト',
+    'アート、デザイン、写真などのクリエイティブな活動を共有するコミュニティです。',
+    'https://example.com/community/creative_artists.jpg',
+    'https://example.com/community/art_cover.jpg',
+    FALSE,
+    (SELECT id FROM users WHERE email = 'yamada.hanako@example.com')
+),
+-- コミュニティ3: プライベートコミュニティ、スポーツ関連
+(
+    'アクティブライフ',
+    'スポーツや健康的な生活習慣について情報交換するプライベートコミュニティです。',
+    'https://example.com/community/active_life.jpg',
+    'https://example.com/community/sports_cover.jpg',
+    TRUE,
+    (SELECT id FROM users WHERE email = 'suzuki.kenji@example.com')
+),
+-- コミュニティ4: 公開コミュニティ、読書関連
+(
+    'ブックラバーズ',
+    '本好きのための読書会コミュニティです。おすすめの本や感想を共有しましょう。',
+    'https://example.com/community/book_lovers.jpg',
+    'https://example.com/community/books_cover.jpg',
+    FALSE,
+    (SELECT id FROM users WHERE email = 'sato.yuki@example.com')
+),
+-- コミュニティ5: プライベートコミュニティ、料理関連
+(
+    'グルメクラブ',
+    '料理やレストラン、食に関する情報を共有するプライベートコミュニティです。',
+    'https://example.com/community/gourmet_club.jpg',
+    'https://example.com/community/food_cover.jpg',
+    TRUE,
+    (SELECT id FROM users WHERE email = 'watanabe.hiroshi@example.com')
+);
+
+-- コミュニティメンバーの挿入
+INSERT INTO community_members (
+    community_id,
+    user_id,
+    role,
+    is_approved
+)
+VALUES
+-- テックエンスージアストのメンバー
+(
+    (SELECT id FROM communities WHERE name = 'テックエンスージアスト'),
+    (SELECT id FROM users WHERE email = 'tanaka.taro@example.com'),
+    'admin',
+    TRUE
+),
+(
+    (SELECT id FROM communities WHERE name = 'テックエンスージアスト'),
+    (SELECT id FROM users WHERE email = 'yamada.hanako@example.com'),
+    'member',
+    TRUE
+),
+(
+    (SELECT id FROM communities WHERE name = 'テックエンスージアスト'),
+    (SELECT id FROM users WHERE email = 'suzuki.kenji@example.com'),
+    'member',
+    TRUE
+),
+
+-- クリエイティブアーティストのメンバー
+(
+    (SELECT id FROM communities WHERE name = 'クリエイティブアーティスト'),
+    (SELECT id FROM users WHERE email = 'yamada.hanako@example.com'),
+    'admin',
+    TRUE
+),
+(
+    (SELECT id FROM communities WHERE name = 'クリエイティブアーティスト'),
+    (SELECT id FROM users WHERE email = 'sato.yuki@example.com'),
+    'moderator',
+    TRUE
+),
+(
+    (SELECT id FROM communities WHERE name = 'クリエイティブアーティスト'),
+    (SELECT id FROM users WHERE email = 'tanaka.taro@example.com'),
+    'member',
+    TRUE
+),
+
+-- アクティブライフのメンバー
+(
+    (SELECT id FROM communities WHERE name = 'アクティブライフ'),
+    (SELECT id FROM users WHERE email = 'suzuki.kenji@example.com'),
+    'admin',
+    TRUE
+),
+(
+    (SELECT id FROM communities WHERE name = 'アクティブライフ'),
+    (SELECT id FROM users WHERE email = 'watanabe.hiroshi@example.com'),
+    'moderator',
+    TRUE
+),
+(
+    (SELECT id FROM communities WHERE name = 'アクティブライフ'),
+    (SELECT id FROM users WHERE email = 'tanaka.taro@example.com'),
+    'member',
+    TRUE
+),
+(
+    (SELECT id FROM communities WHERE name = 'アクティブライフ'),
+    (SELECT id FROM users WHERE email = 'yamada.hanako@example.com'),
+    'member',
+    FALSE
+),
+
+-- ブックラバーズのメンバー
+(
+    (SELECT id FROM communities WHERE name = 'ブックラバーズ'),
+    (SELECT id FROM users WHERE email = 'sato.yuki@example.com'),
+    'admin',
+    TRUE
+),
+(
+    (SELECT id FROM communities WHERE name = 'ブックラバーズ'),
+    (SELECT id FROM users WHERE email = 'yamada.hanako@example.com'),
+    'member',
+    TRUE
+),
+(
+    (SELECT id FROM communities WHERE name = 'ブックラバーズ'),
+    (SELECT id FROM users WHERE email = 'watanabe.hiroshi@example.com'),
+    'member',
+    TRUE
+),
+
+-- グルメクラブのメンバー
+(
+    (SELECT id FROM communities WHERE name = 'グルメクラブ'),
+    (SELECT id FROM users WHERE email = 'watanabe.hiroshi@example.com'),
+    'admin',
+    TRUE
+),
+(
+    (SELECT id FROM communities WHERE name = 'グルメクラブ'),
+    (SELECT id FROM users WHERE email = 'suzuki.kenji@example.com'),
+    'moderator',
+    TRUE
+),
+(
+    (SELECT id FROM communities WHERE name = 'グルメクラブ'),
+    (SELECT id FROM users WHERE email = 'sato.yuki@example.com'),
+    'member',
+    TRUE
+),
+(
+    (SELECT id FROM communities WHERE name = 'グルメクラブ'),
+    (SELECT id FROM users WHERE email = 'tanaka.taro@example.com'),
+    'member',
+    FALSE
+);

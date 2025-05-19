@@ -47,7 +47,6 @@ func main() {
 			model.TableNameUserInterest,
 			gen.FieldRelateModel(field.BelongsTo, "User", model.User{}, nil),
 			gen.FieldRelateModel(field.BelongsTo, "Interest", model.Interest{}, nil),
-			gen.FieldRelateModel(field.BelongsTo, "Category", model.Category{}, nil),
 		),
 		g.GenerateModel(
 			model.TableNameRegion,
@@ -63,7 +62,12 @@ func main() {
 		),
 		g.GenerateModel(
 			model.TableNameCommunity,
-			gen.FieldRelateModel(field.Many2Many, "Members", model.CommunityMember{}, nil),
+			gen.FieldRelateModel(field.Many2Many, "CommunityMembers", model.CommunityMember{}, nil),
+			gen.FieldRelateModel(field.BelongsTo, "User", model.User{}, &field.RelateConfig{
+				GORMTag: map[string][]string{
+					"foreignKey": {"CreatorID"},
+				},
+			}),
 		),
 	}
 
