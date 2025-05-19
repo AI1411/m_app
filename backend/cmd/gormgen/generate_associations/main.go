@@ -40,6 +40,8 @@ func main() {
 		g.GenerateModel(
 			model.TableNameUser,
 			gen.FieldRelateModel(field.HasMany, "UserInterests", model.UserInterest{}, nil),
+			gen.FieldRelateModel(field.BelongsTo, "Prefecture", model.Prefecture{}, nil),
+			gen.FieldRelateModel(field.BelongsTo, "Education", model.Education{}, nil),
 		),
 		g.GenerateModel(
 			model.TableNameInterest,
@@ -49,6 +51,19 @@ func main() {
 			model.TableNameUserInterest,
 			gen.FieldRelateModel(field.BelongsTo, "User", model.User{}, nil),
 			gen.FieldRelateModel(field.BelongsTo, "Interest", model.Interest{}, nil),
+			gen.FieldRelateModel(field.BelongsTo, "Category", model.Category{}, nil),
+		),
+		g.GenerateModel(
+			model.TableNameRegion,
+			gen.FieldRelateModel(field.HasMany, "Prefectures", model.Prefecture{}, nil),
+		),
+		g.GenerateModel(
+			model.TableNamePrefecture,
+			gen.FieldRelateModel(field.BelongsTo, "Region", model.Region{}, nil),
+		),
+		g.GenerateModel(
+			model.TableNameCategory,
+			gen.FieldRelateModel(field.HasMany, "Interests", model.Interest{}, nil),
 		),
 	}
 

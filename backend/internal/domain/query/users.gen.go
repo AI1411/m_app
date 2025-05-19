@@ -54,6 +54,18 @@ func newUser(db *gorm.DB, opts ...gen.DOOption) user {
 		RelationField: field.NewRelation("UserInterests", "model.UserInterest"),
 	}
 
+	_user.Prefecture = userBelongsToPrefecture{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("Prefecture", "model.Prefecture"),
+	}
+
+	_user.Education = userBelongsToEducation{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("Education", "model.Education"),
+	}
+
 	_user.fillFieldMap()
 
 	return _user
@@ -84,6 +96,10 @@ type user struct {
 	UpdatedAt       field.Time   // レコード更新日時
 	DeletedAt       field.Field  // 論理削除日時（NULLは有効なレコードを示す）
 	UserInterests   userHasManyUserInterests
+
+	Prefecture userBelongsToPrefecture
+
+	Education userBelongsToEducation
 
 	fieldMap map[string]field.Expr
 }
@@ -136,7 +152,7 @@ func (u *user) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (u *user) fillFieldMap() {
-	u.fieldMap = make(map[string]field.Expr, 21)
+	u.fieldMap = make(map[string]field.Expr, 23)
 	u.fieldMap["id"] = u.ID
 	u.fieldMap["email"] = u.Email
 	u.fieldMap["password_hash"] = u.PasswordHash
@@ -164,12 +180,18 @@ func (u user) clone(db *gorm.DB) user {
 	u.userDo.ReplaceConnPool(db.Statement.ConnPool)
 	u.UserInterests.db = db.Session(&gorm.Session{Initialized: true})
 	u.UserInterests.db.Statement.ConnPool = db.Statement.ConnPool
+	u.Prefecture.db = db.Session(&gorm.Session{Initialized: true})
+	u.Prefecture.db.Statement.ConnPool = db.Statement.ConnPool
+	u.Education.db = db.Session(&gorm.Session{Initialized: true})
+	u.Education.db.Statement.ConnPool = db.Statement.ConnPool
 	return u
 }
 
 func (u user) replaceDB(db *gorm.DB) user {
 	u.userDo.ReplaceDB(db)
 	u.UserInterests.db = db.Session(&gorm.Session{})
+	u.Prefecture.db = db.Session(&gorm.Session{})
+	u.Education.db = db.Session(&gorm.Session{})
 	return u
 }
 
@@ -250,6 +272,168 @@ func (a userHasManyUserInterestsTx) Count() int64 {
 }
 
 func (a userHasManyUserInterestsTx) Unscoped() *userHasManyUserInterestsTx {
+	a.tx = a.tx.Unscoped()
+	return &a
+}
+
+type userBelongsToPrefecture struct {
+	db *gorm.DB
+
+	field.RelationField
+}
+
+func (a userBelongsToPrefecture) Where(conds ...field.Expr) *userBelongsToPrefecture {
+	if len(conds) == 0 {
+		return &a
+	}
+
+	exprs := make([]clause.Expression, 0, len(conds))
+	for _, cond := range conds {
+		exprs = append(exprs, cond.BeCond().(clause.Expression))
+	}
+	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
+	return &a
+}
+
+func (a userBelongsToPrefecture) WithContext(ctx context.Context) *userBelongsToPrefecture {
+	a.db = a.db.WithContext(ctx)
+	return &a
+}
+
+func (a userBelongsToPrefecture) Session(session *gorm.Session) *userBelongsToPrefecture {
+	a.db = a.db.Session(session)
+	return &a
+}
+
+func (a userBelongsToPrefecture) Model(m *model.User) *userBelongsToPrefectureTx {
+	return &userBelongsToPrefectureTx{a.db.Model(m).Association(a.Name())}
+}
+
+func (a userBelongsToPrefecture) Unscoped() *userBelongsToPrefecture {
+	a.db = a.db.Unscoped()
+	return &a
+}
+
+type userBelongsToPrefectureTx struct{ tx *gorm.Association }
+
+func (a userBelongsToPrefectureTx) Find() (result *model.Prefecture, err error) {
+	return result, a.tx.Find(&result)
+}
+
+func (a userBelongsToPrefectureTx) Append(values ...*model.Prefecture) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Append(targetValues...)
+}
+
+func (a userBelongsToPrefectureTx) Replace(values ...*model.Prefecture) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Replace(targetValues...)
+}
+
+func (a userBelongsToPrefectureTx) Delete(values ...*model.Prefecture) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Delete(targetValues...)
+}
+
+func (a userBelongsToPrefectureTx) Clear() error {
+	return a.tx.Clear()
+}
+
+func (a userBelongsToPrefectureTx) Count() int64 {
+	return a.tx.Count()
+}
+
+func (a userBelongsToPrefectureTx) Unscoped() *userBelongsToPrefectureTx {
+	a.tx = a.tx.Unscoped()
+	return &a
+}
+
+type userBelongsToEducation struct {
+	db *gorm.DB
+
+	field.RelationField
+}
+
+func (a userBelongsToEducation) Where(conds ...field.Expr) *userBelongsToEducation {
+	if len(conds) == 0 {
+		return &a
+	}
+
+	exprs := make([]clause.Expression, 0, len(conds))
+	for _, cond := range conds {
+		exprs = append(exprs, cond.BeCond().(clause.Expression))
+	}
+	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
+	return &a
+}
+
+func (a userBelongsToEducation) WithContext(ctx context.Context) *userBelongsToEducation {
+	a.db = a.db.WithContext(ctx)
+	return &a
+}
+
+func (a userBelongsToEducation) Session(session *gorm.Session) *userBelongsToEducation {
+	a.db = a.db.Session(session)
+	return &a
+}
+
+func (a userBelongsToEducation) Model(m *model.User) *userBelongsToEducationTx {
+	return &userBelongsToEducationTx{a.db.Model(m).Association(a.Name())}
+}
+
+func (a userBelongsToEducation) Unscoped() *userBelongsToEducation {
+	a.db = a.db.Unscoped()
+	return &a
+}
+
+type userBelongsToEducationTx struct{ tx *gorm.Association }
+
+func (a userBelongsToEducationTx) Find() (result *model.Education, err error) {
+	return result, a.tx.Find(&result)
+}
+
+func (a userBelongsToEducationTx) Append(values ...*model.Education) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Append(targetValues...)
+}
+
+func (a userBelongsToEducationTx) Replace(values ...*model.Education) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Replace(targetValues...)
+}
+
+func (a userBelongsToEducationTx) Delete(values ...*model.Education) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Delete(targetValues...)
+}
+
+func (a userBelongsToEducationTx) Clear() error {
+	return a.tx.Clear()
+}
+
+func (a userBelongsToEducationTx) Count() int64 {
+	return a.tx.Count()
+}
+
+func (a userBelongsToEducationTx) Unscoped() *userBelongsToEducationTx {
 	a.tx = a.tx.Unscoped()
 	return &a
 }

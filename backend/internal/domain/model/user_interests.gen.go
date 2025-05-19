@@ -17,6 +17,7 @@ type UserInterest struct {
 	CreatedAt  time.Time `gorm:"column:created_at;type:timestamp with time zone;not null;default:now();comment:関連付け作成日時" json:"created_at"`                  // 関連付け作成日時
 	User       User      `json:"user"`
 	Interest   Interest  `json:"interest"`
+	Category   Category  `json:"category"`
 }
 
 // TableName UserInterest's table name

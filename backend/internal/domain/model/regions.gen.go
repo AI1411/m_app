@@ -14,13 +14,14 @@ const TableNameRegion = "regions"
 
 // Region mapped from table <regions>
 type Region struct {
-	ID        int32          `gorm:"column:id;type:integer;primaryKey;autoIncrement:true;comment:地域ID" json:"id"`                                       // 地域ID
-	Name      string         `gorm:"column:name;type:character varying(20);not null;comment:地域名（日本語）" json:"name"`                                      // 地域名（日本語）
-	NameEn    string         `gorm:"column:name_en;type:character varying(30);not null;comment:地域名（英語）" json:"name_en"`                                 // 地域名（英語）
-	SortOrder int32          `gorm:"column:sort_order;type:integer;not null;comment:表示順序" json:"sort_order"`                                            // 表示順序
-	CreatedAt time.Time      `gorm:"column:created_at;type:timestamp with time zone;not null;default:CURRENT_TIMESTAMP;comment:作成日時" json:"created_at"` // 作成日時
-	UpdatedAt time.Time      `gorm:"column:updated_at;type:timestamp with time zone;not null;default:CURRENT_TIMESTAMP;comment:更新日時" json:"updated_at"` // 更新日時
-	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at;type:timestamp with time zone;comment:削除日時（論理削除用）" json:"deleted_at"`                             // 削除日時（論理削除用）
+	ID          int32          `gorm:"column:id;type:integer;primaryKey;autoIncrement:true;comment:地域ID" json:"id"`                                       // 地域ID
+	Name        string         `gorm:"column:name;type:character varying(20);not null;comment:地域名（日本語）" json:"name"`                                      // 地域名（日本語）
+	NameEn      string         `gorm:"column:name_en;type:character varying(30);not null;comment:地域名（英語）" json:"name_en"`                                 // 地域名（英語）
+	SortOrder   int32          `gorm:"column:sort_order;type:integer;not null;comment:表示順序" json:"sort_order"`                                            // 表示順序
+	CreatedAt   time.Time      `gorm:"column:created_at;type:timestamp with time zone;not null;default:CURRENT_TIMESTAMP;comment:作成日時" json:"created_at"` // 作成日時
+	UpdatedAt   time.Time      `gorm:"column:updated_at;type:timestamp with time zone;not null;default:CURRENT_TIMESTAMP;comment:更新日時" json:"updated_at"` // 更新日時
+	DeletedAt   gorm.DeletedAt `gorm:"column:deleted_at;type:timestamp with time zone;comment:削除日時（論理削除用）" json:"deleted_at"`                             // 削除日時（論理削除用）
+	Prefectures []Prefecture   `json:"prefectures"`
 }
 
 // TableName Region's table name

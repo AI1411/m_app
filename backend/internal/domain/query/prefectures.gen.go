@@ -36,6 +36,11 @@ func newPrefecture(db *gorm.DB, opts ...gen.DOOption) prefecture {
 	_prefecture.CreatedAt = field.NewTime(tableName, "created_at")
 	_prefecture.UpdatedAt = field.NewTime(tableName, "updated_at")
 	_prefecture.DeletedAt = field.NewField(tableName, "deleted_at")
+	_prefecture.Region = prefectureBelongsToRegion{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("Region", "model.Region"),
+	}
 
 	_prefecture.fillFieldMap()
 
@@ -54,6 +59,7 @@ type prefecture struct {
 	CreatedAt field.Time   // 作成日時
 	UpdatedAt field.Time   // 更新日時
 	DeletedAt field.Field  // 削除日時（論理削除用）
+	Region    prefectureBelongsToRegion
 
 	fieldMap map[string]field.Expr
 }
@@ -94,7 +100,7 @@ func (p *prefecture) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (p *prefecture) fillFieldMap() {
-	p.fieldMap = make(map[string]field.Expr, 8)
+	p.fieldMap = make(map[string]field.Expr, 9)
 	p.fieldMap["id"] = p.ID
 	p.fieldMap["code"] = p.Code
 	p.fieldMap["name"] = p.Name
@@ -103,16 +109,101 @@ func (p *prefecture) fillFieldMap() {
 	p.fieldMap["created_at"] = p.CreatedAt
 	p.fieldMap["updated_at"] = p.UpdatedAt
 	p.fieldMap["deleted_at"] = p.DeletedAt
+
 }
 
 func (p prefecture) clone(db *gorm.DB) prefecture {
 	p.prefectureDo.ReplaceConnPool(db.Statement.ConnPool)
+	p.Region.db = db.Session(&gorm.Session{Initialized: true})
+	p.Region.db.Statement.ConnPool = db.Statement.ConnPool
 	return p
 }
 
 func (p prefecture) replaceDB(db *gorm.DB) prefecture {
 	p.prefectureDo.ReplaceDB(db)
+	p.Region.db = db.Session(&gorm.Session{})
 	return p
+}
+
+type prefectureBelongsToRegion struct {
+	db *gorm.DB
+
+	field.RelationField
+}
+
+func (a prefectureBelongsToRegion) Where(conds ...field.Expr) *prefectureBelongsToRegion {
+	if len(conds) == 0 {
+		return &a
+	}
+
+	exprs := make([]clause.Expression, 0, len(conds))
+	for _, cond := range conds {
+		exprs = append(exprs, cond.BeCond().(clause.Expression))
+	}
+	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
+	return &a
+}
+
+func (a prefectureBelongsToRegion) WithContext(ctx context.Context) *prefectureBelongsToRegion {
+	a.db = a.db.WithContext(ctx)
+	return &a
+}
+
+func (a prefectureBelongsToRegion) Session(session *gorm.Session) *prefectureBelongsToRegion {
+	a.db = a.db.Session(session)
+	return &a
+}
+
+func (a prefectureBelongsToRegion) Model(m *model.Prefecture) *prefectureBelongsToRegionTx {
+	return &prefectureBelongsToRegionTx{a.db.Model(m).Association(a.Name())}
+}
+
+func (a prefectureBelongsToRegion) Unscoped() *prefectureBelongsToRegion {
+	a.db = a.db.Unscoped()
+	return &a
+}
+
+type prefectureBelongsToRegionTx struct{ tx *gorm.Association }
+
+func (a prefectureBelongsToRegionTx) Find() (result *model.Region, err error) {
+	return result, a.tx.Find(&result)
+}
+
+func (a prefectureBelongsToRegionTx) Append(values ...*model.Region) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Append(targetValues...)
+}
+
+func (a prefectureBelongsToRegionTx) Replace(values ...*model.Region) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Replace(targetValues...)
+}
+
+func (a prefectureBelongsToRegionTx) Delete(values ...*model.Region) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Delete(targetValues...)
+}
+
+func (a prefectureBelongsToRegionTx) Clear() error {
+	return a.tx.Clear()
+}
+
+func (a prefectureBelongsToRegionTx) Count() int64 {
+	return a.tx.Count()
+}
+
+func (a prefectureBelongsToRegionTx) Unscoped() *prefectureBelongsToRegionTx {
+	a.tx = a.tx.Unscoped()
+	return &a
 }
 
 type prefectureDo struct{ gen.DO }

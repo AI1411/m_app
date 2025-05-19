@@ -35,6 +35,8 @@ type User struct {
 	UpdatedAt       time.Time      `gorm:"column:updated_at;type:timestamp with time zone;not null;default:now();comment:レコード更新日時" json:"updated_at"`                                                                   // レコード更新日時
 	DeletedAt       gorm.DeletedAt `gorm:"column:deleted_at;type:timestamp with time zone;index:idx_users_deleted_at,priority:1;comment:論理削除日時（NULLは有効なレコードを示す）" json:"deleted_at"`                                     // 論理削除日時（NULLは有効なレコードを示す）
 	UserInterests   []UserInterest `json:"user_interests"`
+	Prefecture      Prefecture     `json:"prefecture"`
+	Education       Education      `json:"education"`
 }
 
 // TableName User's table name

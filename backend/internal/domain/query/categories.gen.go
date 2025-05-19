@@ -38,6 +38,11 @@ func newCategory(db *gorm.DB, opts ...gen.DOOption) category {
 	_category.CreatedAt = field.NewTime(tableName, "created_at")
 	_category.UpdatedAt = field.NewTime(tableName, "updated_at")
 	_category.DeletedAt = field.NewField(tableName, "deleted_at")
+	_category.Interests = categoryHasManyInterests{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("Interests", "model.Interest"),
+	}
 
 	_category.fillFieldMap()
 
@@ -58,6 +63,7 @@ type category struct {
 	CreatedAt   field.Time   // レコード作成日時
 	UpdatedAt   field.Time   // レコード更新日時
 	DeletedAt   field.Field  // 論理削除日時（NULLは有効なレコードを示す）
+	Interests   categoryHasManyInterests
 
 	fieldMap map[string]field.Expr
 }
@@ -100,7 +106,7 @@ func (c *category) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (c *category) fillFieldMap() {
-	c.fieldMap = make(map[string]field.Expr, 10)
+	c.fieldMap = make(map[string]field.Expr, 11)
 	c.fieldMap["id"] = c.ID
 	c.fieldMap["name"] = c.Name
 	c.fieldMap["display_name"] = c.DisplayName
@@ -111,16 +117,101 @@ func (c *category) fillFieldMap() {
 	c.fieldMap["created_at"] = c.CreatedAt
 	c.fieldMap["updated_at"] = c.UpdatedAt
 	c.fieldMap["deleted_at"] = c.DeletedAt
+
 }
 
 func (c category) clone(db *gorm.DB) category {
 	c.categoryDo.ReplaceConnPool(db.Statement.ConnPool)
+	c.Interests.db = db.Session(&gorm.Session{Initialized: true})
+	c.Interests.db.Statement.ConnPool = db.Statement.ConnPool
 	return c
 }
 
 func (c category) replaceDB(db *gorm.DB) category {
 	c.categoryDo.ReplaceDB(db)
+	c.Interests.db = db.Session(&gorm.Session{})
 	return c
+}
+
+type categoryHasManyInterests struct {
+	db *gorm.DB
+
+	field.RelationField
+}
+
+func (a categoryHasManyInterests) Where(conds ...field.Expr) *categoryHasManyInterests {
+	if len(conds) == 0 {
+		return &a
+	}
+
+	exprs := make([]clause.Expression, 0, len(conds))
+	for _, cond := range conds {
+		exprs = append(exprs, cond.BeCond().(clause.Expression))
+	}
+	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
+	return &a
+}
+
+func (a categoryHasManyInterests) WithContext(ctx context.Context) *categoryHasManyInterests {
+	a.db = a.db.WithContext(ctx)
+	return &a
+}
+
+func (a categoryHasManyInterests) Session(session *gorm.Session) *categoryHasManyInterests {
+	a.db = a.db.Session(session)
+	return &a
+}
+
+func (a categoryHasManyInterests) Model(m *model.Category) *categoryHasManyInterestsTx {
+	return &categoryHasManyInterestsTx{a.db.Model(m).Association(a.Name())}
+}
+
+func (a categoryHasManyInterests) Unscoped() *categoryHasManyInterests {
+	a.db = a.db.Unscoped()
+	return &a
+}
+
+type categoryHasManyInterestsTx struct{ tx *gorm.Association }
+
+func (a categoryHasManyInterestsTx) Find() (result []*model.Interest, err error) {
+	return result, a.tx.Find(&result)
+}
+
+func (a categoryHasManyInterestsTx) Append(values ...*model.Interest) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Append(targetValues...)
+}
+
+func (a categoryHasManyInterestsTx) Replace(values ...*model.Interest) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Replace(targetValues...)
+}
+
+func (a categoryHasManyInterestsTx) Delete(values ...*model.Interest) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Delete(targetValues...)
+}
+
+func (a categoryHasManyInterestsTx) Clear() error {
+	return a.tx.Clear()
+}
+
+func (a categoryHasManyInterestsTx) Count() int64 {
+	return a.tx.Count()
+}
+
+func (a categoryHasManyInterestsTx) Unscoped() *categoryHasManyInterestsTx {
+	a.tx = a.tx.Unscoped()
+	return &a
 }
 
 type categoryDo struct{ gen.DO }

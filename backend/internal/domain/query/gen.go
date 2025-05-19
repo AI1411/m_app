@@ -17,14 +17,20 @@ import (
 
 var (
 	Q            = new(Query)
+	Category     *category
 	Interest     *interest
+	Prefecture   *prefecture
+	Region       *region
 	User         *user
 	UserInterest *userInterest
 )
 
 func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	*Q = *Use(db, opts...)
+	Category = &Q.Category
 	Interest = &Q.Interest
+	Prefecture = &Q.Prefecture
+	Region = &Q.Region
 	User = &Q.User
 	UserInterest = &Q.UserInterest
 }
@@ -32,7 +38,10 @@ func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 	return &Query{
 		db:           db,
+		Category:     newCategory(db, opts...),
 		Interest:     newInterest(db, opts...),
+		Prefecture:   newPrefecture(db, opts...),
+		Region:       newRegion(db, opts...),
 		User:         newUser(db, opts...),
 		UserInterest: newUserInterest(db, opts...),
 	}
@@ -41,7 +50,10 @@ func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 type Query struct {
 	db *gorm.DB
 
+	Category     category
 	Interest     interest
+	Prefecture   prefecture
+	Region       region
 	User         user
 	UserInterest userInterest
 }
@@ -51,7 +63,10 @@ func (q *Query) Available() bool { return q.db != nil }
 func (q *Query) clone(db *gorm.DB) *Query {
 	return &Query{
 		db:           db,
+		Category:     q.Category.clone(db),
 		Interest:     q.Interest.clone(db),
+		Prefecture:   q.Prefecture.clone(db),
+		Region:       q.Region.clone(db),
 		User:         q.User.clone(db),
 		UserInterest: q.UserInterest.clone(db),
 	}
@@ -68,21 +83,30 @@ func (q *Query) WriteDB() *Query {
 func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 	return &Query{
 		db:           db,
+		Category:     q.Category.replaceDB(db),
 		Interest:     q.Interest.replaceDB(db),
+		Prefecture:   q.Prefecture.replaceDB(db),
+		Region:       q.Region.replaceDB(db),
 		User:         q.User.replaceDB(db),
 		UserInterest: q.UserInterest.replaceDB(db),
 	}
 }
 
 type queryCtx struct {
+	Category     ICategoryDo
 	Interest     IInterestDo
+	Prefecture   IPrefectureDo
+	Region       IRegionDo
 	User         IUserDo
 	UserInterest IUserInterestDo
 }
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
+		Category:     q.Category.WithContext(ctx),
 		Interest:     q.Interest.WithContext(ctx),
+		Prefecture:   q.Prefecture.WithContext(ctx),
+		Region:       q.Region.WithContext(ctx),
 		User:         q.User.WithContext(ctx),
 		UserInterest: q.UserInterest.WithContext(ctx),
 	}
