@@ -1,0 +1,120 @@
+syntax = "proto3";
+
+package community.v1;
+
+import "google/protobuf/timestamp.proto";
+import "prefecture/v1/prefecture.proto";
+
+option go_package = "github.com/AI1411/m_app/gen/proto/community/v1;communityv1";
+
+// コミュニティ情報
+message Community {
+  string id = 1;
+  string name = 2;
+  optional string description = 4;
+  optional string profile_image_url = 5;
+  optional string cover_image_url = 6;
+  bool is_private = 11;
+  optional string creator_id = 14;
+  google.protobuf.Timestamp created_at = 17;
+  google.protobuf.Timestamp updated_at = 18;
+}
+
+// カテゴリ情報
+message Category {
+  int32 id = 1;
+  string name = 2;
+  string display_name = 3;
+  optional string description = 4;
+  optional string icon_url = 5;
+  optional string color_code = 6;
+  int32 sort_order = 7;
+}
+
+// コミュニティプレビュー（検索結果用の簡易版）
+message CommunityPreview {
+  string id = 1;
+  string name = 2;
+  optional string description = 4;
+  optional string profile_image_url = 5;
+  bool is_private = 8;
+}
+
+// コミュニティ情報取得リクエスト
+message GetCommunityRequest {
+  string id = 1;
+}
+
+// コミュニティ情報レスポンス
+message GetCommunityResponse {
+  Community community = 1;
+}
+
+// コミュニティ検索リクエスト
+message SearchCommunitiesRequest {
+  int32 page = 1;
+  int32 page_size = 2;
+  optional string name = 3;
+  optional bool is_private = 6;
+}
+
+// コミュニティ検索レスポンス
+message SearchCommunitiesResponse {
+  repeated CommunityPreview communities = 1;
+  int32 total_count = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+}
+
+// コミュニティ作成リクエスト
+message CreateCommunityRequest {
+  string name = 1;
+  optional string description = 3;
+  optional string profile_image_url = 4;
+  optional string cover_image_url = 5;
+  bool is_private = 8;
+  optional string creator_id = 9;
+}
+
+// コミュニティ作成レスポンス
+message CreateCommunityResponse {
+  string id = 1;
+}
+
+// コミュニティ更新リクエスト
+message UpdateCommunityRequest {
+  string id = 1;
+  optional string name = 2;
+  optional string description = 4;
+  optional string profile_image_url = 5;
+  optional string cover_image_url = 6;
+  optional bool is_private = 9;
+}
+
+// コミュニティ更新レスポンス
+message UpdateCommunityResponse {
+  bool success = 1;
+}
+
+// コミュニティ削除リクエスト
+message DeleteCommunityRequest {
+  string id = 1;
+}
+
+// コミュニティ削除レスポンス
+message DeleteCommunityResponse {
+  bool success = 1;
+}
+
+service CommunityService {
+  // コミュニティ情報取得
+  rpc GetCommunity(GetCommunityRequest) returns (GetCommunityResponse) {}
+  // コミュニティ検索
+  rpc SearchCommunities(SearchCommunitiesRequest) returns (SearchCommunitiesResponse) {}
+  // コミュニティ作成
+  rpc CreateCommunity(CreateCommunityRequest) returns (CreateCommunityResponse) {}
+  // コミュニティ更新
+  rpc UpdateCommunity(UpdateCommunityRequest) returns (UpdateCommunityResponse) {}
+  // コミュニティ削除
+  rpc DeleteCommunity(DeleteCommunityRequest) returns (DeleteCommunityResponse) {}
+}

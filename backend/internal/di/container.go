@@ -1,4 +1,3 @@
-// backend/internal/di/container.go
 package di
 
 import (
@@ -10,6 +9,7 @@ import (
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 
+	"github.com/AI1411/m_app/gen/community/v1/communityv1connect"
 	"github.com/AI1411/m_app/gen/education/v1/educationv1connect"
 	"github.com/AI1411/m_app/gen/interest/v1/interestv1connect"
 	"github.com/AI1411/m_app/gen/prefecture/v1/prefecturev1connect"
@@ -73,6 +73,11 @@ var Module = fx.Options(
 		func(sqlHandler *db.SqlHandler) datastore.EducationRepository {
 			return datastore.NewEducationRepository(sqlHandler)
 		},
+
+		// CommunityRepository
+		func(sqlHandler *db.SqlHandler) datastore.CommunityRepository {
+			return datastore.NewCommunityRepository(sqlHandler)
+		},
 	),
 
 	// ユースケースの依存関係
@@ -88,6 +93,9 @@ var Module = fx.Options(
 
 		// EducationUseCase
 		usecase.NewEducationUseCase,
+
+		// CommunityUseCase
+		usecase.NewCommunityUseCase,
 	),
 
 	// ハンドラーの依存関係
@@ -107,8 +115,11 @@ var Module = fx.Options(
 		// EducationHandler
 		handler.NewEducationHandler,
 
+		// CommunityHandler
+		handler.NewCommunityHandler,
+
 		// HTTPサーバーのセットアップ
-		func(userHandler handler.UserHandler, prefectureHandler handler.PrefectureHandler, regionHandler handler.RegionHandler, interestHandler handler.InterestHandler, educationHandler handler.EducationHandler) *http.ServeMux {
+		func(userHandler handler.UserHandler, prefectureHandler handler.PrefectureHandler, regionHandler handler.RegionHandler, interestHandler handler.InterestHandler, educationHandler handler.EducationHandler, communityHandler handler.CommunityHandler) *http.ServeMux {
 			mux := http.NewServeMux()
 
 			// ユーザーサービスのハンドラー登録
@@ -130,6 +141,10 @@ var Module = fx.Options(
 			// 学歴サービスのハンドラー登録
 			educationPath, educationHttpHandler := educationv1connect.NewEducationServiceHandler(educationHandler)
 			mux.Handle(educationPath, educationHttpHandler)
+
+			// コミュニティサービスのハンドラー登録
+			communityPath, communityHttpHandler := communityv1connect.NewCommunityServiceHandler(communityHandler)
+			mux.Handle(communityPath, communityHttpHandler)
 
 			return mux
 		},

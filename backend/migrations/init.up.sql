@@ -343,23 +343,16 @@ COMMENT ON COLUMN user_interests.created_at IS '関連付け作成日時';
 CREATE INDEX IF NOT EXISTS idx_user_interests_user_id ON user_interests (user_id);
 CREATE INDEX IF NOT EXISTS idx_user_interests_interest_id ON user_interests (interest_id);
 
--- 8. コミュニティテーブル
+-- コミュニティテーブル
 CREATE TABLE communities
 (
     id                UUID PRIMARY KEY                  DEFAULT gen_random_uuid(),
     name              VARCHAR(100)             NOT NULL,
-    slug              VARCHAR(100)             NOT NULL UNIQUE,
     description       TEXT,
     profile_image_url VARCHAR(255),
     cover_image_url   VARCHAR(255),
-    category_id       INTEGER REFERENCES categories (id),
-    prefecture_id     INTEGER REFERENCES prefectures (id),
     is_private        BOOLEAN                  NOT NULL DEFAULT FALSE,
-    is_verified       BOOLEAN                  NOT NULL DEFAULT FALSE,
-    member_count      INTEGER                  NOT NULL DEFAULT 0,
     creator_id        UUID REFERENCES users (id),
-    rules             TEXT,
-    website_url       VARCHAR(255),
     created_at        TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     updated_at        TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     deleted_at        TIMESTAMP WITH TIME ZONE
@@ -371,32 +364,22 @@ COMMENT ON TABLE communities IS 'コミュニティ情報を格納するテー�
 -- カラムコメント
 COMMENT ON COLUMN communities.id IS 'コミュニティの一意識別子（UUIDv4）';
 COMMENT ON COLUMN communities.name IS 'コミュニティ名';
-COMMENT ON COLUMN communities.slug IS 'URLに使用されるコミュニティの一意識別子（英数字とハイフンのみ）';
 COMMENT ON COLUMN communities.description IS 'コミュニティの説明';
 COMMENT ON COLUMN communities.profile_image_url IS 'コミュニティのプロフィール画像URL';
 COMMENT ON COLUMN communities.cover_image_url IS 'コミュニティのカバー画像URL';
-COMMENT ON COLUMN communities.category_id IS 'コミュニティのカテゴリID';
-COMMENT ON COLUMN communities.prefecture_id IS '関連する都道府県ID';
 COMMENT ON COLUMN communities.is_private IS 'プライベートコミュニティフラグ（参加に承認が必要）';
-COMMENT ON COLUMN communities.is_verified IS '公式コミュニティフラグ';
-COMMENT ON COLUMN communities.member_count IS 'メンバー数（キャッシュ）';
 COMMENT ON COLUMN communities.creator_id IS 'コミュニティ作成者のユーザーID';
-COMMENT ON COLUMN communities.rules IS 'コミュニティルール';
-COMMENT ON COLUMN communities.website_url IS 'コミュニティの外部ウェブサイト（オプション）';
 COMMENT ON COLUMN communities.created_at IS 'レコード作成日時';
 COMMENT ON COLUMN communities.updated_at IS 'レコード更新日時';
 COMMENT ON COLUMN communities.deleted_at IS '論理削除日時（NULLは有効なレコードを示す）';
 
 -- インデックス
-CREATE INDEX IF NOT EXISTS idx_communities_category_id ON communities (category_id);
-CREATE INDEX IF NOT EXISTS idx_communities_prefecture_id ON communities (prefecture_id);
 CREATE INDEX IF NOT EXISTS idx_communities_creator_id ON communities (creator_id);
 CREATE INDEX IF NOT EXISTS idx_communities_created_at ON communities (created_at);
 CREATE INDEX IF NOT EXISTS idx_communities_is_private ON communities (is_private);
 CREATE INDEX IF NOT EXISTS idx_communities_deleted_at ON communities (deleted_at) WHERE deleted_at IS NULL;
-CREATE INDEX IF NOT EXISTS idx_communities_slug ON communities (slug);
 
--- 9. コミュニティメンバーシップテーブル
+-- コミュニティメンバーシップテーブル
 CREATE TABLE community_members
 (
     community_id UUID REFERENCES communities (id) ON DELETE CASCADE,
