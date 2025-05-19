@@ -10,6 +10,7 @@ import (
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 
+	"github.com/AI1411/m_app/gen/education/v1/educationv1connect"
 	"github.com/AI1411/m_app/gen/interest/v1/interestv1connect"
 	"github.com/AI1411/m_app/gen/prefecture/v1/prefecturev1connect"
 	"github.com/AI1411/m_app/gen/region/v1/regionv1connect"
@@ -67,6 +68,11 @@ var Module = fx.Options(
 		func(sqlHandler *db.SqlHandler) datastore.InterestRepository {
 			return datastore.NewInterestRepository(sqlHandler)
 		},
+
+		// EducationRepository
+		func(sqlHandler *db.SqlHandler) datastore.EducationRepository {
+			return datastore.NewEducationRepository(sqlHandler)
+		},
 	),
 
 	// ユースケースの依存関係
@@ -79,6 +85,9 @@ var Module = fx.Options(
 
 		// InterestUseCase
 		usecase.NewInterestUseCase,
+
+		// EducationUseCase
+		usecase.NewEducationUseCase,
 	),
 
 	// ハンドラーの依存関係
@@ -95,8 +104,11 @@ var Module = fx.Options(
 		// InterestHandler
 		handler.NewInterestHandler,
 
+		// EducationHandler
+		handler.NewEducationHandler,
+
 		// HTTPサーバーのセットアップ
-		func(userHandler handler.UserHandler, prefectureHandler handler.PrefectureHandler, regionHandler handler.RegionHandler, interestHandler handler.InterestHandler) *http.ServeMux {
+		func(userHandler handler.UserHandler, prefectureHandler handler.PrefectureHandler, regionHandler handler.RegionHandler, interestHandler handler.InterestHandler, educationHandler handler.EducationHandler) *http.ServeMux {
 			mux := http.NewServeMux()
 
 			// ユーザーサービスのハンドラー登録
@@ -114,6 +126,10 @@ var Module = fx.Options(
 			// 興味・関心サービスのハンドラー登録
 			interestPath, interestHttpHandler := interestv1connect.NewInterestServiceHandler(interestHandler)
 			mux.Handle(interestPath, interestHttpHandler)
+
+			// 学歴サービスのハンドラー登録
+			educationPath, educationHttpHandler := educationv1connect.NewEducationServiceHandler(educationHandler)
+			mux.Handle(educationPath, educationHttpHandler)
 
 			return mux
 		},
