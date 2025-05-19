@@ -10,6 +10,7 @@ import (
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 
+	"github.com/AI1411/m_app/gen/prefecture/v1/prefecturev1connect"
 	"github.com/AI1411/m_app/gen/user/v1/userv1connect"
 	"github.com/AI1411/m_app/internal/handler"
 	"github.com/AI1411/m_app/internal/infra/db"
@@ -62,11 +63,21 @@ var Module = fx.Options(
 		// UserHandler
 		handler.NewUserHandler,
 
+		// PrefectureHandler
+		handler.NewPrefectureHandler,
+
 		// HTTPサーバーのセットアップ
-		func(userHandler handler.UserHandler) *http.ServeMux {
+		func(userHandler handler.UserHandler, prefectureHandler handler.PrefectureHandler) *http.ServeMux {
 			mux := http.NewServeMux()
-			path, h := userv1connect.NewUserServiceHandler(userHandler)
-			mux.Handle(path, h)
+
+			// ユーザーサービスのハンドラー登録
+			userPath, userHttpHandler := userv1connect.NewUserServiceHandler(userHandler)
+			mux.Handle(userPath, userHttpHandler)
+
+			// 都道府県サービスのハンドラー登録
+			prefecturePath, prefectureHttpHandler := prefecturev1connect.NewPrefectureServiceHandler(prefectureHandler)
+			mux.Handle(prefecturePath, prefectureHttpHandler)
+
 			return mux
 		},
 

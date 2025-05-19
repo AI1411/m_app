@@ -4,6 +4,7 @@ import (
 	"gorm.io/gen"
 
 	"github.com/AI1411/m_app/internal/infra/db"
+	applogger "github.com/AI1411/m_app/internal/infra/logger"
 )
 
 func main() {
@@ -20,7 +21,9 @@ func main() {
 		"mypassword",
 		"localhost",
 		"5432",
-		"m_app")
+		"m_app",
+		applogger.New(applogger.DefaultConfig()),
+	)
 	if err != nil {
 		panic(err)
 	}
