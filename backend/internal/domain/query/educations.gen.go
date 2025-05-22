@@ -34,6 +34,11 @@ func newEducation(db *gorm.DB, opts ...gen.DOOption) education {
 	_education.CreatedAt = field.NewTime(tableName, "created_at")
 	_education.UpdatedAt = field.NewTime(tableName, "updated_at")
 	_education.DeletedAt = field.NewField(tableName, "deleted_at")
+	_education.Users = educationHasManyUsers{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("Users", "model.User"),
+	}
 
 	_education.fillFieldMap()
 
@@ -50,6 +55,7 @@ type education struct {
 	CreatedAt field.Time   // レコード作成日時
 	UpdatedAt field.Time   // レコード更新日時
 	DeletedAt field.Field  // 論理削除日時（NULLは有効なレコードを示す）
+	Users     educationHasManyUsers
 
 	fieldMap map[string]field.Expr
 }
@@ -88,23 +94,108 @@ func (e *education) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (e *education) fillFieldMap() {
-	e.fieldMap = make(map[string]field.Expr, 6)
+	e.fieldMap = make(map[string]field.Expr, 7)
 	e.fieldMap["id"] = e.ID
 	e.fieldMap["name"] = e.Name
 	e.fieldMap["sort_order"] = e.SortOrder
 	e.fieldMap["created_at"] = e.CreatedAt
 	e.fieldMap["updated_at"] = e.UpdatedAt
 	e.fieldMap["deleted_at"] = e.DeletedAt
+
 }
 
 func (e education) clone(db *gorm.DB) education {
 	e.educationDo.ReplaceConnPool(db.Statement.ConnPool)
+	e.Users.db = db.Session(&gorm.Session{Initialized: true})
+	e.Users.db.Statement.ConnPool = db.Statement.ConnPool
 	return e
 }
 
 func (e education) replaceDB(db *gorm.DB) education {
 	e.educationDo.ReplaceDB(db)
+	e.Users.db = db.Session(&gorm.Session{})
 	return e
+}
+
+type educationHasManyUsers struct {
+	db *gorm.DB
+
+	field.RelationField
+}
+
+func (a educationHasManyUsers) Where(conds ...field.Expr) *educationHasManyUsers {
+	if len(conds) == 0 {
+		return &a
+	}
+
+	exprs := make([]clause.Expression, 0, len(conds))
+	for _, cond := range conds {
+		exprs = append(exprs, cond.BeCond().(clause.Expression))
+	}
+	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
+	return &a
+}
+
+func (a educationHasManyUsers) WithContext(ctx context.Context) *educationHasManyUsers {
+	a.db = a.db.WithContext(ctx)
+	return &a
+}
+
+func (a educationHasManyUsers) Session(session *gorm.Session) *educationHasManyUsers {
+	a.db = a.db.Session(session)
+	return &a
+}
+
+func (a educationHasManyUsers) Model(m *model.Education) *educationHasManyUsersTx {
+	return &educationHasManyUsersTx{a.db.Model(m).Association(a.Name())}
+}
+
+func (a educationHasManyUsers) Unscoped() *educationHasManyUsers {
+	a.db = a.db.Unscoped()
+	return &a
+}
+
+type educationHasManyUsersTx struct{ tx *gorm.Association }
+
+func (a educationHasManyUsersTx) Find() (result []*model.User, err error) {
+	return result, a.tx.Find(&result)
+}
+
+func (a educationHasManyUsersTx) Append(values ...*model.User) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Append(targetValues...)
+}
+
+func (a educationHasManyUsersTx) Replace(values ...*model.User) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Replace(targetValues...)
+}
+
+func (a educationHasManyUsersTx) Delete(values ...*model.User) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Delete(targetValues...)
+}
+
+func (a educationHasManyUsersTx) Clear() error {
+	return a.tx.Clear()
+}
+
+func (a educationHasManyUsersTx) Count() int64 {
+	return a.tx.Count()
+}
+
+func (a educationHasManyUsersTx) Unscoped() *educationHasManyUsersTx {
+	a.tx = a.tx.Unscoped()
+	return &a
 }
 
 type educationDo struct{ gen.DO }

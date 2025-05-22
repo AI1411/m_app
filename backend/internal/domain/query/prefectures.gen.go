@@ -42,6 +42,12 @@ func newPrefecture(db *gorm.DB, opts ...gen.DOOption) prefecture {
 		RelationField: field.NewRelation("Region", "model.Region"),
 	}
 
+	_prefecture.Users = prefectureHasManyUsers{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("Users", "model.User"),
+	}
+
 	_prefecture.fillFieldMap()
 
 	return _prefecture
@@ -60,6 +66,8 @@ type prefecture struct {
 	UpdatedAt field.Time   // 更新日時
 	DeletedAt field.Field  // 削除日時（論理削除用）
 	Region    prefectureBelongsToRegion
+
+	Users prefectureHasManyUsers
 
 	fieldMap map[string]field.Expr
 }
@@ -100,7 +108,7 @@ func (p *prefecture) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (p *prefecture) fillFieldMap() {
-	p.fieldMap = make(map[string]field.Expr, 9)
+	p.fieldMap = make(map[string]field.Expr, 10)
 	p.fieldMap["id"] = p.ID
 	p.fieldMap["code"] = p.Code
 	p.fieldMap["name"] = p.Name
@@ -116,12 +124,15 @@ func (p prefecture) clone(db *gorm.DB) prefecture {
 	p.prefectureDo.ReplaceConnPool(db.Statement.ConnPool)
 	p.Region.db = db.Session(&gorm.Session{Initialized: true})
 	p.Region.db.Statement.ConnPool = db.Statement.ConnPool
+	p.Users.db = db.Session(&gorm.Session{Initialized: true})
+	p.Users.db.Statement.ConnPool = db.Statement.ConnPool
 	return p
 }
 
 func (p prefecture) replaceDB(db *gorm.DB) prefecture {
 	p.prefectureDo.ReplaceDB(db)
 	p.Region.db = db.Session(&gorm.Session{})
+	p.Users.db = db.Session(&gorm.Session{})
 	return p
 }
 
@@ -202,6 +213,87 @@ func (a prefectureBelongsToRegionTx) Count() int64 {
 }
 
 func (a prefectureBelongsToRegionTx) Unscoped() *prefectureBelongsToRegionTx {
+	a.tx = a.tx.Unscoped()
+	return &a
+}
+
+type prefectureHasManyUsers struct {
+	db *gorm.DB
+
+	field.RelationField
+}
+
+func (a prefectureHasManyUsers) Where(conds ...field.Expr) *prefectureHasManyUsers {
+	if len(conds) == 0 {
+		return &a
+	}
+
+	exprs := make([]clause.Expression, 0, len(conds))
+	for _, cond := range conds {
+		exprs = append(exprs, cond.BeCond().(clause.Expression))
+	}
+	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
+	return &a
+}
+
+func (a prefectureHasManyUsers) WithContext(ctx context.Context) *prefectureHasManyUsers {
+	a.db = a.db.WithContext(ctx)
+	return &a
+}
+
+func (a prefectureHasManyUsers) Session(session *gorm.Session) *prefectureHasManyUsers {
+	a.db = a.db.Session(session)
+	return &a
+}
+
+func (a prefectureHasManyUsers) Model(m *model.Prefecture) *prefectureHasManyUsersTx {
+	return &prefectureHasManyUsersTx{a.db.Model(m).Association(a.Name())}
+}
+
+func (a prefectureHasManyUsers) Unscoped() *prefectureHasManyUsers {
+	a.db = a.db.Unscoped()
+	return &a
+}
+
+type prefectureHasManyUsersTx struct{ tx *gorm.Association }
+
+func (a prefectureHasManyUsersTx) Find() (result []*model.User, err error) {
+	return result, a.tx.Find(&result)
+}
+
+func (a prefectureHasManyUsersTx) Append(values ...*model.User) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Append(targetValues...)
+}
+
+func (a prefectureHasManyUsersTx) Replace(values ...*model.User) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Replace(targetValues...)
+}
+
+func (a prefectureHasManyUsersTx) Delete(values ...*model.User) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Delete(targetValues...)
+}
+
+func (a prefectureHasManyUsersTx) Clear() error {
+	return a.tx.Clear()
+}
+
+func (a prefectureHasManyUsersTx) Count() int64 {
+	return a.tx.Count()
+}
+
+func (a prefectureHasManyUsersTx) Unscoped() *prefectureHasManyUsersTx {
 	a.tx = a.tx.Unscoped()
 	return &a
 }

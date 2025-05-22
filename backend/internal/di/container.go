@@ -12,6 +12,7 @@ import (
 	"github.com/AI1411/m_app/gen/community/v1/communityv1connect"
 	"github.com/AI1411/m_app/gen/education/v1/educationv1connect"
 	"github.com/AI1411/m_app/gen/interest/v1/interestv1connect"
+	"github.com/AI1411/m_app/gen/notification/v1/notificationv1connect"
 	"github.com/AI1411/m_app/gen/prefecture/v1/prefecturev1connect"
 	"github.com/AI1411/m_app/gen/region/v1/regionv1connect"
 	"github.com/AI1411/m_app/gen/user/v1/userv1connect"
@@ -90,6 +91,11 @@ var Module = fx.Options(
 		func(sqlHandler *db.SqlHandler) datastore.CommunityRepository {
 			return datastore.NewCommunityRepository(sqlHandler)
 		},
+
+		// NotificationRepository
+		func(sqlHandler *db.SqlHandler) datastore.NotificationRepository {
+			return datastore.NewNotificationRepository(sqlHandler)
+		},
 	),
 
 	// ユースケースの依存関係
@@ -108,6 +114,9 @@ var Module = fx.Options(
 
 		// CommunityUseCase
 		usecase.NewCommunityUseCase,
+
+		// NotificationUseCase
+		usecase.NewNotificationUseCase,
 	),
 
 	// ハンドラーの依存関係
@@ -130,8 +139,11 @@ var Module = fx.Options(
 		// CommunityHandler
 		handler.NewCommunityHandler,
 
+		// NotificationHandler
+		handler.NewNotificationHandler,
+
 		// HTTPサーバーのセットアップ
-		func(userHandler handler.UserHandler, prefectureHandler handler.PrefectureHandler, regionHandler handler.RegionHandler, interestHandler handler.InterestHandler, educationHandler handler.EducationHandler, communityHandler handler.CommunityHandler) *http.ServeMux {
+		func(userHandler handler.UserHandler, prefectureHandler handler.PrefectureHandler, regionHandler handler.RegionHandler, interestHandler handler.InterestHandler, educationHandler handler.EducationHandler, communityHandler handler.CommunityHandler, notificationHandler handler.NotificationHandler) *http.ServeMux {
 			mux := http.NewServeMux()
 
 			// ユーザーサービスのハンドラー登録
@@ -157,6 +169,10 @@ var Module = fx.Options(
 			// コミュニティサービスのハンドラー登録
 			communityPath, communityHttpHandler := communityv1connect.NewCommunityServiceHandler(communityHandler)
 			mux.Handle(communityPath, communityHttpHandler)
+
+			// 通知サービスのハンドラー登録
+			notificationPath, notificationHttpHandler := notificationv1connect.NewNotificationServiceHandler(notificationHandler)
+			mux.Handle(notificationPath, notificationHttpHandler)
 
 			return mux
 		},

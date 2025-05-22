@@ -66,6 +66,60 @@ func newUser(db *gorm.DB, opts ...gen.DOOption) user {
 		RelationField: field.NewRelation("Education", "model.Education"),
 	}
 
+	_user.Communities = userHasManyCommunities{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("Communities", "model.Community"),
+	}
+
+	_user.CommunityMembers = userHasManyCommunityMembers{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("CommunityMembers", "model.CommunityMember"),
+	}
+
+	_user.Likes = userHasManyLikes{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("Likes", "model.Like"),
+	}
+
+	_user.Matches = userHasManyMatches{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("Matches", "model.Match"),
+	}
+
+	_user.Reports = userHasManyReports{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("Reports", "model.Report"),
+	}
+
+	_user.Footprints = userHasManyFootprints{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("Footprints", "model.Footprint"),
+	}
+
+	_user.UserImages = userHasManyUserImages{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("UserImages", "model.UserImage"),
+	}
+
+	_user.Tweets = userHasManyTweets{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("Tweets", "model.Tweet"),
+	}
+
+	_user.Blocklists = userHasManyBlocklists{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("Blocklists", "model.Blocklist"),
+	}
+
 	_user.fillFieldMap()
 
 	return _user
@@ -100,6 +154,24 @@ type user struct {
 	Prefecture userBelongsToPrefecture
 
 	Education userBelongsToEducation
+
+	Communities userHasManyCommunities
+
+	CommunityMembers userHasManyCommunityMembers
+
+	Likes userHasManyLikes
+
+	Matches userHasManyMatches
+
+	Reports userHasManyReports
+
+	Footprints userHasManyFootprints
+
+	UserImages userHasManyUserImages
+
+	Tweets userHasManyTweets
+
+	Blocklists userHasManyBlocklists
 
 	fieldMap map[string]field.Expr
 }
@@ -152,7 +224,7 @@ func (u *user) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (u *user) fillFieldMap() {
-	u.fieldMap = make(map[string]field.Expr, 23)
+	u.fieldMap = make(map[string]field.Expr, 32)
 	u.fieldMap["id"] = u.ID
 	u.fieldMap["email"] = u.Email
 	u.fieldMap["password_hash"] = u.PasswordHash
@@ -184,6 +256,24 @@ func (u user) clone(db *gorm.DB) user {
 	u.Prefecture.db.Statement.ConnPool = db.Statement.ConnPool
 	u.Education.db = db.Session(&gorm.Session{Initialized: true})
 	u.Education.db.Statement.ConnPool = db.Statement.ConnPool
+	u.Communities.db = db.Session(&gorm.Session{Initialized: true})
+	u.Communities.db.Statement.ConnPool = db.Statement.ConnPool
+	u.CommunityMembers.db = db.Session(&gorm.Session{Initialized: true})
+	u.CommunityMembers.db.Statement.ConnPool = db.Statement.ConnPool
+	u.Likes.db = db.Session(&gorm.Session{Initialized: true})
+	u.Likes.db.Statement.ConnPool = db.Statement.ConnPool
+	u.Matches.db = db.Session(&gorm.Session{Initialized: true})
+	u.Matches.db.Statement.ConnPool = db.Statement.ConnPool
+	u.Reports.db = db.Session(&gorm.Session{Initialized: true})
+	u.Reports.db.Statement.ConnPool = db.Statement.ConnPool
+	u.Footprints.db = db.Session(&gorm.Session{Initialized: true})
+	u.Footprints.db.Statement.ConnPool = db.Statement.ConnPool
+	u.UserImages.db = db.Session(&gorm.Session{Initialized: true})
+	u.UserImages.db.Statement.ConnPool = db.Statement.ConnPool
+	u.Tweets.db = db.Session(&gorm.Session{Initialized: true})
+	u.Tweets.db.Statement.ConnPool = db.Statement.ConnPool
+	u.Blocklists.db = db.Session(&gorm.Session{Initialized: true})
+	u.Blocklists.db.Statement.ConnPool = db.Statement.ConnPool
 	return u
 }
 
@@ -192,6 +282,15 @@ func (u user) replaceDB(db *gorm.DB) user {
 	u.UserInterests.db = db.Session(&gorm.Session{})
 	u.Prefecture.db = db.Session(&gorm.Session{})
 	u.Education.db = db.Session(&gorm.Session{})
+	u.Communities.db = db.Session(&gorm.Session{})
+	u.CommunityMembers.db = db.Session(&gorm.Session{})
+	u.Likes.db = db.Session(&gorm.Session{})
+	u.Matches.db = db.Session(&gorm.Session{})
+	u.Reports.db = db.Session(&gorm.Session{})
+	u.Footprints.db = db.Session(&gorm.Session{})
+	u.UserImages.db = db.Session(&gorm.Session{})
+	u.Tweets.db = db.Session(&gorm.Session{})
+	u.Blocklists.db = db.Session(&gorm.Session{})
 	return u
 }
 
@@ -434,6 +533,735 @@ func (a userBelongsToEducationTx) Count() int64 {
 }
 
 func (a userBelongsToEducationTx) Unscoped() *userBelongsToEducationTx {
+	a.tx = a.tx.Unscoped()
+	return &a
+}
+
+type userHasManyCommunities struct {
+	db *gorm.DB
+
+	field.RelationField
+}
+
+func (a userHasManyCommunities) Where(conds ...field.Expr) *userHasManyCommunities {
+	if len(conds) == 0 {
+		return &a
+	}
+
+	exprs := make([]clause.Expression, 0, len(conds))
+	for _, cond := range conds {
+		exprs = append(exprs, cond.BeCond().(clause.Expression))
+	}
+	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
+	return &a
+}
+
+func (a userHasManyCommunities) WithContext(ctx context.Context) *userHasManyCommunities {
+	a.db = a.db.WithContext(ctx)
+	return &a
+}
+
+func (a userHasManyCommunities) Session(session *gorm.Session) *userHasManyCommunities {
+	a.db = a.db.Session(session)
+	return &a
+}
+
+func (a userHasManyCommunities) Model(m *model.User) *userHasManyCommunitiesTx {
+	return &userHasManyCommunitiesTx{a.db.Model(m).Association(a.Name())}
+}
+
+func (a userHasManyCommunities) Unscoped() *userHasManyCommunities {
+	a.db = a.db.Unscoped()
+	return &a
+}
+
+type userHasManyCommunitiesTx struct{ tx *gorm.Association }
+
+func (a userHasManyCommunitiesTx) Find() (result []*model.Community, err error) {
+	return result, a.tx.Find(&result)
+}
+
+func (a userHasManyCommunitiesTx) Append(values ...*model.Community) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Append(targetValues...)
+}
+
+func (a userHasManyCommunitiesTx) Replace(values ...*model.Community) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Replace(targetValues...)
+}
+
+func (a userHasManyCommunitiesTx) Delete(values ...*model.Community) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Delete(targetValues...)
+}
+
+func (a userHasManyCommunitiesTx) Clear() error {
+	return a.tx.Clear()
+}
+
+func (a userHasManyCommunitiesTx) Count() int64 {
+	return a.tx.Count()
+}
+
+func (a userHasManyCommunitiesTx) Unscoped() *userHasManyCommunitiesTx {
+	a.tx = a.tx.Unscoped()
+	return &a
+}
+
+type userHasManyCommunityMembers struct {
+	db *gorm.DB
+
+	field.RelationField
+}
+
+func (a userHasManyCommunityMembers) Where(conds ...field.Expr) *userHasManyCommunityMembers {
+	if len(conds) == 0 {
+		return &a
+	}
+
+	exprs := make([]clause.Expression, 0, len(conds))
+	for _, cond := range conds {
+		exprs = append(exprs, cond.BeCond().(clause.Expression))
+	}
+	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
+	return &a
+}
+
+func (a userHasManyCommunityMembers) WithContext(ctx context.Context) *userHasManyCommunityMembers {
+	a.db = a.db.WithContext(ctx)
+	return &a
+}
+
+func (a userHasManyCommunityMembers) Session(session *gorm.Session) *userHasManyCommunityMembers {
+	a.db = a.db.Session(session)
+	return &a
+}
+
+func (a userHasManyCommunityMembers) Model(m *model.User) *userHasManyCommunityMembersTx {
+	return &userHasManyCommunityMembersTx{a.db.Model(m).Association(a.Name())}
+}
+
+func (a userHasManyCommunityMembers) Unscoped() *userHasManyCommunityMembers {
+	a.db = a.db.Unscoped()
+	return &a
+}
+
+type userHasManyCommunityMembersTx struct{ tx *gorm.Association }
+
+func (a userHasManyCommunityMembersTx) Find() (result []*model.CommunityMember, err error) {
+	return result, a.tx.Find(&result)
+}
+
+func (a userHasManyCommunityMembersTx) Append(values ...*model.CommunityMember) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Append(targetValues...)
+}
+
+func (a userHasManyCommunityMembersTx) Replace(values ...*model.CommunityMember) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Replace(targetValues...)
+}
+
+func (a userHasManyCommunityMembersTx) Delete(values ...*model.CommunityMember) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Delete(targetValues...)
+}
+
+func (a userHasManyCommunityMembersTx) Clear() error {
+	return a.tx.Clear()
+}
+
+func (a userHasManyCommunityMembersTx) Count() int64 {
+	return a.tx.Count()
+}
+
+func (a userHasManyCommunityMembersTx) Unscoped() *userHasManyCommunityMembersTx {
+	a.tx = a.tx.Unscoped()
+	return &a
+}
+
+type userHasManyLikes struct {
+	db *gorm.DB
+
+	field.RelationField
+}
+
+func (a userHasManyLikes) Where(conds ...field.Expr) *userHasManyLikes {
+	if len(conds) == 0 {
+		return &a
+	}
+
+	exprs := make([]clause.Expression, 0, len(conds))
+	for _, cond := range conds {
+		exprs = append(exprs, cond.BeCond().(clause.Expression))
+	}
+	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
+	return &a
+}
+
+func (a userHasManyLikes) WithContext(ctx context.Context) *userHasManyLikes {
+	a.db = a.db.WithContext(ctx)
+	return &a
+}
+
+func (a userHasManyLikes) Session(session *gorm.Session) *userHasManyLikes {
+	a.db = a.db.Session(session)
+	return &a
+}
+
+func (a userHasManyLikes) Model(m *model.User) *userHasManyLikesTx {
+	return &userHasManyLikesTx{a.db.Model(m).Association(a.Name())}
+}
+
+func (a userHasManyLikes) Unscoped() *userHasManyLikes {
+	a.db = a.db.Unscoped()
+	return &a
+}
+
+type userHasManyLikesTx struct{ tx *gorm.Association }
+
+func (a userHasManyLikesTx) Find() (result []*model.Like, err error) {
+	return result, a.tx.Find(&result)
+}
+
+func (a userHasManyLikesTx) Append(values ...*model.Like) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Append(targetValues...)
+}
+
+func (a userHasManyLikesTx) Replace(values ...*model.Like) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Replace(targetValues...)
+}
+
+func (a userHasManyLikesTx) Delete(values ...*model.Like) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Delete(targetValues...)
+}
+
+func (a userHasManyLikesTx) Clear() error {
+	return a.tx.Clear()
+}
+
+func (a userHasManyLikesTx) Count() int64 {
+	return a.tx.Count()
+}
+
+func (a userHasManyLikesTx) Unscoped() *userHasManyLikesTx {
+	a.tx = a.tx.Unscoped()
+	return &a
+}
+
+type userHasManyMatches struct {
+	db *gorm.DB
+
+	field.RelationField
+}
+
+func (a userHasManyMatches) Where(conds ...field.Expr) *userHasManyMatches {
+	if len(conds) == 0 {
+		return &a
+	}
+
+	exprs := make([]clause.Expression, 0, len(conds))
+	for _, cond := range conds {
+		exprs = append(exprs, cond.BeCond().(clause.Expression))
+	}
+	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
+	return &a
+}
+
+func (a userHasManyMatches) WithContext(ctx context.Context) *userHasManyMatches {
+	a.db = a.db.WithContext(ctx)
+	return &a
+}
+
+func (a userHasManyMatches) Session(session *gorm.Session) *userHasManyMatches {
+	a.db = a.db.Session(session)
+	return &a
+}
+
+func (a userHasManyMatches) Model(m *model.User) *userHasManyMatchesTx {
+	return &userHasManyMatchesTx{a.db.Model(m).Association(a.Name())}
+}
+
+func (a userHasManyMatches) Unscoped() *userHasManyMatches {
+	a.db = a.db.Unscoped()
+	return &a
+}
+
+type userHasManyMatchesTx struct{ tx *gorm.Association }
+
+func (a userHasManyMatchesTx) Find() (result []*model.Match, err error) {
+	return result, a.tx.Find(&result)
+}
+
+func (a userHasManyMatchesTx) Append(values ...*model.Match) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Append(targetValues...)
+}
+
+func (a userHasManyMatchesTx) Replace(values ...*model.Match) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Replace(targetValues...)
+}
+
+func (a userHasManyMatchesTx) Delete(values ...*model.Match) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Delete(targetValues...)
+}
+
+func (a userHasManyMatchesTx) Clear() error {
+	return a.tx.Clear()
+}
+
+func (a userHasManyMatchesTx) Count() int64 {
+	return a.tx.Count()
+}
+
+func (a userHasManyMatchesTx) Unscoped() *userHasManyMatchesTx {
+	a.tx = a.tx.Unscoped()
+	return &a
+}
+
+type userHasManyReports struct {
+	db *gorm.DB
+
+	field.RelationField
+}
+
+func (a userHasManyReports) Where(conds ...field.Expr) *userHasManyReports {
+	if len(conds) == 0 {
+		return &a
+	}
+
+	exprs := make([]clause.Expression, 0, len(conds))
+	for _, cond := range conds {
+		exprs = append(exprs, cond.BeCond().(clause.Expression))
+	}
+	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
+	return &a
+}
+
+func (a userHasManyReports) WithContext(ctx context.Context) *userHasManyReports {
+	a.db = a.db.WithContext(ctx)
+	return &a
+}
+
+func (a userHasManyReports) Session(session *gorm.Session) *userHasManyReports {
+	a.db = a.db.Session(session)
+	return &a
+}
+
+func (a userHasManyReports) Model(m *model.User) *userHasManyReportsTx {
+	return &userHasManyReportsTx{a.db.Model(m).Association(a.Name())}
+}
+
+func (a userHasManyReports) Unscoped() *userHasManyReports {
+	a.db = a.db.Unscoped()
+	return &a
+}
+
+type userHasManyReportsTx struct{ tx *gorm.Association }
+
+func (a userHasManyReportsTx) Find() (result []*model.Report, err error) {
+	return result, a.tx.Find(&result)
+}
+
+func (a userHasManyReportsTx) Append(values ...*model.Report) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Append(targetValues...)
+}
+
+func (a userHasManyReportsTx) Replace(values ...*model.Report) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Replace(targetValues...)
+}
+
+func (a userHasManyReportsTx) Delete(values ...*model.Report) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Delete(targetValues...)
+}
+
+func (a userHasManyReportsTx) Clear() error {
+	return a.tx.Clear()
+}
+
+func (a userHasManyReportsTx) Count() int64 {
+	return a.tx.Count()
+}
+
+func (a userHasManyReportsTx) Unscoped() *userHasManyReportsTx {
+	a.tx = a.tx.Unscoped()
+	return &a
+}
+
+type userHasManyFootprints struct {
+	db *gorm.DB
+
+	field.RelationField
+}
+
+func (a userHasManyFootprints) Where(conds ...field.Expr) *userHasManyFootprints {
+	if len(conds) == 0 {
+		return &a
+	}
+
+	exprs := make([]clause.Expression, 0, len(conds))
+	for _, cond := range conds {
+		exprs = append(exprs, cond.BeCond().(clause.Expression))
+	}
+	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
+	return &a
+}
+
+func (a userHasManyFootprints) WithContext(ctx context.Context) *userHasManyFootprints {
+	a.db = a.db.WithContext(ctx)
+	return &a
+}
+
+func (a userHasManyFootprints) Session(session *gorm.Session) *userHasManyFootprints {
+	a.db = a.db.Session(session)
+	return &a
+}
+
+func (a userHasManyFootprints) Model(m *model.User) *userHasManyFootprintsTx {
+	return &userHasManyFootprintsTx{a.db.Model(m).Association(a.Name())}
+}
+
+func (a userHasManyFootprints) Unscoped() *userHasManyFootprints {
+	a.db = a.db.Unscoped()
+	return &a
+}
+
+type userHasManyFootprintsTx struct{ tx *gorm.Association }
+
+func (a userHasManyFootprintsTx) Find() (result []*model.Footprint, err error) {
+	return result, a.tx.Find(&result)
+}
+
+func (a userHasManyFootprintsTx) Append(values ...*model.Footprint) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Append(targetValues...)
+}
+
+func (a userHasManyFootprintsTx) Replace(values ...*model.Footprint) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Replace(targetValues...)
+}
+
+func (a userHasManyFootprintsTx) Delete(values ...*model.Footprint) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Delete(targetValues...)
+}
+
+func (a userHasManyFootprintsTx) Clear() error {
+	return a.tx.Clear()
+}
+
+func (a userHasManyFootprintsTx) Count() int64 {
+	return a.tx.Count()
+}
+
+func (a userHasManyFootprintsTx) Unscoped() *userHasManyFootprintsTx {
+	a.tx = a.tx.Unscoped()
+	return &a
+}
+
+type userHasManyUserImages struct {
+	db *gorm.DB
+
+	field.RelationField
+}
+
+func (a userHasManyUserImages) Where(conds ...field.Expr) *userHasManyUserImages {
+	if len(conds) == 0 {
+		return &a
+	}
+
+	exprs := make([]clause.Expression, 0, len(conds))
+	for _, cond := range conds {
+		exprs = append(exprs, cond.BeCond().(clause.Expression))
+	}
+	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
+	return &a
+}
+
+func (a userHasManyUserImages) WithContext(ctx context.Context) *userHasManyUserImages {
+	a.db = a.db.WithContext(ctx)
+	return &a
+}
+
+func (a userHasManyUserImages) Session(session *gorm.Session) *userHasManyUserImages {
+	a.db = a.db.Session(session)
+	return &a
+}
+
+func (a userHasManyUserImages) Model(m *model.User) *userHasManyUserImagesTx {
+	return &userHasManyUserImagesTx{a.db.Model(m).Association(a.Name())}
+}
+
+func (a userHasManyUserImages) Unscoped() *userHasManyUserImages {
+	a.db = a.db.Unscoped()
+	return &a
+}
+
+type userHasManyUserImagesTx struct{ tx *gorm.Association }
+
+func (a userHasManyUserImagesTx) Find() (result []*model.UserImage, err error) {
+	return result, a.tx.Find(&result)
+}
+
+func (a userHasManyUserImagesTx) Append(values ...*model.UserImage) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Append(targetValues...)
+}
+
+func (a userHasManyUserImagesTx) Replace(values ...*model.UserImage) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Replace(targetValues...)
+}
+
+func (a userHasManyUserImagesTx) Delete(values ...*model.UserImage) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Delete(targetValues...)
+}
+
+func (a userHasManyUserImagesTx) Clear() error {
+	return a.tx.Clear()
+}
+
+func (a userHasManyUserImagesTx) Count() int64 {
+	return a.tx.Count()
+}
+
+func (a userHasManyUserImagesTx) Unscoped() *userHasManyUserImagesTx {
+	a.tx = a.tx.Unscoped()
+	return &a
+}
+
+type userHasManyTweets struct {
+	db *gorm.DB
+
+	field.RelationField
+}
+
+func (a userHasManyTweets) Where(conds ...field.Expr) *userHasManyTweets {
+	if len(conds) == 0 {
+		return &a
+	}
+
+	exprs := make([]clause.Expression, 0, len(conds))
+	for _, cond := range conds {
+		exprs = append(exprs, cond.BeCond().(clause.Expression))
+	}
+	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
+	return &a
+}
+
+func (a userHasManyTweets) WithContext(ctx context.Context) *userHasManyTweets {
+	a.db = a.db.WithContext(ctx)
+	return &a
+}
+
+func (a userHasManyTweets) Session(session *gorm.Session) *userHasManyTweets {
+	a.db = a.db.Session(session)
+	return &a
+}
+
+func (a userHasManyTweets) Model(m *model.User) *userHasManyTweetsTx {
+	return &userHasManyTweetsTx{a.db.Model(m).Association(a.Name())}
+}
+
+func (a userHasManyTweets) Unscoped() *userHasManyTweets {
+	a.db = a.db.Unscoped()
+	return &a
+}
+
+type userHasManyTweetsTx struct{ tx *gorm.Association }
+
+func (a userHasManyTweetsTx) Find() (result []*model.Tweet, err error) {
+	return result, a.tx.Find(&result)
+}
+
+func (a userHasManyTweetsTx) Append(values ...*model.Tweet) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Append(targetValues...)
+}
+
+func (a userHasManyTweetsTx) Replace(values ...*model.Tweet) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Replace(targetValues...)
+}
+
+func (a userHasManyTweetsTx) Delete(values ...*model.Tweet) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Delete(targetValues...)
+}
+
+func (a userHasManyTweetsTx) Clear() error {
+	return a.tx.Clear()
+}
+
+func (a userHasManyTweetsTx) Count() int64 {
+	return a.tx.Count()
+}
+
+func (a userHasManyTweetsTx) Unscoped() *userHasManyTweetsTx {
+	a.tx = a.tx.Unscoped()
+	return &a
+}
+
+type userHasManyBlocklists struct {
+	db *gorm.DB
+
+	field.RelationField
+}
+
+func (a userHasManyBlocklists) Where(conds ...field.Expr) *userHasManyBlocklists {
+	if len(conds) == 0 {
+		return &a
+	}
+
+	exprs := make([]clause.Expression, 0, len(conds))
+	for _, cond := range conds {
+		exprs = append(exprs, cond.BeCond().(clause.Expression))
+	}
+	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
+	return &a
+}
+
+func (a userHasManyBlocklists) WithContext(ctx context.Context) *userHasManyBlocklists {
+	a.db = a.db.WithContext(ctx)
+	return &a
+}
+
+func (a userHasManyBlocklists) Session(session *gorm.Session) *userHasManyBlocklists {
+	a.db = a.db.Session(session)
+	return &a
+}
+
+func (a userHasManyBlocklists) Model(m *model.User) *userHasManyBlocklistsTx {
+	return &userHasManyBlocklistsTx{a.db.Model(m).Association(a.Name())}
+}
+
+func (a userHasManyBlocklists) Unscoped() *userHasManyBlocklists {
+	a.db = a.db.Unscoped()
+	return &a
+}
+
+type userHasManyBlocklistsTx struct{ tx *gorm.Association }
+
+func (a userHasManyBlocklistsTx) Find() (result []*model.Blocklist, err error) {
+	return result, a.tx.Find(&result)
+}
+
+func (a userHasManyBlocklistsTx) Append(values ...*model.Blocklist) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Append(targetValues...)
+}
+
+func (a userHasManyBlocklistsTx) Replace(values ...*model.Blocklist) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Replace(targetValues...)
+}
+
+func (a userHasManyBlocklistsTx) Delete(values ...*model.Blocklist) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Delete(targetValues...)
+}
+
+func (a userHasManyBlocklistsTx) Clear() error {
+	return a.tx.Clear()
+}
+
+func (a userHasManyBlocklistsTx) Count() int64 {
+	return a.tx.Count()
+}
+
+func (a userHasManyBlocklistsTx) Unscoped() *userHasManyBlocklistsTx {
 	a.tx = a.tx.Unscoped()
 	return &a
 }

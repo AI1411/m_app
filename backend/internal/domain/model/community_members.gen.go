@@ -18,6 +18,8 @@ type CommunityMember struct {
 	IsApproved  bool      `gorm:"column:is_approved;type:boolean;not null;index:idx_community_members_is_approved,priority:1;comment:承認状態（プライベートコミュニティの場合）" json:"is_approved"`                     // 承認状態（プライベートコミュニティの場合）
 	JoinedAt    time.Time `gorm:"column:joined_at;type:timestamp with time zone;not null;default:now();comment:コミュニティ参加日時" json:"joined_at"`                                                        // コミュニティ参加日時
 	UpdatedAt   time.Time `gorm:"column:updated_at;type:timestamp with time zone;not null;default:now();comment:レコード更新日時" json:"updated_at"`                                                        // レコード更新日時
+	Community   Community `json:"community"`
+	User        User      `json:"user"`
 }
 
 // TableName CommunityMember's table name
