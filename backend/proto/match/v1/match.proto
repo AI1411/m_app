@@ -1,0 +1,88 @@
+syntax = "proto3";
+
+package match.v1;
+
+import "google/protobuf/timestamp.proto";
+import "user/v1/user.proto";
+
+option go_package = "github.com/AI1411/m_app/gen/proto/match/v1;matchv1";
+
+// マッチング情報
+message Match {
+  string id = 1; // マッチングID (UUID)
+  string user_id_1 = 2; // 1人目のユーザーID
+  string user_id_2 = 3; // 2人目のユーザーID
+  google.protobuf.Timestamp matched_at = 4; // マッチング成立日時
+  google.protobuf.Timestamp created_at = 5; // 作成日時
+  google.protobuf.Timestamp updated_at = 6; // 更新日時
+}
+
+// マッチング作成リクエスト
+message CreateMatchRequest {
+  string user_id_1 = 1; // 1人目のユーザーID
+  string user_id_2 = 2; // 2人目のユーザーID
+}
+
+// マッチング作成レスポンス
+message CreateMatchResponse {
+  string id = 1; // 作成されたマッチングのID
+  google.protobuf.Timestamp matched_at = 2; // マッチング成立日時
+}
+
+// マッチング取得リクエスト（ユーザーのマッチング一覧）
+message GetUserMatchesRequest {
+  string user_id = 1; // マッチングを取得したいユーザーID
+  int32 page = 2; // ページ番号
+  int32 page_size = 3; // 1ページあたりのアイテム数
+}
+
+// マッチング取得レスポンス
+message GetUserMatchesResponse {
+  repeated MatchWithUser matches = 1; // マッチング情報とマッチしたユーザー情報のリスト
+  int32 total_count = 2; // 総マッチング数
+  int32 page = 3; // 現在のページ番号
+  int32 page_size = 4; // 1ページあたりのアイテム数
+}
+
+// マッチング情報とマッチしたユーザー情報
+message MatchWithUser {
+  Match match = 1; // マッチング情報
+  user.v1.User matched_user = 2; // マッチしたユーザー情報
+}
+
+// マッチング削除リクエスト
+message DeleteMatchRequest {
+  string match_id = 1; // 削除するマッチングのID
+}
+
+// マッチング削除レスポンス
+message DeleteMatchResponse {
+  bool success = 1; // 削除成功フラグ
+}
+
+// マッチングチェックリクエスト（2人のユーザー間にマッチングが存在するか）
+message CheckMatchRequest {
+  string user_id_1 = 1; // 1人目のユーザーID
+  string user_id_2 = 2; // 2人目のユーザーID
+}
+
+// マッチングチェックレスポンス
+message CheckMatchResponse {
+  bool matched = 1; // マッチングが存在する場合はtrue
+  optional string match_id = 2; // マッチングが存在する場合、そのID
+  optional google.protobuf.Timestamp matched_at = 3; // マッチング成立日時
+}
+
+service MatchService {
+  // マッチング作成（お互いにいいねを送り合った場合に成立）
+  rpc CreateMatch(CreateMatchRequest) returns (CreateMatchResponse) {}
+  
+  // ユーザーのマッチング一覧取得
+  rpc GetUserMatches(GetUserMatchesRequest) returns (GetUserMatchesResponse) {}
+  
+  // マッチング削除（マッチング解除）
+  rpc DeleteMatch(DeleteMatchRequest) returns (DeleteMatchResponse) {}
+  
+  // マッチングチェック（2人のユーザー間にマッチングが存在するか）
+  rpc CheckMatch(CheckMatchRequest) returns (CheckMatchResponse) {}
+}

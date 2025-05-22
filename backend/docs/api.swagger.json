@@ -33,6 +33,9 @@
       "name": "LikeService"
     },
     {
+      "name": "MatchService"
+    },
+    {
       "name": "NotificationService"
     },
     {
@@ -285,6 +288,25 @@
       },
       "title": "いいねチェックレスポンス"
     },
+    "v1CheckMatchResponse": {
+      "type": "object",
+      "properties": {
+        "matched": {
+          "type": "boolean",
+          "title": "マッチングが存在する場合はtrue"
+        },
+        "matchId": {
+          "type": "string",
+          "title": "マッチングが存在する場合、そのID"
+        },
+        "matchedAt": {
+          "type": "string",
+          "format": "date-time",
+          "title": "マッチング成立日時"
+        }
+      },
+      "title": "マッチングチェックレスポンス"
+    },
     "v1Community": {
       "type": "object",
       "properties": {
@@ -389,6 +411,21 @@
       },
       "title": "いいね作成レスポンス"
     },
+    "v1CreateMatchResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "作成されたマッチングのID"
+        },
+        "matchedAt": {
+          "type": "string",
+          "format": "date-time",
+          "title": "マッチング成立日時"
+        }
+      },
+      "title": "マッチング作成レスポンス"
+    },
     "v1CreateNotificationResponse": {
       "type": "object",
       "properties": {
@@ -453,6 +490,16 @@
         }
       },
       "title": "いいね削除レスポンス"
+    },
+    "v1DeleteMatchResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean",
+          "title": "削除成功フラグ"
+        }
+      },
+      "title": "マッチング削除レスポンス"
     },
     "v1DeleteNotificationResponse": {
       "type": "object",
@@ -656,6 +703,35 @@
         }
       },
       "title": "ユーザーのいいね一覧取得レスポンス"
+    },
+    "v1GetUserMatchesResponse": {
+      "type": "object",
+      "properties": {
+        "matches": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1MatchWithUser"
+          },
+          "title": "マッチング情報とマッチしたユーザー情報のリスト"
+        },
+        "totalCount": {
+          "type": "integer",
+          "format": "int32",
+          "title": "総マッチング数"
+        },
+        "page": {
+          "type": "integer",
+          "format": "int32",
+          "title": "現在のページ番号"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32",
+          "title": "1ページあたりのアイテム数"
+        }
+      },
+      "title": "マッチング取得レスポンス"
     },
     "v1GetUserResponse": {
       "type": "object",
@@ -878,6 +954,53 @@
         }
       },
       "title": "通知既読設定レスポンス"
+    },
+    "v1Match": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "マッチングID (UUID)"
+        },
+        "userId1": {
+          "type": "string",
+          "title": "1人目のユーザーID"
+        },
+        "userId2": {
+          "type": "string",
+          "title": "2人目のユーザーID"
+        },
+        "matchedAt": {
+          "type": "string",
+          "format": "date-time",
+          "title": "マッチング成立日時"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "title": "作成日時"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "title": "更新日時"
+        }
+      },
+      "title": "マッチング情報"
+    },
+    "v1MatchWithUser": {
+      "type": "object",
+      "properties": {
+        "match": {
+          "$ref": "#/definitions/v1Match",
+          "title": "マッチング情報"
+        },
+        "matchedUser": {
+          "$ref": "#/definitions/userv1User",
+          "title": "マッチしたユーザー情報"
+        }
+      },
+      "title": "マッチング情報とマッチしたユーザー情報"
     },
     "v1Notification": {
       "type": "object",
