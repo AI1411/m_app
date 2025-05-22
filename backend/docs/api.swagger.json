@@ -43,6 +43,9 @@
     },
     {
       "name": "TweetService"
+    },
+    {
+      "name": "UserImageService"
     }
   ],
   "consumes": [
@@ -464,6 +467,15 @@
       },
       "title": "つぶやき作成レスポンス"
     },
+    "v1CreateUserImageResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      },
+      "title": "ユーザー画像作成レスポンス"
+    },
     "v1CreateUserResponse": {
       "type": "object",
       "properties": {
@@ -518,6 +530,15 @@
         }
       },
       "title": "つぶやき削除レスポンス"
+    },
+    "v1DeleteUserImageResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        }
+      },
+      "title": "ユーザー画像削除レスポンス"
     },
     "v1Education": {
       "type": "object",
@@ -678,6 +699,15 @@
         }
       },
       "title": "つぶやき取得レスポンス"
+    },
+    "v1GetUserImageResponse": {
+      "type": "object",
+      "properties": {
+        "userImage": {
+          "$ref": "#/definitions/v1UserImage"
+        }
+      },
+      "title": "ユーザー画像取得レスポンス"
     },
     "v1GetUserLikesResponse": {
       "type": "object",
@@ -934,6 +964,31 @@
         }
       },
       "title": "つぶやき一覧取得レスポンス"
+    },
+    "v1ListUserImagesResponse": {
+      "type": "object",
+      "properties": {
+        "userImages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1UserImage"
+          }
+        },
+        "totalCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "page": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "ユーザー画像一覧取得レスポンス"
     },
     "v1MarkAllNotificationsAsReadResponse": {
       "type": "object",
@@ -1255,6 +1310,15 @@
       },
       "title": "つぶやき更新レスポンス"
     },
+    "v1UpdateUserImageResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        }
+      },
+      "title": "ユーザー画像更新レスポンス"
+    },
     "v1UpdateUserResponse": {
       "type": "object",
       "properties": {
@@ -1263,6 +1327,39 @@
         }
       },
       "title": "ユーザー更新レスポンス"
+    },
+    "v1UserImage": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        },
+        "imageUrl": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "isPrimary": {
+          "type": "boolean"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "user": {
+          "$ref": "#/definitions/userv1User",
+          "title": "画像の所有者であるユーザー情報"
+        }
+      },
+      "title": "ユーザー画像情報"
     },
     "v1UserPreview": {
       "type": "object",

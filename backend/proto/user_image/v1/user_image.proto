@@ -1,0 +1,94 @@
+syntax = "proto3";
+
+package user_image.v1;
+
+import "google/protobuf/timestamp.proto";
+import "user/v1/user.proto";
+
+option go_package = "github.com/AI1411/m_app/gen/proto/user_image/v1;user_imagev1";
+
+// ユーザー画像情報
+message UserImage {
+  string id = 1;
+  string user_id = 2;
+  string image_url = 3;
+  string description = 4;
+  bool is_primary = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
+  user.v1.User user = 8; // 画像の所有者であるユーザー情報
+}
+
+// ユーザー画像作成リクエスト
+message CreateUserImageRequest {
+  string user_id = 1;
+  string image_url = 2;
+  string description = 3;
+  bool is_primary = 4;
+}
+
+// ユーザー画像作成レスポンス
+message CreateUserImageResponse {
+  string id = 1;
+}
+
+// ユーザー画像取得リクエスト
+message GetUserImageRequest {
+  string id = 1;
+}
+
+// ユーザー画像取得レスポンス
+message GetUserImageResponse {
+  UserImage user_image = 1;
+}
+
+// ユーザー画像一覧取得リクエスト
+message ListUserImagesRequest {
+  string user_id = 1; // ユーザーIDは必須
+  int32 page = 2;
+  int32 page_size = 3;
+}
+
+// ユーザー画像一覧取得レスポンス
+message ListUserImagesResponse {
+  repeated UserImage user_images = 1;
+  int32 total_count = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+}
+
+// ユーザー画像更新リクエスト
+message UpdateUserImageRequest {
+  string id = 1;
+  optional string image_url = 2;
+  optional string description = 3;
+  optional bool is_primary = 4;
+}
+
+// ユーザー画像更新レスポンス
+message UpdateUserImageResponse {
+  bool success = 1;
+}
+
+// ユーザー画像削除リクエスト
+message DeleteUserImageRequest {
+  string id = 1;
+}
+
+// ユーザー画像削除レスポンス
+message DeleteUserImageResponse {
+  bool success = 1;
+}
+
+service UserImageService {
+  // ユーザー画像作成
+  rpc CreateUserImage(CreateUserImageRequest) returns (CreateUserImageResponse) {}
+  // ユーザー画像取得
+  rpc GetUserImage(GetUserImageRequest) returns (GetUserImageResponse) {}
+  // ユーザー画像一覧取得
+  rpc ListUserImages(ListUserImagesRequest) returns (ListUserImagesResponse) {}
+  // ユーザー画像更新
+  rpc UpdateUserImage(UpdateUserImageRequest) returns (UpdateUserImageResponse) {}
+  // ユーザー画像削除
+  rpc DeleteUserImage(DeleteUserImageRequest) returns (DeleteUserImageResponse) {}
+}
