@@ -33,6 +33,9 @@
       "name": "LikeService"
     },
     {
+      "name": "NotificationService"
+    },
+    {
       "name": "TweetService"
     }
   ],
@@ -383,6 +386,16 @@
       },
       "title": "いいね作成レスポンス"
     },
+    "v1CreateNotificationResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "作成された通知のID"
+        }
+      },
+      "title": "通知作成レスポンス"
+    },
     "v1CreateRegionResponse": {
       "type": "object",
       "properties": {
@@ -427,6 +440,15 @@
         }
       },
       "title": "いいね削除レスポンス"
+    },
+    "v1DeleteNotificationResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        }
+      },
+      "title": "通知削除レスポンス"
     },
     "v1DeleteTweetResponse": {
       "type": "object",
@@ -528,6 +550,36 @@
         }
       },
       "title": "いいね取得レスポンス"
+    },
+    "v1GetNotificationsResponse": {
+      "type": "object",
+      "properties": {
+        "notifications": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Notification"
+          }
+        },
+        "totalCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "page": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "unreadCount": {
+          "type": "integer",
+          "format": "int32",
+          "title": "未読通知の総数"
+        }
+      },
+      "title": "通知リスト取得レスポンス"
     },
     "v1GetPrefectureResponse": {
       "type": "object",
@@ -754,6 +806,71 @@
         }
       },
       "title": "つぶやき一覧取得レスポンス"
+    },
+    "v1MarkAllNotificationsAsReadResponse": {
+      "type": "object",
+      "properties": {
+        "updatedCount": {
+          "type": "integer",
+          "format": "int32",
+          "title": "更新された通知の数"
+        }
+      },
+      "title": "全通知既読設定レスポンス"
+    },
+    "v1MarkNotificationAsReadResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        }
+      },
+      "title": "通知既読設定レスポンス"
+    },
+    "v1Notification": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string",
+          "title": "通知の受信者ID"
+        },
+        "title": {
+          "type": "string",
+          "title": "通知タイトル"
+        },
+        "content": {
+          "type": "string",
+          "title": "通知内容"
+        },
+        "notificationType": {
+          "type": "string",
+          "title": "通知タイプ（system, like, follow, etc.）"
+        },
+        "relatedResourceId": {
+          "type": "string",
+          "title": "関連リソースID（ツイートID、ユーザーIDなど）"
+        },
+        "relatedResourceType": {
+          "type": "string",
+          "title": "関連リソースタイプ（tweet, user, etc.）"
+        },
+        "isRead": {
+          "type": "boolean",
+          "title": "既読フラグ"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "title": "通知情報"
     },
     "v1RecordFootprintResponse": {
       "type": "object",

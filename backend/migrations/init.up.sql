@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS notifications;
 DROP TABLE IF EXISTS tweets;
 DROP TABLE IF EXISTS likes;
 DROP TABLE IF EXISTS community_members;
@@ -512,3 +513,42 @@ CREATE INDEX idx_footprints_visitor_user_id ON footprints (visitor_user_id);
 CREATE INDEX idx_footprints_visited_user_id ON footprints (visited_user_id);
 CREATE INDEX idx_footprints_visited_at ON footprints (visited_at);
 CREATE INDEX idx_footprints_deleted_at ON footprints (deleted_at) WHERE deleted_at IS NULL;
+
+-- お知らせ（通知）テーブル
+CREATE TABLE notifications
+(
+    id                    UUID PRIMARY KEY                  DEFAULT gen_random_uuid(),
+    user_id               UUID                     NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    title                 VARCHAR(255)             NOT NULL,
+    content               TEXT                     NOT NULL,
+    notification_type     VARCHAR(50)              NOT NULL,
+    related_resource_id   UUID,
+    related_resource_type VARCHAR(50),
+    is_read               BOOLEAN                  NOT NULL DEFAULT FALSE,
+    created_at            TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at            TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at            TIMESTAMP WITH TIME ZONE
+);
+
+-- テーブルコメント
+COMMENT ON TABLE notifications IS 'ユーザーへの通知情報を格納するテーブル';
+
+-- カラムコメント
+COMMENT ON COLUMN notifications.id IS '通知の一意識別子（UUIDv4）';
+COMMENT ON COLUMN notifications.user_id IS '通知の受信者となるユーザーID';
+COMMENT ON COLUMN notifications.title IS '通知のタイトル';
+COMMENT ON COLUMN notifications.content IS '通知の内容';
+COMMENT ON COLUMN notifications.notification_type IS '通知のタイプ（system, like, follow, etc.）';
+COMMENT ON COLUMN notifications.related_resource_id IS '関連リソースのID（ツイートID、ユーザーIDなど）';
+COMMENT ON COLUMN notifications.related_resource_type IS '関連リソースのタイプ（tweet, user, etc.）';
+COMMENT ON COLUMN notifications.is_read IS '既読フラグ（true: 既読, false: 未読）';
+COMMENT ON COLUMN notifications.created_at IS '通知作成日時';
+COMMENT ON COLUMN notifications.updated_at IS 'レコード更新日時';
+COMMENT ON COLUMN notifications.deleted_at IS '論理削除日時（NULLは有効なレコードを示す）';
+
+-- インデックス
+CREATE INDEX idx_notifications_user_id ON notifications (user_id);
+CREATE INDEX idx_notifications_notification_type ON notifications (notification_type);
+CREATE INDEX idx_notifications_is_read ON notifications (is_read);
+CREATE INDEX idx_notifications_created_at ON notifications (created_at);
+CREATE INDEX idx_notifications_deleted_at ON notifications (deleted_at) WHERE deleted_at IS NULL;

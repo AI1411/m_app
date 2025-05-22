@@ -1,0 +1,103 @@
+syntax = "proto3";
+
+package notification.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/AI1411/m_app/gen/proto/notification/v1;notificationv1";
+
+// 通知情報
+message Notification {
+  string id = 1;
+  string user_id = 2; // 通知の受信者ID
+  string title = 3; // 通知タイトル
+  string content = 4; // 通知内容
+  string notification_type = 5; // 通知タイプ（system, like, follow, etc.）
+  optional string related_resource_id = 6; // 関連リソースID（ツイートID、ユーザーIDなど）
+  optional string related_resource_type = 7; // 関連リソースタイプ（tweet, user, etc.）
+  bool is_read = 8; // 既読フラグ
+  google.protobuf.Timestamp created_at = 9;
+  google.protobuf.Timestamp updated_at = 10;
+}
+
+// 通知リスト取得リクエスト
+message GetNotificationsRequest {
+  string user_id = 1; // 通知を取得するユーザーID
+  int32 page = 2;
+  int32 page_size = 3;
+  optional bool unread_only = 4; // trueの場合、未読の通知のみを取得
+}
+
+// 通知リスト取得レスポンス
+message GetNotificationsResponse {
+  repeated Notification notifications = 1;
+  int32 total_count = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+  int32 unread_count = 5; // 未読通知の総数
+}
+
+// 通知既読設定リクエスト
+message MarkNotificationAsReadRequest {
+  string notification_id = 1;
+  string user_id = 2; // 認証・認可のため
+}
+
+// 通知既読設定レスポンス
+message MarkNotificationAsReadResponse {
+  bool success = 1;
+}
+
+// 全通知既読設定リクエスト
+message MarkAllNotificationsAsReadRequest {
+  string user_id = 1; // 認証・認可のため
+}
+
+// 全通知既読設定レスポンス
+message MarkAllNotificationsAsReadResponse {
+  int32 updated_count = 1; // 更新された通知の数
+}
+
+// 通知作成リクエスト（システム管理者用）
+message CreateNotificationRequest {
+  string user_id = 1; // 通知の受信者ID
+  string title = 2; // 通知タイトル
+  string content = 3; // 通知内容
+  string notification_type = 4; // 通知タイプ
+  optional string related_resource_id = 5; // 関連リソースID
+  optional string related_resource_type = 6; // 関連リソースタイプ
+}
+
+// 通知作成レスポンス
+message CreateNotificationResponse {
+  string id = 1; // 作成された通知のID
+}
+
+// 通知削除リクエスト
+message DeleteNotificationRequest {
+  string notification_id = 1;
+  string user_id = 2; // 認証・認可のため
+}
+
+// 通知削除レスポンス
+message DeleteNotificationResponse {
+  bool success = 1;
+}
+
+// 通知サービス
+service NotificationService {
+  // ユーザーの通知リストを取得
+  rpc GetNotifications(GetNotificationsRequest) returns (GetNotificationsResponse) {}
+  
+  // 特定の通知を既読にする
+  rpc MarkNotificationAsRead(MarkNotificationAsReadRequest) returns (MarkNotificationAsReadResponse) {}
+  
+  // ユーザーの全通知を既読にする
+  rpc MarkAllNotificationsAsRead(MarkAllNotificationsAsReadRequest) returns (MarkAllNotificationsAsReadResponse) {}
+  
+  // 通知を作成する（システム管理者用）
+  rpc CreateNotification(CreateNotificationRequest) returns (CreateNotificationResponse) {}
+  
+  // 通知を削除する
+  rpc DeleteNotification(DeleteNotificationRequest) returns (DeleteNotificationResponse) {}
+}
