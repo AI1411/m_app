@@ -26,7 +26,7 @@ type Report struct {
 	UpdatedAt      time.Time      `gorm:"column:updated_at;type:timestamp with time zone;not null;default:CURRENT_TIMESTAMP;comment:レコード更新日時" json:"updated_at"`                                                        // レコード更新日時
 	DeletedAt      gorm.DeletedAt `gorm:"column:deleted_at;type:timestamp with time zone;index:idx_reports_deleted_at,priority:1;comment:論理削除日時（NULLは有効なレコードを示す）" json:"deleted_at"`                                    // 論理削除日時（NULLは有効なレコードを示す）
 	User           User           `json:"user"`
-	ReportedUser   User           `gorm:"foreignKey:ReportedUserID" json:"reported_user"`
+	ReportedUser   User           `gorm:"foreignKey:ReportedUserID;references:ID" json:"reported_user"`
 }
 
 // TableName Report's table name

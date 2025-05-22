@@ -17,7 +17,7 @@ type Blocklist struct {
 	BlockedUserID string    `gorm:"column:blocked_user_id;type:uuid;not null;index:idx_blocklists_blocked_user_id,priority:1" json:"blocked_user_id"`
 	CreatedAt     time.Time `gorm:"column:created_at;type:timestamp with time zone;not null;default:CURRENT_TIMESTAMP" json:"created_at"`
 	User          User      `json:"user"`
-	BlockedUser   User      `gorm:"foreignKey:BlockedUserID" json:"blocked_user"`
+	BlockedUser   User      `gorm:"foreignKey:BlockedUserID;references:ID" json:"blocked_user"`
 }
 
 // TableName Blocklist's table name

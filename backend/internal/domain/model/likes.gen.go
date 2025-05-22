@@ -21,7 +21,7 @@ type Like struct {
 	UpdatedAt time.Time      `gorm:"column:updated_at;type:timestamp with time zone;not null;default:now();comment:レコード更新日時" json:"updated_at"`                                      // レコード更新日時
 	DeletedAt gorm.DeletedAt `gorm:"column:deleted_at;type:timestamp with time zone;index:idx_likes_deleted_at,priority:1;comment:論理削除日時（NULLは有効なレコードを示す）" json:"deleted_at"`        // 論理削除日時（NULLは有効なレコードを示す）
 	User      User           `json:"user"`
-	LikedUser User           `gorm:"foreignKey:LikedUserID" json:"liked_user"`
+	LikedUser User           `gorm:"foreignKey:LikedUserID;references:ID" json:"liked_user"`
 }
 
 // TableName Like's table name

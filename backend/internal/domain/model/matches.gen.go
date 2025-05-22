@@ -22,7 +22,7 @@ type Match struct {
 	UpdatedAt   time.Time      `gorm:"column:updated_at;type:timestamp with time zone;not null;default:CURRENT_TIMESTAMP;comment:レコード更新日時" json:"updated_at"`                                          // レコード更新日時
 	DeletedAt   gorm.DeletedAt `gorm:"column:deleted_at;type:timestamp with time zone;index:idx_matches_deleted_at,priority:1;comment:論理削除日時（NULLは有効なレコードを示す）" json:"deleted_at"`                      // 論理削除日時（NULLは有効なレコードを示す）
 	User        User           `json:"user"`
-	MatchedUser User           `gorm:"foreignKey:MatchedUserID" json:"matched_user"`
+	MatchedUser User           `gorm:"foreignKey:MatchedUserID;references:ID" json:"matched_user"`
 }
 
 // TableName Match's table name

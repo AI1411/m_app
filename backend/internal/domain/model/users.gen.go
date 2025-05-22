@@ -28,7 +28,7 @@ type User struct {
 	EducationID      *int32            `gorm:"column:education_id;type:integer;index:idx_users_education_id,priority:1;comment:学歴ID" json:"education_id"`                                                                   // 学歴ID
 	PrefectureID     *int32            `gorm:"column:prefecture_id;type:integer;index:idx_users_prefecture_id,priority:1;comment:都道府県ID" json:"prefecture_id"`                                                              // 都道府県ID
 	LookingFor       *string           `gorm:"column:looking_for;type:text;comment:求めている関係性の説明" json:"looking_for"`                                                                                                         // 求めている関係性の説明
-	LastActive       *time.Time        `gorm:"column:last_active;type:timestamp with time zone;index:idx_users_premium_last_active,priority:2;index:idx_users_last_active,priority:1;comment:最終アクティブ日時" json:"last_active"` // 最終アクティブ日時
+	LastActive       *time.Time        `gorm:"column:last_active;type:timestamp with time zone;index:idx_users_last_active,priority:1;index:idx_users_premium_last_active,priority:2;comment:最終アクティブ日時" json:"last_active"` // 最終アクティブ日時
 	IsVerified       *bool             `gorm:"column:is_verified;type:boolean;comment:アカウント認証済みフラグ" json:"is_verified"`                                                                                                     // アカウント認証済みフラグ
 	IsPremium        *bool             `gorm:"column:is_premium;type:boolean;index:idx_users_premium_last_active,priority:1;comment:プレミアムアカウントフラグ" json:"is_premium"`                                                       // プレミアムアカウントフラグ
 	CreatedAt        time.Time         `gorm:"column:created_at;type:timestamp with time zone;not null;default:now();comment:レコード作成日時" json:"created_at"`                                                                   // レコード作成日時
@@ -37,7 +37,7 @@ type User struct {
 	UserInterests    []UserInterest    `json:"user_interests"`
 	Prefecture       Prefecture        `json:"prefecture"`
 	Education        Education         `json:"education"`
-	Communities      []Community       `gorm:"foreignKey:CreatorID" json:"communities"`
+	Communities      []Community       `gorm:"foreignKey:CreatorID;references:ID" json:"communities"`
 	CommunityMembers []CommunityMember `json:"community_members"`
 	Likes            []Like            `json:"likes"`
 	Matches          []Match           `json:"matches"`

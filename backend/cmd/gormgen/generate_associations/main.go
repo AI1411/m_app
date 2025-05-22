@@ -46,6 +46,7 @@ func main() {
 			gen.FieldRelateModel(field.HasMany, "Communities", model.Community{}, &field.RelateConfig{
 				GORMTag: map[string][]string{
 					"foreignKey": {"CreatorID"},
+					"references": {"ID"},
 				},
 			}),
 			gen.FieldRelateModel(field.HasMany, "CommunityMembers", model.CommunityMember{}, nil),
@@ -92,6 +93,7 @@ func main() {
 			gen.FieldRelateModel(field.BelongsTo, "User", model.User{}, &field.RelateConfig{
 				GORMTag: map[string][]string{
 					"foreignKey": {"CreatorID"},
+					"references": {"ID"},
 				},
 			}),
 		),
@@ -118,6 +120,7 @@ func main() {
 			gen.FieldRelateModel(field.BelongsTo, "LikedUser", model.User{}, &field.RelateConfig{
 				GORMTag: map[string][]string{
 					"foreignKey": {"LikedUserID"},
+					"references": {"ID"},
 				},
 			}),
 		),
@@ -128,6 +131,7 @@ func main() {
 			gen.FieldRelateModel(field.BelongsTo, "MatchedUser", model.User{}, &field.RelateConfig{
 				GORMTag: map[string][]string{
 					"foreignKey": {"MatchedUserID"},
+					"references": {"ID"},
 				},
 			}),
 		),
@@ -138,6 +142,7 @@ func main() {
 			gen.FieldRelateModel(field.BelongsTo, "ReportedUser", model.User{}, &field.RelateConfig{
 				GORMTag: map[string][]string{
 					"foreignKey": {"ReportedUserID"},
+					"references": {"ID"},
 				},
 			}),
 		),
@@ -148,6 +153,7 @@ func main() {
 			gen.FieldRelateModel(field.BelongsTo, "VisitedUser", model.User{}, &field.RelateConfig{
 				GORMTag: map[string][]string{
 					"foreignKey": {"VisitedUserID"},
+					"references": {"ID"},
 				},
 			}),
 		),
@@ -168,6 +174,7 @@ func main() {
 			gen.FieldRelateModel(field.BelongsTo, "BlockedUser", model.User{}, &field.RelateConfig{
 				GORMTag: map[string][]string{
 					"foreignKey": {"BlockedUserID"},
+					"references": {"ID"},
 				},
 			}),
 		),
