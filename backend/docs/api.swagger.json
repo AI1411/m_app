@@ -36,6 +36,9 @@
       "name": "NotificationService"
     },
     {
+      "name": "ReportService"
+    },
+    {
       "name": "TweetService"
     }
   ],
@@ -405,6 +408,16 @@
       },
       "title": "リージョン作成レスポンス"
     },
+    "v1CreateReportResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "作成された通報のID"
+        }
+      },
+      "title": "通報作成レスポンス"
+    },
     "v1CreateTweetResponse": {
       "type": "object",
       "properties": {
@@ -600,6 +613,16 @@
       },
       "title": "リージョン詳細取得レスポンス"
     },
+    "v1GetReportResponse": {
+      "type": "object",
+      "properties": {
+        "report": {
+          "$ref": "#/definitions/v1Report",
+          "title": "取得した通報情報"
+        }
+      },
+      "title": "通報取得レスポンス"
+    },
     "v1GetTweetResponse": {
       "type": "object",
       "properties": {
@@ -782,6 +805,35 @@
       },
       "title": "リージョン一覧取得レスポンス"
     },
+    "v1ListReportsResponse": {
+      "type": "object",
+      "properties": {
+        "reports": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Report"
+          },
+          "title": "通報のリスト"
+        },
+        "totalCount": {
+          "type": "integer",
+          "format": "int32",
+          "title": "総通報数"
+        },
+        "page": {
+          "type": "integer",
+          "format": "int32",
+          "title": "現在のページ"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32",
+          "title": "ページサイズ"
+        }
+      },
+      "title": "通報一覧取得レスポンス"
+    },
     "v1ListTweetsResponse": {
       "type": "object",
       "properties": {
@@ -909,6 +961,59 @@
       },
       "title": "リージョン（地域）情報"
     },
+    "v1Report": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "reporterUserId": {
+          "type": "string",
+          "title": "通報したユーザーID"
+        },
+        "reportedUserId": {
+          "type": "string",
+          "title": "通報されたユーザーID"
+        },
+        "reason": {
+          "type": "string",
+          "title": "通報理由"
+        },
+        "details": {
+          "type": "string",
+          "title": "詳細説明"
+        },
+        "status": {
+          "type": "string",
+          "title": "通報ステータス (pending, reviewing, resolved, rejected)"
+        },
+        "targetType": {
+          "type": "string",
+          "title": "通報対象のタイプ (user, tweet, community, etc.)"
+        },
+        "targetId": {
+          "type": "string",
+          "title": "通報対象のID"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "reporter": {
+          "$ref": "#/definitions/userv1User",
+          "title": "通報したユーザー情報"
+        },
+        "reported": {
+          "$ref": "#/definitions/userv1User",
+          "title": "通報されたユーザー情報"
+        }
+      },
+      "title": "通報情報"
+    },
     "v1SearchCommunitiesResponse": {
       "type": "object",
       "properties": {
@@ -1007,6 +1112,16 @@
         }
       },
       "title": "リージョン更新レスポンス"
+    },
+    "v1UpdateReportStatusResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean",
+          "title": "更新が成功したかどうか"
+        }
+      },
+      "title": "通報ステータス更新レスポンス"
     },
     "v1UpdateTweetResponse": {
       "type": "object",

@@ -1,0 +1,89 @@
+syntax = "proto3";
+
+package report.v1;
+
+import "google/protobuf/timestamp.proto";
+import "user/v1/user.proto";
+
+option go_package = "github.com/AI1411/m_app/gen/proto/report/v1;reportv1";
+
+// 通報情報
+message Report {
+  string id = 1;
+  string reporter_user_id = 2; // 通報したユーザーID
+  string reported_user_id = 3; // 通報されたユーザーID
+  string reason = 4; // 通報理由
+  string details = 5; // 詳細説明
+  string status = 6; // 通報ステータス (pending, reviewing, resolved, rejected)
+  string target_type = 7; // 通報対象のタイプ (user, tweet, community, etc.)
+  string target_id = 8; // 通報対象のID
+  google.protobuf.Timestamp created_at = 9;
+  google.protobuf.Timestamp updated_at = 10;
+  user.v1.User reporter = 11; // 通報したユーザー情報
+  user.v1.User reported = 12; // 通報されたユーザー情報
+}
+
+// 通報作成リクエスト
+message CreateReportRequest {
+  string reporter_user_id = 1; // 通報するユーザーID
+  string reported_user_id = 2; // 通報されるユーザーID
+  string reason = 3; // 通報理由
+  string details = 4; // 詳細説明
+  string target_type = 5; // 通報対象のタイプ (user, tweet, community, etc.)
+  string target_id = 6; // 通報対象のID
+}
+
+// 通報作成レスポンス
+message CreateReportResponse {
+  string id = 1; // 作成された通報のID
+}
+
+// 通報取得リクエスト
+message GetReportRequest {
+  string id = 1; // 取得する通報のID
+}
+
+// 通報取得レスポンス
+message GetReportResponse {
+  Report report = 1; // 取得した通報情報
+}
+
+// 通報一覧取得リクエスト
+message ListReportsRequest {
+  optional string reporter_user_id = 1; // 特定の通報者のみの通報を取得する場合に指定
+  optional string reported_user_id = 2; // 特定の被通報者のみの通報を取得する場合に指定
+  optional string status = 3; // 特定のステータスの通報のみを取得する場合に指定
+  optional string target_type = 4; // 特定のターゲットタイプの通報のみを取得する場合に指定
+  int32 page = 5;
+  int32 page_size = 6;
+}
+
+// 通報一覧取得レスポンス
+message ListReportsResponse {
+  repeated Report reports = 1; // 通報のリスト
+  int32 total_count = 2; // 総通報数
+  int32 page = 3; // 現在のページ
+  int32 page_size = 4; // ページサイズ
+}
+
+// 通報ステータス更新リクエスト
+message UpdateReportStatusRequest {
+  string id = 1; // 更新する通報のID
+  string status = 2; // 新しいステータス
+}
+
+// 通報ステータス更新レスポンス
+message UpdateReportStatusResponse {
+  bool success = 1; // 更新が成功したかどうか
+}
+
+service ReportService {
+  // 通報作成
+  rpc CreateReport(CreateReportRequest) returns (CreateReportResponse) {}
+  // 通報取得
+  rpc GetReport(GetReportRequest) returns (GetReportResponse) {}
+  // 通報一覧取得
+  rpc ListReports(ListReportsRequest) returns (ListReportsResponse) {}
+  // 通報ステータス更新
+  rpc UpdateReportStatus(UpdateReportStatusRequest) returns (UpdateReportStatusResponse) {}
+}

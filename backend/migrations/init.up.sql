@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS reports;
 DROP TABLE IF EXISTS notifications;
 DROP TABLE IF EXISTS tweets;
 DROP TABLE IF EXISTS likes;
@@ -552,3 +553,43 @@ CREATE INDEX idx_notifications_notification_type ON notifications (notification_
 CREATE INDEX idx_notifications_is_read ON notifications (is_read);
 CREATE INDEX idx_notifications_created_at ON notifications (created_at);
 CREATE INDEX idx_notifications_deleted_at ON notifications (deleted_at) WHERE deleted_at IS NULL;
+
+-- 通報テーブル
+CREATE TABLE reports
+(
+    id               UUID PRIMARY KEY                  DEFAULT gen_random_uuid(),
+    reporter_user_id UUID                     NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    reported_user_id UUID                     NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    reason           VARCHAR(255)             NOT NULL,
+    details          TEXT,
+    status           VARCHAR(50)              NOT NULL DEFAULT 'pending',
+    target_type      VARCHAR(50)              NOT NULL,
+    target_id        UUID                     NOT NULL,
+    created_at       TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at       TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at       TIMESTAMP WITH TIME ZONE
+);
+
+-- テーブルコメント
+COMMENT ON TABLE reports IS 'ユーザーからの通報情報を格納するテーブル';
+
+-- カラムコメント
+COMMENT ON COLUMN reports.id IS '通報の一意識別子（UUIDv4）';
+COMMENT ON COLUMN reports.reporter_user_id IS '通報したユーザーのID';
+COMMENT ON COLUMN reports.reported_user_id IS '通報されたユーザーのID';
+COMMENT ON COLUMN reports.reason IS '通報理由';
+COMMENT ON COLUMN reports.details IS '通報の詳細説明';
+COMMENT ON COLUMN reports.status IS '通報のステータス（pending, reviewing, resolved, rejected）';
+COMMENT ON COLUMN reports.target_type IS '通報対象のタイプ（user, tweet, community, etc.）';
+COMMENT ON COLUMN reports.target_id IS '通報対象のID';
+COMMENT ON COLUMN reports.created_at IS '通報作成日時';
+COMMENT ON COLUMN reports.updated_at IS 'レコード更新日時';
+COMMENT ON COLUMN reports.deleted_at IS '論理削除日時（NULLは有効なレコードを示す）';
+
+-- インデックス
+CREATE INDEX idx_reports_reporter_user_id ON reports (reporter_user_id);
+CREATE INDEX idx_reports_reported_user_id ON reports (reported_user_id);
+CREATE INDEX idx_reports_status ON reports (status);
+CREATE INDEX idx_reports_target_type_target_id ON reports (target_type, target_id);
+CREATE INDEX idx_reports_created_at ON reports (created_at);
+CREATE INDEX idx_reports_deleted_at ON reports (deleted_at) WHERE deleted_at IS NULL;
