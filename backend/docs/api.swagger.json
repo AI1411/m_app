@@ -1,0 +1,779 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "blocklist/v1/blocklist.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "BlocklistService"
+    },
+    {
+      "name": "RegionService"
+    },
+    {
+      "name": "PrefectureService"
+    },
+    {
+      "name": "CommunityService"
+    },
+    {
+      "name": "EducationService"
+    },
+    {
+      "name": "InterestService"
+    },
+    {
+      "name": "UserService"
+    },
+    {
+      "name": "LikeService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {},
+  "definitions": {
+    "communityv1User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "nickname": {
+          "type": "string"
+        },
+        "profileImageUrl": {
+          "type": "string"
+        },
+        "aboutMe": {
+          "type": "string"
+        }
+      },
+      "title": "ユーザー情報"
+    },
+    "prefecturev1Prefecture": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        },
+        "nameEn": {
+          "type": "string"
+        },
+        "regionId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "region": {
+          "$ref": "#/definitions/v1Region",
+          "title": "完全修飾名を使用"
+        }
+      },
+      "title": "都道府県情報"
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "regionv1Prefecture": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        },
+        "nameEn": {
+          "type": "string"
+        },
+        "regionId": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "都道府県情報（リージョン内で使用）"
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "userv1User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "nickname": {
+          "type": "string"
+        },
+        "birthDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "age": {
+          "type": "integer",
+          "format": "int32",
+          "title": "計算フィールド"
+        },
+        "gender": {
+          "type": "string"
+        },
+        "profileImageUrl": {
+          "type": "string"
+        },
+        "aboutMe": {
+          "type": "string"
+        },
+        "prefecture": {
+          "$ref": "#/definitions/prefecturev1Prefecture",
+          "title": "都道府県情報"
+        },
+        "jobTitle": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "education": {
+          "$ref": "#/definitions/v1Education",
+          "title": "学歴情報"
+        },
+        "interests": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "lookingFor": {
+          "type": "string"
+        },
+        "lastActive": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "isVerified": {
+          "type": "boolean"
+        },
+        "isPremium": {
+          "type": "boolean"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "title": "更新日時を追加"
+        }
+      },
+      "title": "ユーザー情報（完全版）"
+    },
+    "v1BlocklistEntry": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "ブロックリストエントリID (UUIDなどを想定)"
+        },
+        "blockerUserId": {
+          "type": "string",
+          "title": "ブロックしたユーザーID"
+        },
+        "blockedUserId": {
+          "type": "string",
+          "title": "ブロックされたユーザーID"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "title": "ブロック日時"
+        }
+      },
+      "title": "ブロックリストのエントリ"
+    },
+    "v1CheckLikeResponse": {
+      "type": "object",
+      "properties": {
+        "liked": {
+          "type": "boolean"
+        },
+        "likeId": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "いいねチェックレスポンス"
+    },
+    "v1Community": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "profileImageUrl": {
+          "type": "string"
+        },
+        "coverImageUrl": {
+          "type": "string"
+        },
+        "isPrivate": {
+          "type": "boolean"
+        },
+        "creatorId": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "creator": {
+          "$ref": "#/definitions/communityv1User"
+        },
+        "members": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1CommunityMember"
+          }
+        }
+      },
+      "title": "コミュニティ情報"
+    },
+    "v1CommunityMember": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "isApproved": {
+          "type": "boolean"
+        },
+        "joinedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "title": "コミュニティメンバー情報"
+    },
+    "v1CommunityPreview": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "profileImageUrl": {
+          "type": "string"
+        },
+        "isPrivate": {
+          "type": "boolean"
+        }
+      },
+      "title": "コミュニティプレビュー（検索結果用の簡易版）"
+    },
+    "v1CreateCommunityResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      },
+      "title": "コミュニティ作成レスポンス"
+    },
+    "v1CreateLikeResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "いいね作成レスポンス"
+    },
+    "v1CreateRegionResponse": {
+      "type": "object",
+      "properties": {
+        "region": {
+          "$ref": "#/definitions/v1Region"
+        }
+      },
+      "title": "リージョン作成レスポンス"
+    },
+    "v1CreateUserResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      },
+      "title": "ユーザー作成レスポンス"
+    },
+    "v1DeleteCommunityResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        }
+      },
+      "title": "コミュニティ削除レスポンス"
+    },
+    "v1DeleteLikeResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        }
+      },
+      "title": "いいね削除レスポンス"
+    },
+    "v1Education": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        },
+        "sortOrder": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "学歴情報"
+    },
+    "v1GetBlockedUsersResponse": {
+      "type": "object",
+      "properties": {
+        "blockedUsers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1BlocklistEntry"
+          },
+          "title": "ブロックしているユーザーのリスト"
+        },
+        "nextPageToken": {
+          "type": "string",
+          "title": "次のページがある場合のトークン"
+        }
+      },
+      "title": "特定のユーザーがブロックしているユーザーリストのレスポンス"
+    },
+    "v1GetCommunityResponse": {
+      "type": "object",
+      "properties": {
+        "community": {
+          "$ref": "#/definitions/v1Community"
+        }
+      },
+      "title": "コミュニティ情報レスポンス"
+    },
+    "v1GetLikesForTargetResponse": {
+      "type": "object",
+      "properties": {
+        "likes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/userv1User"
+          }
+        },
+        "totalCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "page": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "いいね取得レスポンス"
+    },
+    "v1GetPrefectureResponse": {
+      "type": "object",
+      "properties": {
+        "prefecture": {
+          "$ref": "#/definitions/prefecturev1Prefecture",
+          "title": "都道府県情報"
+        }
+      },
+      "title": "都道府県詳細取得レスポンス"
+    },
+    "v1GetRegionResponse": {
+      "type": "object",
+      "properties": {
+        "region": {
+          "$ref": "#/definitions/v1Region"
+        }
+      },
+      "title": "リージョン詳細取得レスポンス"
+    },
+    "v1GetUserLikesResponse": {
+      "type": "object",
+      "properties": {
+        "likes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Like"
+          }
+        },
+        "totalCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "page": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "ユーザーのいいね一覧取得レスポンス"
+    },
+    "v1GetUserResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/userv1User"
+        }
+      },
+      "title": "ユーザー情報レスポンス"
+    },
+    "v1Interest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        },
+        "displayName": {
+          "type": "string"
+        },
+        "categoryId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "iconUrl": {
+          "type": "string"
+        },
+        "sortOrder": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "興味・関心情報"
+    },
+    "v1IsBlockedResponse": {
+      "type": "object",
+      "properties": {
+        "isBlocked": {
+          "type": "boolean",
+          "title": "ブロックされていれば true"
+        }
+      },
+      "title": "ユーザーが指定ユーザーにブロックされているか確認するレスポンス"
+    },
+    "v1Like": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "userId": {
+          "type": "string"
+        },
+        "targetId": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "title": "いいね情報"
+    },
+    "v1ListEducationsResponse": {
+      "type": "object",
+      "properties": {
+        "educations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Education"
+          }
+        }
+      },
+      "title": "学歴一覧取得レスポンス"
+    },
+    "v1ListInterestsResponse": {
+      "type": "object",
+      "properties": {
+        "interests": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Interest"
+          }
+        }
+      },
+      "title": "興味・関心一覧取得レスポンス"
+    },
+    "v1ListPrefecturesResponse": {
+      "type": "object",
+      "properties": {
+        "prefectures": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/prefecturev1Prefecture"
+          }
+        }
+      },
+      "title": "都道府県一覧取得レスポンス"
+    },
+    "v1ListRegionsResponse": {
+      "type": "object",
+      "properties": {
+        "regions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Region"
+          }
+        }
+      },
+      "title": "リージョン一覧取得レスポンス"
+    },
+    "v1Region": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        },
+        "nameEn": {
+          "type": "string"
+        },
+        "sortOrder": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "prefectures": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/regionv1Prefecture"
+          }
+        }
+      },
+      "title": "リージョン（地域）情報"
+    },
+    "v1SearchCommunitiesResponse": {
+      "type": "object",
+      "properties": {
+        "communities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1CommunityPreview"
+          }
+        },
+        "totalCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "page": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "コミュニティ検索レスポンス"
+    },
+    "v1SearchUsersResponse": {
+      "type": "object",
+      "properties": {
+        "users": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1UserPreview"
+          }
+        },
+        "totalCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "page": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "ユーザー検索レスポンス"
+    },
+    "v1UpdateCommunityResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        }
+      },
+      "title": "コミュニティ更新レスポンス"
+    },
+    "v1UpdateRegionResponse": {
+      "type": "object",
+      "properties": {
+        "region": {
+          "$ref": "#/definitions/v1Region"
+        }
+      },
+      "title": "リージョン更新レスポンス"
+    },
+    "v1UpdateUserResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        }
+      },
+      "title": "ユーザー更新レスポンス"
+    },
+    "v1UserPreview": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "nickname": {
+          "type": "string"
+        },
+        "age": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "gender": {
+          "type": "string"
+        },
+        "profileImageUrl": {
+          "type": "string"
+        },
+        "prefecture": {
+          "$ref": "#/definitions/prefecturev1Prefecture",
+          "title": "都道府県情報"
+        },
+        "interests": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "jobTitle": {
+          "type": "string",
+          "title": "職業情報を追加"
+        },
+        "education": {
+          "$ref": "#/definitions/v1Education",
+          "title": "学歴情報を追加"
+        }
+      },
+      "title": "ユーザープレビュー（検索結果用の簡易版）"
+    }
+  }
+}
