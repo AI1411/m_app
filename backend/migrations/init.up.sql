@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS likes;
 DROP TABLE IF EXISTS community_members;
 DROP TABLE IF EXISTS communities;
 DROP TABLE IF EXISTS user_interests;
@@ -406,3 +407,32 @@ COMMENT ON COLUMN community_members.updated_at IS 'レコード更新日時';
 CREATE INDEX IF NOT EXISTS idx_community_members_user_id ON community_members (user_id);
 CREATE INDEX IF NOT EXISTS idx_community_members_role ON community_members (role);
 CREATE INDEX IF NOT EXISTS idx_community_members_is_approved ON community_members (is_approved);
+
+-- いいね機能のテーブル
+CREATE TABLE likes
+(
+    id             SERIAL PRIMARY KEY,
+    user_id        UUID REFERENCES users (id) ON DELETE CASCADE,
+    target_id      UUID NOT NULL,
+    created_at     TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    updated_at     TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    deleted_at     TIMESTAMP WITH TIME ZONE,
+    CONSTRAINT uk_likes_user_target UNIQUE (user_id, target_id)
+);
+
+-- テーブルコメント
+COMMENT ON TABLE likes IS 'ユーザーのいいね情報を格納するテーブル';
+
+-- カラムコメント
+COMMENT ON COLUMN likes.id IS 'いいねID';
+COMMENT ON COLUMN likes.user_id IS 'いいねをしたユーザーID';
+COMMENT ON COLUMN likes.target_id IS 'いいねの対象となるエンティティのID';
+COMMENT ON COLUMN likes.created_at IS 'いいね作成日時';
+COMMENT ON COLUMN likes.updated_at IS 'レコード更新日時';
+COMMENT ON COLUMN likes.deleted_at IS '論理削除日時（NULLは有効なレコードを示す）';
+
+-- インデックス
+CREATE INDEX IF NOT EXISTS idx_likes_user_id ON likes (user_id);
+CREATE INDEX IF NOT EXISTS idx_likes_target_id ON likes (target_id);
+CREATE INDEX IF NOT EXISTS idx_likes_created_at ON likes (created_at);
+CREATE INDEX IF NOT EXISTS idx_likes_deleted_at ON likes (deleted_at) WHERE deleted_at IS NULL;

@@ -1,0 +1,97 @@
+syntax = "proto3";
+
+package like.v1;
+
+import "google/protobuf/timestamp.proto";
+import "user/v1/user.proto";
+
+option go_package = "github.com/AI1411/m_app/gen/proto/like/v1;likev1";
+
+// いいね情報
+message Like {
+  int32 id = 1;
+  string user_id = 2;
+  string target_id = 3;
+  google.protobuf.Timestamp created_at = 4;
+  google.protobuf.Timestamp updated_at = 5;
+}
+
+// いいね作成リクエスト
+message CreateLikeRequest {
+  string user_id = 1;
+  string target_id = 2;
+  string target_type = 3;
+}
+
+// いいね作成レスポンス
+message CreateLikeResponse {
+  int32 id = 1;
+}
+
+// いいね削除リクエスト
+message DeleteLikeRequest {
+  int32 id = 1;
+}
+
+// いいね削除レスポンス
+message DeleteLikeResponse {
+  bool success = 1;
+}
+
+// いいね取得リクエスト（特定のターゲットに対するいいね一覧）
+message GetLikesForTargetRequest {
+  string target_id = 1;
+  string target_type = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+}
+
+// いいね取得レスポンス
+message GetLikesForTargetResponse {
+  repeated user.v1.User likes = 1;
+  int32 total_count = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+}
+
+// ユーザーのいいね一覧取得リクエスト
+message GetUserLikesRequest {
+  string user_id = 1;
+  optional string target_type = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+}
+
+// ユーザーのいいね一覧取得レスポンス
+message GetUserLikesResponse {
+  repeated Like likes = 1;
+  int32 total_count = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+}
+
+// いいねチェックリクエスト（ユーザーが特定のターゲットにいいねしているか）
+message CheckLikeRequest {
+  string user_id = 1;
+  string target_id = 2;
+  string target_type = 3;
+}
+
+// いいねチェックレスポンス
+message CheckLikeResponse {
+  bool liked = 1;
+  optional int32 like_id = 2;
+}
+
+service LikeService {
+  // いいね作成
+  rpc CreateLike(CreateLikeRequest) returns (CreateLikeResponse) {}
+  // いいね削除
+  rpc DeleteLike(DeleteLikeRequest) returns (DeleteLikeResponse) {}
+  // 特定のターゲットに対するいいね一覧取得
+  rpc GetLikesForTarget(GetLikesForTargetRequest) returns (GetLikesForTargetResponse) {}
+  // ユーザーのいいね一覧取得
+  rpc GetUserLikes(GetUserLikesRequest) returns (GetUserLikesResponse) {}
+  // いいねチェック（ユーザーが特定のターゲットにいいねしているか）
+  rpc CheckLike(CheckLikeRequest) returns (CheckLikeResponse) {}
+}
