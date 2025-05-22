@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+package footprint.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/AI1411/m_app/gen/proto/footprint/v1;footprintv1";
+
+// 足あと情報（ユーザーのプロフィール閲覧履歴）
+message Footprint {
+  string id = 1; // 足あとID (UUIDなどを想定)
+  string visitor_user_id = 2; // 閲覧したユーザーID
+  string visited_user_id = 3; // 閲覧されたユーザーID
+  google.protobuf.Timestamp visited_at = 4; // 閲覧日時
+}
+
+// 足あと記録リクエスト
+message RecordFootprintRequest {
+  string visitor_user_id = 1; // 閲覧するユーザーID
+  string visited_user_id = 2; // 閲覧されるユーザーID
+}
+
+// 足あと記録レスポンス
+message RecordFootprintResponse {
+  Footprint footprint = 1; // 記録された足あと情報
+}
+
+// 自分のプロフィールを閲覧したユーザー一覧取得リクエスト
+message GetVisitorsRequest {
+  string user_id = 1; // 閲覧されたユーザーID（自分のID）
+  int32 page_size = 2; // 1ページあたりのアイテム数
+  string page_token = 3; // 次のページを取得するためのトークン
+}
+
+// 自分のプロフィールを閲覧したユーザー一覧取得レスポンス
+message GetVisitorsResponse {
+  repeated Footprint visitors = 1; // 閲覧したユーザーの足あと情報リスト
+  string next_page_token = 2; // 次のページがある場合のトークン
+}
+
+// 自分が閲覧したユーザー一覧取得リクエスト
+message GetVisitedUsersRequest {
+  string user_id = 1; // 閲覧したユーザーID（自分のID）
+  int32 page_size = 2; // 1ページあたりのアイテム数
+  string page_token = 3; // 次のページを取得するためのトークン
+}
+
+// 自分が閲覧したユーザー一覧取得レスポンス
+message GetVisitedUsersResponse {
+  repeated Footprint visited_users = 1; // 閲覧されたユーザーの足あと情報リスト
+  string next_page_token = 2; // 次のページがある場合のトークン
+}
+
+// 足あとサービス
+service FootprintService {
+  // ユーザーの足あとを記録する（プロフィール閲覧時に呼び出される）
+  rpc RecordFootprint(RecordFootprintRequest) returns (RecordFootprintResponse);
+
+  // 自分のプロフィールを閲覧したユーザー一覧を取得する
+  rpc GetVisitors(GetVisitorsRequest) returns (GetVisitorsResponse);
+
+  // 自分が閲覧したユーザー一覧を取得する
+  rpc GetVisitedUsers(GetVisitedUsersRequest) returns (GetVisitedUsersResponse);
+}

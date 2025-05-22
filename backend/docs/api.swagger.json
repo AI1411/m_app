@@ -15,6 +15,9 @@
       "name": "EducationService"
     },
     {
+      "name": "FootprintService"
+    },
+    {
       "name": "InterestService"
     },
     {
@@ -451,6 +454,29 @@
       },
       "title": "学歴情報"
     },
+    "v1Footprint": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "足あとID (UUIDなどを想定)"
+        },
+        "visitorUserId": {
+          "type": "string",
+          "title": "閲覧したユーザーID"
+        },
+        "visitedUserId": {
+          "type": "string",
+          "title": "閲覧されたユーザーID"
+        },
+        "visitedAt": {
+          "type": "string",
+          "format": "date-time",
+          "title": "閲覧日時"
+        }
+      },
+      "title": "足あと情報（ユーザーのプロフィール閲覧履歴）"
+    },
     "v1GetBlockedUsersResponse": {
       "type": "object",
       "properties": {
@@ -564,6 +590,42 @@
         }
       },
       "title": "ユーザー情報レスポンス"
+    },
+    "v1GetVisitedUsersResponse": {
+      "type": "object",
+      "properties": {
+        "visitedUsers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Footprint"
+          },
+          "title": "閲覧されたユーザーの足あと情報リスト"
+        },
+        "nextPageToken": {
+          "type": "string",
+          "title": "次のページがある場合のトークン"
+        }
+      },
+      "title": "自分が閲覧したユーザー一覧取得レスポンス"
+    },
+    "v1GetVisitorsResponse": {
+      "type": "object",
+      "properties": {
+        "visitors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Footprint"
+          },
+          "title": "閲覧したユーザーの足あと情報リスト"
+        },
+        "nextPageToken": {
+          "type": "string",
+          "title": "次のページがある場合のトークン"
+        }
+      },
+      "title": "自分のプロフィールを閲覧したユーザー一覧取得レスポンス"
     },
     "v1Interest": {
       "type": "object",
@@ -692,6 +754,16 @@
         }
       },
       "title": "つぶやき一覧取得レスポンス"
+    },
+    "v1RecordFootprintResponse": {
+      "type": "object",
+      "properties": {
+        "footprint": {
+          "$ref": "#/definitions/v1Footprint",
+          "title": "記録された足あと情報"
+        }
+      },
+      "title": "足あと記録レスポンス"
     },
     "v1Region": {
       "type": "object",

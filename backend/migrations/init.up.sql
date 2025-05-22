@@ -10,6 +10,7 @@ DROP TABLE IF EXISTS educations;
 DROP TABLE IF EXISTS prefectures;
 DROP TABLE IF EXISTS regions;
 DROP TABLE IF EXISTS blocklists;
+DROP TABLE IF EXISTS footprints;
 
 -- 1. 地域（リージョン）テーブルの作成
 CREATE TABLE regions
@@ -481,3 +482,33 @@ COMMENT ON COLUMN tweets.deleted_at IS '論理削除日時（NULLは有効なレ
 CREATE INDEX idx_tweets_user_id ON tweets (user_id);
 CREATE INDEX idx_tweets_created_at ON tweets (created_at);
 CREATE INDEX idx_tweets_deleted_at ON tweets (deleted_at) WHERE deleted_at IS NULL;
+
+-- 足あとテーブル（ユーザーのプロフィール閲覧履歴）
+CREATE TABLE footprints
+(
+    id              UUID PRIMARY KEY                  DEFAULT gen_random_uuid(),
+    visitor_user_id UUID                     NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    visited_user_id UUID                     NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    visited_at      TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at      TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at      TIMESTAMP WITH TIME ZONE
+);
+
+-- テーブルコメント
+COMMENT ON TABLE footprints IS 'ユーザーのプロフィール閲覧履歴（足あと）を格納するテーブル';
+
+-- カラムコメント
+COMMENT ON COLUMN footprints.id IS '足あとの一意識別子（UUIDv4）';
+COMMENT ON COLUMN footprints.visitor_user_id IS 'プロフィールを閲覧したユーザーのID';
+COMMENT ON COLUMN footprints.visited_user_id IS 'プロフィールを閲覧されたユーザーのID';
+COMMENT ON COLUMN footprints.visited_at IS 'プロフィール閲覧日時';
+COMMENT ON COLUMN footprints.created_at IS 'レコード作成日時';
+COMMENT ON COLUMN footprints.updated_at IS 'レコード更新日時';
+COMMENT ON COLUMN footprints.deleted_at IS '論理削除日時（NULLは有効なレコードを示す）';
+
+-- インデックス
+CREATE INDEX idx_footprints_visitor_user_id ON footprints (visitor_user_id);
+CREATE INDEX idx_footprints_visited_user_id ON footprints (visited_user_id);
+CREATE INDEX idx_footprints_visited_at ON footprints (visited_at);
+CREATE INDEX idx_footprints_deleted_at ON footprints (deleted_at) WHERE deleted_at IS NULL;
