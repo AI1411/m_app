@@ -1,0 +1,88 @@
+syntax = "proto3";
+
+package tweet.v1;
+
+import "google/protobuf/timestamp.proto";
+import "user/v1/user.proto";
+
+option go_package = "github.com/AI1411/m_app/gen/proto/tweet/v1;tweetv1";
+
+// つぶやき情報
+message Tweet {
+  string id = 1;
+  string user_id = 2;
+  string content = 3;
+  google.protobuf.Timestamp created_at = 4;
+  google.protobuf.Timestamp updated_at = 5;
+  user.v1.User user = 6; // つぶやきを投稿したユーザー情報
+}
+
+// つぶやき作成リクエスト
+message CreateTweetRequest {
+  string user_id = 1;
+  string content = 2;
+}
+
+// つぶやき作成レスポンス
+message CreateTweetResponse {
+  string id = 1;
+}
+
+// つぶやき取得リクエスト
+message GetTweetRequest {
+  string id = 1;
+}
+
+// つぶやき取得レスポンス
+message GetTweetResponse {
+  Tweet tweet = 1;
+}
+
+// つぶやき一覧取得リクエスト
+message ListTweetsRequest {
+  optional string user_id = 1; // 特定ユーザーのつぶやきのみを取得する場合に指定
+  int32 page = 2;
+  int32 page_size = 3;
+}
+
+// つぶやき一覧取得レスポンス
+message ListTweetsResponse {
+  repeated Tweet tweets = 1;
+  int32 total_count = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+}
+
+// つぶやき更新リクエスト
+message UpdateTweetRequest {
+  string id = 1;
+  string content = 2;
+}
+
+// つぶやき更新レスポンス
+message UpdateTweetResponse {
+  bool success = 1;
+}
+
+// つぶやき削除リクエスト
+message DeleteTweetRequest {
+  string id = 1;
+}
+
+// つぶやき削除レスポンス
+message DeleteTweetResponse {
+  bool success = 1;
+}
+
+service TweetService {
+  // つぶやき作成
+  rpc CreateTweet(CreateTweetRequest) returns (CreateTweetResponse) {}
+  // つぶやき取得
+  rpc GetTweet(GetTweetRequest) returns (GetTweetResponse) {}
+  // つぶやき一覧取得
+  rpc ListTweets(ListTweetsRequest) returns (ListTweetsResponse) {}
+  // つぶやき更新
+  rpc UpdateTweet(UpdateTweetRequest) returns (UpdateTweetResponse) {}
+  // つぶやき削除
+  rpc DeleteTweet(DeleteTweetRequest) returns (DeleteTweetResponse) {}
+}

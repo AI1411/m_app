@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS tweets;
 DROP TABLE IF EXISTS likes;
 DROP TABLE IF EXISTS community_members;
 DROP TABLE IF EXISTS communities;
@@ -453,3 +454,30 @@ CREATE TABLE blocklists
 -- パフォーマンス向上のため、必要に応じてインデックスを作成します
 CREATE INDEX idx_blocklists_blocker_user_id ON blocklists (blocker_user_id);
 CREATE INDEX idx_blocklists_blocked_user_id ON blocklists (blocked_user_id);
+
+-- つぶやきテーブル
+CREATE TABLE tweets
+(
+    id         UUID PRIMARY KEY                  DEFAULT gen_random_uuid(),
+    user_id    UUID                     NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    content    TEXT                     NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP WITH TIME ZONE
+);
+
+-- テーブルコメント
+COMMENT ON TABLE tweets IS 'ユーザーのつぶやき情報を格納するテーブル';
+
+-- カラムコメント
+COMMENT ON COLUMN tweets.id IS 'つぶやきの一意識別子（UUIDv4）';
+COMMENT ON COLUMN tweets.user_id IS 'つぶやきを投稿したユーザーのID';
+COMMENT ON COLUMN tweets.content IS 'つぶやきの内容';
+COMMENT ON COLUMN tweets.created_at IS 'つぶやき作成日時';
+COMMENT ON COLUMN tweets.updated_at IS 'レコード更新日時';
+COMMENT ON COLUMN tweets.deleted_at IS '論理削除日時（NULLは有効なレコードを示す）';
+
+-- インデックス
+CREATE INDEX idx_tweets_user_id ON tweets (user_id);
+CREATE INDEX idx_tweets_created_at ON tweets (created_at);
+CREATE INDEX idx_tweets_deleted_at ON tweets (deleted_at) WHERE deleted_at IS NULL;

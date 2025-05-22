@@ -9,12 +9,6 @@
       "name": "BlocklistService"
     },
     {
-      "name": "RegionService"
-    },
-    {
-      "name": "PrefectureService"
-    },
-    {
       "name": "CommunityService"
     },
     {
@@ -24,10 +18,19 @@
       "name": "InterestService"
     },
     {
+      "name": "RegionService"
+    },
+    {
+      "name": "PrefectureService"
+    },
+    {
       "name": "UserService"
     },
     {
       "name": "LikeService"
+    },
+    {
+      "name": "TweetService"
     }
   ],
   "consumes": [
@@ -217,7 +220,7 @@
       },
       "title": "ユーザー情報（完全版）"
     },
-    "v1BlocklistEntry": {
+    "v1BlockUserResponse": {
       "type": "object",
       "properties": {
         "id": {
@@ -238,7 +241,27 @@
           "title": "ブロック日時"
         }
       },
-      "title": "ブロックリストのエントリ"
+      "title": "ユーザーをブロックした際のエントリ情報（BlockUserのレスポンスとしても利用）"
+    },
+    "v1CheckIfUserHasBlockedTargetResponse": {
+      "type": "object",
+      "properties": {
+        "hasBlocked": {
+          "type": "boolean",
+          "title": "ブロックしていれば true"
+        }
+      },
+      "title": "指定したユーザーが、対象ユーザーをブロックしているか確認するレスポンス"
+    },
+    "v1CheckIfUserIsBlockedByTargetResponse": {
+      "type": "object",
+      "properties": {
+        "isBlocked": {
+          "type": "boolean",
+          "title": "ブロックされていれば true"
+        }
+      },
+      "title": "指定したユーザーが、対象ユーザーによってブロックされているか確認するレスポンス"
     },
     "v1CheckLikeResponse": {
       "type": "object",
@@ -366,6 +389,15 @@
       },
       "title": "リージョン作成レスポンス"
     },
+    "v1CreateTweetResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      },
+      "title": "つぶやき作成レスポンス"
+    },
     "v1CreateUserResponse": {
       "type": "object",
       "properties": {
@@ -393,6 +425,15 @@
       },
       "title": "いいね削除レスポンス"
     },
+    "v1DeleteTweetResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        }
+      },
+      "title": "つぶやき削除レスポンス"
+    },
     "v1Education": {
       "type": "object",
       "properties": {
@@ -417,9 +458,9 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/v1BlocklistEntry"
+            "$ref": "#/definitions/v1BlockUserResponse"
           },
-          "title": "ブロックしているユーザーのリスト"
+          "title": "ブロックしているユーザーのリスト (BlockUserResponseを再利用)"
         },
         "nextPageToken": {
           "type": "string",
@@ -481,6 +522,15 @@
       },
       "title": "リージョン詳細取得レスポンス"
     },
+    "v1GetTweetResponse": {
+      "type": "object",
+      "properties": {
+        "tweet": {
+          "$ref": "#/definitions/v1Tweet"
+        }
+      },
+      "title": "つぶやき取得レスポンス"
+    },
     "v1GetUserLikesResponse": {
       "type": "object",
       "properties": {
@@ -541,16 +591,6 @@
         }
       },
       "title": "興味・関心情報"
-    },
-    "v1IsBlockedResponse": {
-      "type": "object",
-      "properties": {
-        "isBlocked": {
-          "type": "boolean",
-          "title": "ブロックされていれば true"
-        }
-      },
-      "title": "ユーザーが指定ユーザーにブロックされているか確認するレスポンス"
     },
     "v1Like": {
       "type": "object",
@@ -627,6 +667,31 @@
         }
       },
       "title": "リージョン一覧取得レスポンス"
+    },
+    "v1ListTweetsResponse": {
+      "type": "object",
+      "properties": {
+        "tweets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Tweet"
+          }
+        },
+        "totalCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "page": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "つぶやき一覧取得レスポンス"
     },
     "v1Region": {
       "type": "object",
@@ -705,6 +770,37 @@
       },
       "title": "ユーザー検索レスポンス"
     },
+    "v1Tweet": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "user": {
+          "$ref": "#/definitions/userv1User",
+          "title": "つぶやきを投稿したユーザー情報"
+        }
+      },
+      "title": "つぶやき情報"
+    },
+    "v1UnblockUserResponse": {
+      "type": "object",
+      "title": "ユーザーブロック解除レスポンス (Emptyの代わりに明示的な型を使用)"
+    },
     "v1UpdateCommunityResponse": {
       "type": "object",
       "properties": {
@@ -722,6 +818,15 @@
         }
       },
       "title": "リージョン更新レスポンス"
+    },
+    "v1UpdateTweetResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
+        }
+      },
+      "title": "つぶやき更新レスポンス"
     },
     "v1UpdateUserResponse": {
       "type": "object",

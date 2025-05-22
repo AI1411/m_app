@@ -7,7 +7,6 @@
 package communityv1
 
 import (
-	_ "github.com/AI1411/m_app/gen/prefecture/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
@@ -1046,7 +1045,7 @@ var File_community_v1_community_proto protoreflect.FileDescriptor
 
 const file_community_v1_community_proto_rawDesc = "" +
 	"\n" +
-	"\x1ccommunity/v1/community.proto\x12\fcommunity.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1eprefecture/v1/prefecture.proto\"\xcc\x01\n" +
+	"\x1ccommunity/v1/community.proto\x12\fcommunity.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcc\x01\n" +
 	"\x04User\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x1f\n" +

@@ -9,7 +9,6 @@ import (
 	context "context"
 	errors "errors"
 	v1 "github.com/AI1411/m_app/gen/blocklist/v1"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	http "net/http"
 	strings "strings"
 )
@@ -54,17 +53,17 @@ const (
 // BlocklistServiceClient is a client for the blocklist.v1.BlocklistService service.
 type BlocklistServiceClient interface {
 	// ユーザーをブロックする
-	BlockUser(context.Context, *connect.Request[v1.BlockUserRequest]) (*connect.Response[v1.BlocklistEntry], error)
+	BlockUser(context.Context, *connect.Request[v1.BlockUserRequest]) (*connect.Response[v1.BlockUserResponse], error)
 	// ユーザーのブロックを解除する
-	UnblockUser(context.Context, *connect.Request[v1.UnblockUserRequest]) (*connect.Response[emptypb.Empty], error)
+	UnblockUser(context.Context, *connect.Request[v1.UnblockUserRequest]) (*connect.Response[v1.UnblockUserResponse], error)
 	// 特定のユーザーがブロックしているユーザーのリストを取得する
 	GetBlockedUsers(context.Context, *connect.Request[v1.GetBlockedUsersRequest]) (*connect.Response[v1.GetBlockedUsersResponse], error)
 	// 指定したユーザーが、もう一方のユーザーによってブロックされているか確認する
 	// (例: AさんがBさんにブロックされているかを確認)
-	CheckIfUserIsBlockedByTarget(context.Context, *connect.Request[v1.IsBlockedRequest]) (*connect.Response[v1.IsBlockedResponse], error)
+	CheckIfUserIsBlockedByTarget(context.Context, *connect.Request[v1.CheckIfUserIsBlockedByTargetRequest]) (*connect.Response[v1.CheckIfUserIsBlockedByTargetResponse], error)
 	// 指定したユーザーが、もう一方のユーザーをブロックしているか確認する
 	// (例: AさんがBさんをブロックしているかを確認)
-	CheckIfUserHasBlockedTarget(context.Context, *connect.Request[v1.IsBlockedRequest]) (*connect.Response[v1.IsBlockedResponse], error)
+	CheckIfUserHasBlockedTarget(context.Context, *connect.Request[v1.CheckIfUserHasBlockedTargetRequest]) (*connect.Response[v1.CheckIfUserHasBlockedTargetResponse], error)
 }
 
 // NewBlocklistServiceClient constructs a client for the blocklist.v1.BlocklistService service. By
@@ -78,13 +77,13 @@ func NewBlocklistServiceClient(httpClient connect.HTTPClient, baseURL string, op
 	baseURL = strings.TrimRight(baseURL, "/")
 	blocklistServiceMethods := v1.File_blocklist_v1_blocklist_proto.Services().ByName("BlocklistService").Methods()
 	return &blocklistServiceClient{
-		blockUser: connect.NewClient[v1.BlockUserRequest, v1.BlocklistEntry](
+		blockUser: connect.NewClient[v1.BlockUserRequest, v1.BlockUserResponse](
 			httpClient,
 			baseURL+BlocklistServiceBlockUserProcedure,
 			connect.WithSchema(blocklistServiceMethods.ByName("BlockUser")),
 			connect.WithClientOptions(opts...),
 		),
-		unblockUser: connect.NewClient[v1.UnblockUserRequest, emptypb.Empty](
+		unblockUser: connect.NewClient[v1.UnblockUserRequest, v1.UnblockUserResponse](
 			httpClient,
 			baseURL+BlocklistServiceUnblockUserProcedure,
 			connect.WithSchema(blocklistServiceMethods.ByName("UnblockUser")),
@@ -96,13 +95,13 @@ func NewBlocklistServiceClient(httpClient connect.HTTPClient, baseURL string, op
 			connect.WithSchema(blocklistServiceMethods.ByName("GetBlockedUsers")),
 			connect.WithClientOptions(opts...),
 		),
-		checkIfUserIsBlockedByTarget: connect.NewClient[v1.IsBlockedRequest, v1.IsBlockedResponse](
+		checkIfUserIsBlockedByTarget: connect.NewClient[v1.CheckIfUserIsBlockedByTargetRequest, v1.CheckIfUserIsBlockedByTargetResponse](
 			httpClient,
 			baseURL+BlocklistServiceCheckIfUserIsBlockedByTargetProcedure,
 			connect.WithSchema(blocklistServiceMethods.ByName("CheckIfUserIsBlockedByTarget")),
 			connect.WithClientOptions(opts...),
 		),
-		checkIfUserHasBlockedTarget: connect.NewClient[v1.IsBlockedRequest, v1.IsBlockedResponse](
+		checkIfUserHasBlockedTarget: connect.NewClient[v1.CheckIfUserHasBlockedTargetRequest, v1.CheckIfUserHasBlockedTargetResponse](
 			httpClient,
 			baseURL+BlocklistServiceCheckIfUserHasBlockedTargetProcedure,
 			connect.WithSchema(blocklistServiceMethods.ByName("CheckIfUserHasBlockedTarget")),
@@ -113,20 +112,20 @@ func NewBlocklistServiceClient(httpClient connect.HTTPClient, baseURL string, op
 
 // blocklistServiceClient implements BlocklistServiceClient.
 type blocklistServiceClient struct {
-	blockUser                    *connect.Client[v1.BlockUserRequest, v1.BlocklistEntry]
-	unblockUser                  *connect.Client[v1.UnblockUserRequest, emptypb.Empty]
+	blockUser                    *connect.Client[v1.BlockUserRequest, v1.BlockUserResponse]
+	unblockUser                  *connect.Client[v1.UnblockUserRequest, v1.UnblockUserResponse]
 	getBlockedUsers              *connect.Client[v1.GetBlockedUsersRequest, v1.GetBlockedUsersResponse]
-	checkIfUserIsBlockedByTarget *connect.Client[v1.IsBlockedRequest, v1.IsBlockedResponse]
-	checkIfUserHasBlockedTarget  *connect.Client[v1.IsBlockedRequest, v1.IsBlockedResponse]
+	checkIfUserIsBlockedByTarget *connect.Client[v1.CheckIfUserIsBlockedByTargetRequest, v1.CheckIfUserIsBlockedByTargetResponse]
+	checkIfUserHasBlockedTarget  *connect.Client[v1.CheckIfUserHasBlockedTargetRequest, v1.CheckIfUserHasBlockedTargetResponse]
 }
 
 // BlockUser calls blocklist.v1.BlocklistService.BlockUser.
-func (c *blocklistServiceClient) BlockUser(ctx context.Context, req *connect.Request[v1.BlockUserRequest]) (*connect.Response[v1.BlocklistEntry], error) {
+func (c *blocklistServiceClient) BlockUser(ctx context.Context, req *connect.Request[v1.BlockUserRequest]) (*connect.Response[v1.BlockUserResponse], error) {
 	return c.blockUser.CallUnary(ctx, req)
 }
 
 // UnblockUser calls blocklist.v1.BlocklistService.UnblockUser.
-func (c *blocklistServiceClient) UnblockUser(ctx context.Context, req *connect.Request[v1.UnblockUserRequest]) (*connect.Response[emptypb.Empty], error) {
+func (c *blocklistServiceClient) UnblockUser(ctx context.Context, req *connect.Request[v1.UnblockUserRequest]) (*connect.Response[v1.UnblockUserResponse], error) {
 	return c.unblockUser.CallUnary(ctx, req)
 }
 
@@ -136,29 +135,29 @@ func (c *blocklistServiceClient) GetBlockedUsers(ctx context.Context, req *conne
 }
 
 // CheckIfUserIsBlockedByTarget calls blocklist.v1.BlocklistService.CheckIfUserIsBlockedByTarget.
-func (c *blocklistServiceClient) CheckIfUserIsBlockedByTarget(ctx context.Context, req *connect.Request[v1.IsBlockedRequest]) (*connect.Response[v1.IsBlockedResponse], error) {
+func (c *blocklistServiceClient) CheckIfUserIsBlockedByTarget(ctx context.Context, req *connect.Request[v1.CheckIfUserIsBlockedByTargetRequest]) (*connect.Response[v1.CheckIfUserIsBlockedByTargetResponse], error) {
 	return c.checkIfUserIsBlockedByTarget.CallUnary(ctx, req)
 }
 
 // CheckIfUserHasBlockedTarget calls blocklist.v1.BlocklistService.CheckIfUserHasBlockedTarget.
-func (c *blocklistServiceClient) CheckIfUserHasBlockedTarget(ctx context.Context, req *connect.Request[v1.IsBlockedRequest]) (*connect.Response[v1.IsBlockedResponse], error) {
+func (c *blocklistServiceClient) CheckIfUserHasBlockedTarget(ctx context.Context, req *connect.Request[v1.CheckIfUserHasBlockedTargetRequest]) (*connect.Response[v1.CheckIfUserHasBlockedTargetResponse], error) {
 	return c.checkIfUserHasBlockedTarget.CallUnary(ctx, req)
 }
 
 // BlocklistServiceHandler is an implementation of the blocklist.v1.BlocklistService service.
 type BlocklistServiceHandler interface {
 	// ユーザーをブロックする
-	BlockUser(context.Context, *connect.Request[v1.BlockUserRequest]) (*connect.Response[v1.BlocklistEntry], error)
+	BlockUser(context.Context, *connect.Request[v1.BlockUserRequest]) (*connect.Response[v1.BlockUserResponse], error)
 	// ユーザーのブロックを解除する
-	UnblockUser(context.Context, *connect.Request[v1.UnblockUserRequest]) (*connect.Response[emptypb.Empty], error)
+	UnblockUser(context.Context, *connect.Request[v1.UnblockUserRequest]) (*connect.Response[v1.UnblockUserResponse], error)
 	// 特定のユーザーがブロックしているユーザーのリストを取得する
 	GetBlockedUsers(context.Context, *connect.Request[v1.GetBlockedUsersRequest]) (*connect.Response[v1.GetBlockedUsersResponse], error)
 	// 指定したユーザーが、もう一方のユーザーによってブロックされているか確認する
 	// (例: AさんがBさんにブロックされているかを確認)
-	CheckIfUserIsBlockedByTarget(context.Context, *connect.Request[v1.IsBlockedRequest]) (*connect.Response[v1.IsBlockedResponse], error)
+	CheckIfUserIsBlockedByTarget(context.Context, *connect.Request[v1.CheckIfUserIsBlockedByTargetRequest]) (*connect.Response[v1.CheckIfUserIsBlockedByTargetResponse], error)
 	// 指定したユーザーが、もう一方のユーザーをブロックしているか確認する
 	// (例: AさんがBさんをブロックしているかを確認)
-	CheckIfUserHasBlockedTarget(context.Context, *connect.Request[v1.IsBlockedRequest]) (*connect.Response[v1.IsBlockedResponse], error)
+	CheckIfUserHasBlockedTarget(context.Context, *connect.Request[v1.CheckIfUserHasBlockedTargetRequest]) (*connect.Response[v1.CheckIfUserHasBlockedTargetResponse], error)
 }
 
 // NewBlocklistServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -219,11 +218,11 @@ func NewBlocklistServiceHandler(svc BlocklistServiceHandler, opts ...connect.Han
 // UnimplementedBlocklistServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedBlocklistServiceHandler struct{}
 
-func (UnimplementedBlocklistServiceHandler) BlockUser(context.Context, *connect.Request[v1.BlockUserRequest]) (*connect.Response[v1.BlocklistEntry], error) {
+func (UnimplementedBlocklistServiceHandler) BlockUser(context.Context, *connect.Request[v1.BlockUserRequest]) (*connect.Response[v1.BlockUserResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("blocklist.v1.BlocklistService.BlockUser is not implemented"))
 }
 
-func (UnimplementedBlocklistServiceHandler) UnblockUser(context.Context, *connect.Request[v1.UnblockUserRequest]) (*connect.Response[emptypb.Empty], error) {
+func (UnimplementedBlocklistServiceHandler) UnblockUser(context.Context, *connect.Request[v1.UnblockUserRequest]) (*connect.Response[v1.UnblockUserResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("blocklist.v1.BlocklistService.UnblockUser is not implemented"))
 }
 
@@ -231,10 +230,10 @@ func (UnimplementedBlocklistServiceHandler) GetBlockedUsers(context.Context, *co
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("blocklist.v1.BlocklistService.GetBlockedUsers is not implemented"))
 }
 
-func (UnimplementedBlocklistServiceHandler) CheckIfUserIsBlockedByTarget(context.Context, *connect.Request[v1.IsBlockedRequest]) (*connect.Response[v1.IsBlockedResponse], error) {
+func (UnimplementedBlocklistServiceHandler) CheckIfUserIsBlockedByTarget(context.Context, *connect.Request[v1.CheckIfUserIsBlockedByTargetRequest]) (*connect.Response[v1.CheckIfUserIsBlockedByTargetResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("blocklist.v1.BlocklistService.CheckIfUserIsBlockedByTarget is not implemented"))
 }
 
-func (UnimplementedBlocklistServiceHandler) CheckIfUserHasBlockedTarget(context.Context, *connect.Request[v1.IsBlockedRequest]) (*connect.Response[v1.IsBlockedResponse], error) {
+func (UnimplementedBlocklistServiceHandler) CheckIfUserHasBlockedTarget(context.Context, *connect.Request[v1.CheckIfUserHasBlockedTargetRequest]) (*connect.Response[v1.CheckIfUserHasBlockedTargetResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("blocklist.v1.BlocklistService.CheckIfUserHasBlockedTarget is not implemented"))
 }

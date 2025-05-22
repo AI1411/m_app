@@ -18,3 +18,18 @@ seed:
 	@docker cp ./migrations/seed.sql db:/seed.sql
 	@docker exec -it db psql -U myuser -d m_app -f /seed.sql
 	@echo "seeding done"
+
+.PHONY: install-buf-plugins
+install-buf-plugins:
+	@echo "Installing buf plugins..."
+	@go install github.com/bufbuild/buf/cmd/buf@latest
+	@go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+	@go install github.com/bufbuild/connect-go/cmd/protoc-gen-connect-go@latest
+	@go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@latest
+	@echo "Buf plugins installed successfully"
+
+.PHONY: generate-proto
+generate-proto: install-buf-plugins
+	@echo "Generating proto files..."
+	@buf generate
+	@echo "Proto files generated successfully"

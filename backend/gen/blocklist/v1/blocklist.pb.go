@@ -9,7 +9,6 @@ package blocklistv1
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
@@ -23,8 +22,8 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// ブロックリストのエントリ
-type BlocklistEntry struct {
+// ユーザーをブロックした際のエントリ情報（BlockUserのレスポンスとしても利用）
+type BlockUserResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`                                              // ブロックリストエントリID (UUIDなどを想定)
 	BlockerUserId string                 `protobuf:"bytes,2,opt,name=blocker_user_id,json=blockerUserId,proto3" json:"blocker_user_id,omitempty"` // ブロックしたユーザーID
@@ -34,20 +33,20 @@ type BlocklistEntry struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *BlocklistEntry) Reset() {
-	*x = BlocklistEntry{}
+func (x *BlockUserResponse) Reset() {
+	*x = BlockUserResponse{}
 	mi := &file_blocklist_v1_blocklist_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *BlocklistEntry) String() string {
+func (x *BlockUserResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*BlocklistEntry) ProtoMessage() {}
+func (*BlockUserResponse) ProtoMessage() {}
 
-func (x *BlocklistEntry) ProtoReflect() protoreflect.Message {
+func (x *BlockUserResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_blocklist_v1_blocklist_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -59,33 +58,33 @@ func (x *BlocklistEntry) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use BlocklistEntry.ProtoReflect.Descriptor instead.
-func (*BlocklistEntry) Descriptor() ([]byte, []int) {
+// Deprecated: Use BlockUserResponse.ProtoReflect.Descriptor instead.
+func (*BlockUserResponse) Descriptor() ([]byte, []int) {
 	return file_blocklist_v1_blocklist_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *BlocklistEntry) GetId() string {
+func (x *BlockUserResponse) GetId() string {
 	if x != nil {
 		return x.Id
 	}
 	return ""
 }
 
-func (x *BlocklistEntry) GetBlockerUserId() string {
+func (x *BlockUserResponse) GetBlockerUserId() string {
 	if x != nil {
 		return x.BlockerUserId
 	}
 	return ""
 }
 
-func (x *BlocklistEntry) GetBlockedUserId() string {
+func (x *BlockUserResponse) GetBlockedUserId() string {
 	if x != nil {
 		return x.BlockedUserId
 	}
 	return ""
 }
 
-func (x *BlocklistEntry) GetCreatedAt() *timestamppb.Timestamp {
+func (x *BlockUserResponse) GetCreatedAt() *timestamppb.Timestamp {
 	if x != nil {
 		return x.CreatedAt
 	}
@@ -198,6 +197,43 @@ func (x *UnblockUserRequest) GetBlockedUserId() string {
 	return ""
 }
 
+// ユーザーブロック解除レスポンス (Emptyの代わりに明示的な型を使用)
+type UnblockUserResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UnblockUserResponse) Reset() {
+	*x = UnblockUserResponse{}
+	mi := &file_blocklist_v1_blocklist_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UnblockUserResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UnblockUserResponse) ProtoMessage() {}
+
+func (x *UnblockUserResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_blocklist_v1_blocklist_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UnblockUserResponse.ProtoReflect.Descriptor instead.
+func (*UnblockUserResponse) Descriptor() ([]byte, []int) {
+	return file_blocklist_v1_blocklist_proto_rawDescGZIP(), []int{3}
+}
+
 // 特定のユーザーがブロックしているユーザーリストを取得するリクエスト
 type GetBlockedUsersRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -210,7 +246,7 @@ type GetBlockedUsersRequest struct {
 
 func (x *GetBlockedUsersRequest) Reset() {
 	*x = GetBlockedUsersRequest{}
-	mi := &file_blocklist_v1_blocklist_proto_msgTypes[3]
+	mi := &file_blocklist_v1_blocklist_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -222,7 +258,7 @@ func (x *GetBlockedUsersRequest) String() string {
 func (*GetBlockedUsersRequest) ProtoMessage() {}
 
 func (x *GetBlockedUsersRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_blocklist_v1_blocklist_proto_msgTypes[3]
+	mi := &file_blocklist_v1_blocklist_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -235,7 +271,7 @@ func (x *GetBlockedUsersRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetBlockedUsersRequest.ProtoReflect.Descriptor instead.
 func (*GetBlockedUsersRequest) Descriptor() ([]byte, []int) {
-	return file_blocklist_v1_blocklist_proto_rawDescGZIP(), []int{3}
+	return file_blocklist_v1_blocklist_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *GetBlockedUsersRequest) GetUserId() string {
@@ -262,7 +298,7 @@ func (x *GetBlockedUsersRequest) GetPageToken() string {
 // 特定のユーザーがブロックしているユーザーリストのレスポンス
 type GetBlockedUsersResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	BlockedUsers  []*BlocklistEntry      `protobuf:"bytes,1,rep,name=blocked_users,json=blockedUsers,proto3" json:"blocked_users,omitempty"`      // ブロックしているユーザーのリスト
+	BlockedUsers  []*BlockUserResponse   `protobuf:"bytes,1,rep,name=blocked_users,json=blockedUsers,proto3" json:"blocked_users,omitempty"`      // ブロックしているユーザーのリスト (BlockUserResponseを再利用)
 	NextPageToken string                 `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"` // 次のページがある場合のトークン
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -270,7 +306,7 @@ type GetBlockedUsersResponse struct {
 
 func (x *GetBlockedUsersResponse) Reset() {
 	*x = GetBlockedUsersResponse{}
-	mi := &file_blocklist_v1_blocklist_proto_msgTypes[4]
+	mi := &file_blocklist_v1_blocklist_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -282,7 +318,7 @@ func (x *GetBlockedUsersResponse) String() string {
 func (*GetBlockedUsersResponse) ProtoMessage() {}
 
 func (x *GetBlockedUsersResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_blocklist_v1_blocklist_proto_msgTypes[4]
+	mi := &file_blocklist_v1_blocklist_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -295,10 +331,10 @@ func (x *GetBlockedUsersResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetBlockedUsersResponse.ProtoReflect.Descriptor instead.
 func (*GetBlockedUsersResponse) Descriptor() ([]byte, []int) {
-	return file_blocklist_v1_blocklist_proto_rawDescGZIP(), []int{4}
+	return file_blocklist_v1_blocklist_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *GetBlockedUsersResponse) GetBlockedUsers() []*BlocklistEntry {
+func (x *GetBlockedUsersResponse) GetBlockedUsers() []*BlockUserResponse {
 	if x != nil {
 		return x.BlockedUsers
 	}
@@ -312,8 +348,8 @@ func (x *GetBlockedUsersResponse) GetNextPageToken() string {
 	return ""
 }
 
-// ユーザーが指定ユーザーにブロックされているか確認するリクエスト
-type IsBlockedRequest struct {
+// 指定したユーザーが、対象ユーザーによってブロックされているか確認するリクエスト
+type CheckIfUserIsBlockedByTargetRequest struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
 	CheckingUserId string                 `protobuf:"bytes,1,opt,name=checking_user_id,json=checkingUserId,proto3" json:"checking_user_id,omitempty"` // 確認するユーザーID (自分がブロックされているか確認したいユーザー)
 	TargetUserId   string                 `protobuf:"bytes,2,opt,name=target_user_id,json=targetUserId,proto3" json:"target_user_id,omitempty"`       // 確認対象のユーザーID (相手が自分をブロックしているか確認したいユーザー)
@@ -321,21 +357,21 @@ type IsBlockedRequest struct {
 	sizeCache      protoimpl.SizeCache
 }
 
-func (x *IsBlockedRequest) Reset() {
-	*x = IsBlockedRequest{}
-	mi := &file_blocklist_v1_blocklist_proto_msgTypes[5]
+func (x *CheckIfUserIsBlockedByTargetRequest) Reset() {
+	*x = CheckIfUserIsBlockedByTargetRequest{}
+	mi := &file_blocklist_v1_blocklist_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *IsBlockedRequest) String() string {
+func (x *CheckIfUserIsBlockedByTargetRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*IsBlockedRequest) ProtoMessage() {}
+func (*CheckIfUserIsBlockedByTargetRequest) ProtoMessage() {}
 
-func (x *IsBlockedRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_blocklist_v1_blocklist_proto_msgTypes[5]
+func (x *CheckIfUserIsBlockedByTargetRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_blocklist_v1_blocklist_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -346,48 +382,48 @@ func (x *IsBlockedRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use IsBlockedRequest.ProtoReflect.Descriptor instead.
-func (*IsBlockedRequest) Descriptor() ([]byte, []int) {
-	return file_blocklist_v1_blocklist_proto_rawDescGZIP(), []int{5}
+// Deprecated: Use CheckIfUserIsBlockedByTargetRequest.ProtoReflect.Descriptor instead.
+func (*CheckIfUserIsBlockedByTargetRequest) Descriptor() ([]byte, []int) {
+	return file_blocklist_v1_blocklist_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *IsBlockedRequest) GetCheckingUserId() string {
+func (x *CheckIfUserIsBlockedByTargetRequest) GetCheckingUserId() string {
 	if x != nil {
 		return x.CheckingUserId
 	}
 	return ""
 }
 
-func (x *IsBlockedRequest) GetTargetUserId() string {
+func (x *CheckIfUserIsBlockedByTargetRequest) GetTargetUserId() string {
 	if x != nil {
 		return x.TargetUserId
 	}
 	return ""
 }
 
-// ユーザーが指定ユーザーにブロックされているか確認するレスポンス
-type IsBlockedResponse struct {
+// 指定したユーザーが、対象ユーザーによってブロックされているか確認するレスポンス
+type CheckIfUserIsBlockedByTargetResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	IsBlocked     bool                   `protobuf:"varint,1,opt,name=is_blocked,json=isBlocked,proto3" json:"is_blocked,omitempty"` // ブロックされていれば true
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *IsBlockedResponse) Reset() {
-	*x = IsBlockedResponse{}
-	mi := &file_blocklist_v1_blocklist_proto_msgTypes[6]
+func (x *CheckIfUserIsBlockedByTargetResponse) Reset() {
+	*x = CheckIfUserIsBlockedByTargetResponse{}
+	mi := &file_blocklist_v1_blocklist_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *IsBlockedResponse) String() string {
+func (x *CheckIfUserIsBlockedByTargetResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*IsBlockedResponse) ProtoMessage() {}
+func (*CheckIfUserIsBlockedByTargetResponse) ProtoMessage() {}
 
-func (x *IsBlockedResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_blocklist_v1_blocklist_proto_msgTypes[6]
+func (x *CheckIfUserIsBlockedByTargetResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_blocklist_v1_blocklist_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -398,14 +434,112 @@ func (x *IsBlockedResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use IsBlockedResponse.ProtoReflect.Descriptor instead.
-func (*IsBlockedResponse) Descriptor() ([]byte, []int) {
-	return file_blocklist_v1_blocklist_proto_rawDescGZIP(), []int{6}
+// Deprecated: Use CheckIfUserIsBlockedByTargetResponse.ProtoReflect.Descriptor instead.
+func (*CheckIfUserIsBlockedByTargetResponse) Descriptor() ([]byte, []int) {
+	return file_blocklist_v1_blocklist_proto_rawDescGZIP(), []int{7}
 }
 
-func (x *IsBlockedResponse) GetIsBlocked() bool {
+func (x *CheckIfUserIsBlockedByTargetResponse) GetIsBlocked() bool {
 	if x != nil {
 		return x.IsBlocked
+	}
+	return false
+}
+
+// 指定したユーザーが、対象ユーザーをブロックしているか確認するリクエスト
+type CheckIfUserHasBlockedTargetRequest struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	CheckingUserId string                 `protobuf:"bytes,1,opt,name=checking_user_id,json=checkingUserId,proto3" json:"checking_user_id,omitempty"` // 確認するユーザーID (自分が相手をブロックしているか確認したいユーザー)
+	TargetUserId   string                 `protobuf:"bytes,2,opt,name=target_user_id,json=targetUserId,proto3" json:"target_user_id,omitempty"`       // 確認対象のユーザーID (自分がブロックしているか確認したい相手ユーザー)
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *CheckIfUserHasBlockedTargetRequest) Reset() {
+	*x = CheckIfUserHasBlockedTargetRequest{}
+	mi := &file_blocklist_v1_blocklist_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CheckIfUserHasBlockedTargetRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CheckIfUserHasBlockedTargetRequest) ProtoMessage() {}
+
+func (x *CheckIfUserHasBlockedTargetRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_blocklist_v1_blocklist_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CheckIfUserHasBlockedTargetRequest.ProtoReflect.Descriptor instead.
+func (*CheckIfUserHasBlockedTargetRequest) Descriptor() ([]byte, []int) {
+	return file_blocklist_v1_blocklist_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *CheckIfUserHasBlockedTargetRequest) GetCheckingUserId() string {
+	if x != nil {
+		return x.CheckingUserId
+	}
+	return ""
+}
+
+func (x *CheckIfUserHasBlockedTargetRequest) GetTargetUserId() string {
+	if x != nil {
+		return x.TargetUserId
+	}
+	return ""
+}
+
+// 指定したユーザーが、対象ユーザーをブロックしているか確認するレスポンス
+type CheckIfUserHasBlockedTargetResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	HasBlocked    bool                   `protobuf:"varint,1,opt,name=has_blocked,json=hasBlocked,proto3" json:"has_blocked,omitempty"` // ブロックしていれば true
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CheckIfUserHasBlockedTargetResponse) Reset() {
+	*x = CheckIfUserHasBlockedTargetResponse{}
+	mi := &file_blocklist_v1_blocklist_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CheckIfUserHasBlockedTargetResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CheckIfUserHasBlockedTargetResponse) ProtoMessage() {}
+
+func (x *CheckIfUserHasBlockedTargetResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_blocklist_v1_blocklist_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CheckIfUserHasBlockedTargetResponse.ProtoReflect.Descriptor instead.
+func (*CheckIfUserHasBlockedTargetResponse) Descriptor() ([]byte, []int) {
+	return file_blocklist_v1_blocklist_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *CheckIfUserHasBlockedTargetResponse) GetHasBlocked() bool {
+	if x != nil {
+		return x.HasBlocked
 	}
 	return false
 }
@@ -414,8 +548,8 @@ var File_blocklist_v1_blocklist_proto protoreflect.FileDescriptor
 
 const file_blocklist_v1_blocklist_proto_rawDesc = "" +
 	"\n" +
-	"\x1cblocklist/v1/blocklist.proto\x12\fblocklist.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xab\x01\n" +
-	"\x0eBlocklistEntry\x12\x0e\n" +
+	"\x1cblocklist/v1/blocklist.proto\x12\fblocklist.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xae\x01\n" +
+	"\x11BlockUserResponse\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12&\n" +
 	"\x0fblocker_user_id\x18\x02 \x01(\tR\rblockerUserId\x12&\n" +
 	"\x0fblocked_user_id\x18\x03 \x01(\tR\rblockedUserId\x129\n" +
@@ -426,27 +560,34 @@ const file_blocklist_v1_blocklist_proto_rawDesc = "" +
 	"\x0fblocked_user_id\x18\x02 \x01(\tR\rblockedUserId\"d\n" +
 	"\x12UnblockUserRequest\x12&\n" +
 	"\x0fblocker_user_id\x18\x01 \x01(\tR\rblockerUserId\x12&\n" +
-	"\x0fblocked_user_id\x18\x02 \x01(\tR\rblockedUserId\"m\n" +
+	"\x0fblocked_user_id\x18\x02 \x01(\tR\rblockedUserId\"\x15\n" +
+	"\x13UnblockUserResponse\"m\n" +
 	"\x16GetBlockedUsersRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\"\x84\x01\n" +
-	"\x17GetBlockedUsersResponse\x12A\n" +
-	"\rblocked_users\x18\x01 \x03(\v2\x1c.blocklist.v1.BlocklistEntryR\fblockedUsers\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"b\n" +
-	"\x10IsBlockedRequest\x12(\n" +
+	"page_token\x18\x03 \x01(\tR\tpageToken\"\x87\x01\n" +
+	"\x17GetBlockedUsersResponse\x12D\n" +
+	"\rblocked_users\x18\x01 \x03(\v2\x1f.blocklist.v1.BlockUserResponseR\fblockedUsers\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"u\n" +
+	"#CheckIfUserIsBlockedByTargetRequest\x12(\n" +
 	"\x10checking_user_id\x18\x01 \x01(\tR\x0echeckingUserId\x12$\n" +
-	"\x0etarget_user_id\x18\x02 \x01(\tR\ftargetUserId\"2\n" +
-	"\x11IsBlockedResponse\x12\x1d\n" +
+	"\x0etarget_user_id\x18\x02 \x01(\tR\ftargetUserId\"E\n" +
+	"$CheckIfUserIsBlockedByTargetResponse\x12\x1d\n" +
 	"\n" +
-	"is_blocked\x18\x01 \x01(\bR\tisBlocked2\xc7\x03\n" +
-	"\x10BlocklistService\x12I\n" +
-	"\tBlockUser\x12\x1e.blocklist.v1.BlockUserRequest\x1a\x1c.blocklist.v1.BlocklistEntry\x12G\n" +
-	"\vUnblockUser\x12 .blocklist.v1.UnblockUserRequest\x1a\x16.google.protobuf.Empty\x12^\n" +
-	"\x0fGetBlockedUsers\x12$.blocklist.v1.GetBlockedUsersRequest\x1a%.blocklist.v1.GetBlockedUsersResponse\x12_\n" +
-	"\x1cCheckIfUserIsBlockedByTarget\x12\x1e.blocklist.v1.IsBlockedRequest\x1a\x1f.blocklist.v1.IsBlockedResponse\x12^\n" +
-	"\x1bCheckIfUserHasBlockedTarget\x12\x1e.blocklist.v1.IsBlockedRequest\x1a\x1f.blocklist.v1.IsBlockedResponseB\xa9\x01\n" +
+	"is_blocked\x18\x01 \x01(\bR\tisBlocked\"t\n" +
+	"\"CheckIfUserHasBlockedTargetRequest\x12(\n" +
+	"\x10checking_user_id\x18\x01 \x01(\tR\x0echeckingUserId\x12$\n" +
+	"\x0etarget_user_id\x18\x02 \x01(\tR\ftargetUserId\"F\n" +
+	"#CheckIfUserHasBlockedTargetResponse\x12\x1f\n" +
+	"\vhas_blocked\x18\x01 \x01(\bR\n" +
+	"hasBlocked2\xa1\x04\n" +
+	"\x10BlocklistService\x12L\n" +
+	"\tBlockUser\x12\x1e.blocklist.v1.BlockUserRequest\x1a\x1f.blocklist.v1.BlockUserResponse\x12R\n" +
+	"\vUnblockUser\x12 .blocklist.v1.UnblockUserRequest\x1a!.blocklist.v1.UnblockUserResponse\x12^\n" +
+	"\x0fGetBlockedUsers\x12$.blocklist.v1.GetBlockedUsersRequest\x1a%.blocklist.v1.GetBlockedUsersResponse\x12\x85\x01\n" +
+	"\x1cCheckIfUserIsBlockedByTarget\x121.blocklist.v1.CheckIfUserIsBlockedByTargetRequest\x1a2.blocklist.v1.CheckIfUserIsBlockedByTargetResponse\x12\x82\x01\n" +
+	"\x1bCheckIfUserHasBlockedTarget\x120.blocklist.v1.CheckIfUserHasBlockedTargetRequest\x1a1.blocklist.v1.CheckIfUserHasBlockedTargetResponseB\xa9\x01\n" +
 	"\x10com.blocklist.v1B\x0eBlocklistProtoP\x01Z4github.com/AI1411/m_app/gen/blocklist/v1;blocklistv1\xa2\x02\x03BXX\xaa\x02\fBlocklist.V1\xca\x02\fBlocklist\\V1\xe2\x02\x18Blocklist\\V1\\GPBMetadata\xea\x02\rBlocklist::V1b\x06proto3"
 
 var (
@@ -461,36 +602,38 @@ func file_blocklist_v1_blocklist_proto_rawDescGZIP() []byte {
 	return file_blocklist_v1_blocklist_proto_rawDescData
 }
 
-var file_blocklist_v1_blocklist_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_blocklist_v1_blocklist_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_blocklist_v1_blocklist_proto_goTypes = []any{
-	(*BlocklistEntry)(nil),          // 0: blocklist.v1.BlocklistEntry
-	(*BlockUserRequest)(nil),        // 1: blocklist.v1.BlockUserRequest
-	(*UnblockUserRequest)(nil),      // 2: blocklist.v1.UnblockUserRequest
-	(*GetBlockedUsersRequest)(nil),  // 3: blocklist.v1.GetBlockedUsersRequest
-	(*GetBlockedUsersResponse)(nil), // 4: blocklist.v1.GetBlockedUsersResponse
-	(*IsBlockedRequest)(nil),        // 5: blocklist.v1.IsBlockedRequest
-	(*IsBlockedResponse)(nil),       // 6: blocklist.v1.IsBlockedResponse
-	(*timestamppb.Timestamp)(nil),   // 7: google.protobuf.Timestamp
-	(*emptypb.Empty)(nil),           // 8: google.protobuf.Empty
+	(*BlockUserResponse)(nil),                    // 0: blocklist.v1.BlockUserResponse
+	(*BlockUserRequest)(nil),                     // 1: blocklist.v1.BlockUserRequest
+	(*UnblockUserRequest)(nil),                   // 2: blocklist.v1.UnblockUserRequest
+	(*UnblockUserResponse)(nil),                  // 3: blocklist.v1.UnblockUserResponse
+	(*GetBlockedUsersRequest)(nil),               // 4: blocklist.v1.GetBlockedUsersRequest
+	(*GetBlockedUsersResponse)(nil),              // 5: blocklist.v1.GetBlockedUsersResponse
+	(*CheckIfUserIsBlockedByTargetRequest)(nil),  // 6: blocklist.v1.CheckIfUserIsBlockedByTargetRequest
+	(*CheckIfUserIsBlockedByTargetResponse)(nil), // 7: blocklist.v1.CheckIfUserIsBlockedByTargetResponse
+	(*CheckIfUserHasBlockedTargetRequest)(nil),   // 8: blocklist.v1.CheckIfUserHasBlockedTargetRequest
+	(*CheckIfUserHasBlockedTargetResponse)(nil),  // 9: blocklist.v1.CheckIfUserHasBlockedTargetResponse
+	(*timestamppb.Timestamp)(nil),                // 10: google.protobuf.Timestamp
 }
 var file_blocklist_v1_blocklist_proto_depIdxs = []int32{
-	7, // 0: blocklist.v1.BlocklistEntry.created_at:type_name -> google.protobuf.Timestamp
-	0, // 1: blocklist.v1.GetBlockedUsersResponse.blocked_users:type_name -> blocklist.v1.BlocklistEntry
-	1, // 2: blocklist.v1.BlocklistService.BlockUser:input_type -> blocklist.v1.BlockUserRequest
-	2, // 3: blocklist.v1.BlocklistService.UnblockUser:input_type -> blocklist.v1.UnblockUserRequest
-	3, // 4: blocklist.v1.BlocklistService.GetBlockedUsers:input_type -> blocklist.v1.GetBlockedUsersRequest
-	5, // 5: blocklist.v1.BlocklistService.CheckIfUserIsBlockedByTarget:input_type -> blocklist.v1.IsBlockedRequest
-	5, // 6: blocklist.v1.BlocklistService.CheckIfUserHasBlockedTarget:input_type -> blocklist.v1.IsBlockedRequest
-	0, // 7: blocklist.v1.BlocklistService.BlockUser:output_type -> blocklist.v1.BlocklistEntry
-	8, // 8: blocklist.v1.BlocklistService.UnblockUser:output_type -> google.protobuf.Empty
-	4, // 9: blocklist.v1.BlocklistService.GetBlockedUsers:output_type -> blocklist.v1.GetBlockedUsersResponse
-	6, // 10: blocklist.v1.BlocklistService.CheckIfUserIsBlockedByTarget:output_type -> blocklist.v1.IsBlockedResponse
-	6, // 11: blocklist.v1.BlocklistService.CheckIfUserHasBlockedTarget:output_type -> blocklist.v1.IsBlockedResponse
-	7, // [7:12] is the sub-list for method output_type
-	2, // [2:7] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	10, // 0: blocklist.v1.BlockUserResponse.created_at:type_name -> google.protobuf.Timestamp
+	0,  // 1: blocklist.v1.GetBlockedUsersResponse.blocked_users:type_name -> blocklist.v1.BlockUserResponse
+	1,  // 2: blocklist.v1.BlocklistService.BlockUser:input_type -> blocklist.v1.BlockUserRequest
+	2,  // 3: blocklist.v1.BlocklistService.UnblockUser:input_type -> blocklist.v1.UnblockUserRequest
+	4,  // 4: blocklist.v1.BlocklistService.GetBlockedUsers:input_type -> blocklist.v1.GetBlockedUsersRequest
+	6,  // 5: blocklist.v1.BlocklistService.CheckIfUserIsBlockedByTarget:input_type -> blocklist.v1.CheckIfUserIsBlockedByTargetRequest
+	8,  // 6: blocklist.v1.BlocklistService.CheckIfUserHasBlockedTarget:input_type -> blocklist.v1.CheckIfUserHasBlockedTargetRequest
+	0,  // 7: blocklist.v1.BlocklistService.BlockUser:output_type -> blocklist.v1.BlockUserResponse
+	3,  // 8: blocklist.v1.BlocklistService.UnblockUser:output_type -> blocklist.v1.UnblockUserResponse
+	5,  // 9: blocklist.v1.BlocklistService.GetBlockedUsers:output_type -> blocklist.v1.GetBlockedUsersResponse
+	7,  // 10: blocklist.v1.BlocklistService.CheckIfUserIsBlockedByTarget:output_type -> blocklist.v1.CheckIfUserIsBlockedByTargetResponse
+	9,  // 11: blocklist.v1.BlocklistService.CheckIfUserHasBlockedTarget:output_type -> blocklist.v1.CheckIfUserHasBlockedTargetResponse
+	7,  // [7:12] is the sub-list for method output_type
+	2,  // [2:7] is the sub-list for method input_type
+	2,  // [2:2] is the sub-list for extension type_name
+	2,  // [2:2] is the sub-list for extension extendee
+	0,  // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_blocklist_v1_blocklist_proto_init() }
@@ -504,7 +647,7 @@ func file_blocklist_v1_blocklist_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_blocklist_v1_blocklist_proto_rawDesc), len(file_blocklist_v1_blocklist_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   7,
+			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -3,7 +3,6 @@ syntax = "proto3";
 package community.v1;
 
 import "google/protobuf/timestamp.proto";
-import "prefecture/v1/prefecture.proto";
 
 option go_package = "github.com/AI1411/m_app/gen/proto/community/v1;communityv1";
 
