@@ -29,7 +29,7 @@ func NewUserRepository(sqlHandler *db.SqlHandler) UserRepository {
 // GetUserByID はIDでユーザーを取得します
 func (r *userRepository) GetUserByID(ctx context.Context, id string) (*model.User, error) {
 	var user model.User
-	result := r.sqlHandler.Conn.Where("id = ?", id).First(&user)
+	result := r.sqlHandler.Conn.WithContext(ctx).Where("id = ?", id).First(&user)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -39,7 +39,7 @@ func (r *userRepository) GetUserByID(ctx context.Context, id string) (*model.Use
 // SearchUsers はユーザーを検索します
 func (r *userRepository) SearchUsers(ctx context.Context) ([]*model.User, error) {
 	var users []*model.User
-	result := r.sqlHandler.Conn.Preload("UserInterests").Find(&users)
+	result := r.sqlHandler.Conn.WithContext(ctx).Preload("UserInterests").Find(&users)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -48,7 +48,7 @@ func (r *userRepository) SearchUsers(ctx context.Context) ([]*model.User, error)
 
 // CreateUser は新しいユーザーを作成します
 func (r *userRepository) CreateUser(ctx context.Context, user *model.User) (*model.User, error) {
-	result := r.sqlHandler.Conn.Create(user)
+	result := r.sqlHandler.Conn.WithContext(ctx).Create(user)
 	if result.Error != nil {
 		return nil, result.Error
 	}

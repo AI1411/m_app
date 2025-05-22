@@ -15,6 +15,7 @@ import (
 	"github.com/AI1411/m_app/gen/prefecture/v1/prefecturev1connect"
 	"github.com/AI1411/m_app/gen/region/v1/regionv1connect"
 	"github.com/AI1411/m_app/gen/user/v1/userv1connect"
+	"github.com/AI1411/m_app/internal/env"
 	"github.com/AI1411/m_app/internal/handler"
 	"github.com/AI1411/m_app/internal/infra/db"
 	"github.com/AI1411/m_app/internal/infra/logger"
@@ -26,6 +27,17 @@ import (
 var Module = fx.Options(
 	// インフラストラクチャの依存関係
 	fx.Provide(
+		// 環境変数の設定
+		func(log *logger.Logger) (*env.Values, error) {
+			// 環境変数を読み込む
+			v, err := env.NewValues()
+			if err != nil {
+				log.LogError(err, "環境変数の読み込みに失敗しました")
+				return nil, err
+			}
+			return v, nil
+		},
+
 		// ロガーの設定
 		func() *logger.Logger {
 			cfg := logger.DefaultConfig()
@@ -35,14 +47,14 @@ var Module = fx.Options(
 		},
 
 		// データベース接続
-		func(log *logger.Logger) (*db.SqlHandler, error) {
+		func(envValues *env.Values, log *logger.Logger) (*db.SqlHandler, error) { // envValues を引数に追加
 			return db.NewSqlHandler(
-				"myuser",     // 環境変数から取得するのが理想的
-				"mypassword", // 環境変数から取得するのが理想的
-				"localhost",  // 環境変数から取得するのが理想的
-				"5432",       // 環境変数から取得するのが理想的
-				"m_app",      // 環境変数から取得するのが理想的
-				log,          // アプリケーションのロガーを渡す
+				envValues.DatabaseUsername,
+				envValues.DatabasePassword,
+				envValues.DatabaseHost,
+				envValues.DatabasePort,
+				envValues.DatabaseName,
+				log,
 			)
 		},
 	),
@@ -150,9 +162,9 @@ var Module = fx.Options(
 		},
 
 		// HTTPサーバーの設定
-		func(mux *http.ServeMux) *http.Server {
+		func(envValues *env.Values, mux *http.ServeMux) *http.Server { // envValues を引数に追加
 			return &http.Server{
-				Addr:    "localhost:8080",
+				Addr:    envValues.ServerPort,
 				Handler: h2c.NewHandler(mux, &http2.Server{}),
 			}
 		},
@@ -166,8 +178,8 @@ var Module = fx.Options(
 				log.Info("starting HTTP server", "address", server.Addr)
 				go func() {
 					if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-						log.LogError(err, "server error")
-						panic(err)
+						log.LogError(err, "サーバー起動エラー", "address", server.Addr)
+						// アプリケーションを終了させるためにシグナルを送る方法として、fx.Shutdownerを利用することも検討してください
 					}
 				}()
 				return nil
