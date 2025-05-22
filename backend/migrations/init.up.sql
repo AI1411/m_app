@@ -8,6 +8,7 @@ DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS educations;
 DROP TABLE IF EXISTS prefectures;
 DROP TABLE IF EXISTS regions;
+DROP TABLE IF EXISTS blocklists;
 
 -- 1. 地域（リージョン）テーブルの作成
 CREATE TABLE regions
@@ -411,12 +412,12 @@ CREATE INDEX IF NOT EXISTS idx_community_members_is_approved ON community_member
 -- いいね機能のテーブル
 CREATE TABLE likes
 (
-    id             SERIAL PRIMARY KEY,
-    user_id        UUID REFERENCES users (id) ON DELETE CASCADE,
-    target_id      UUID NOT NULL,
-    created_at     TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-    updated_at     TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-    deleted_at     TIMESTAMP WITH TIME ZONE,
+    id         SERIAL PRIMARY KEY,
+    user_id    UUID REFERENCES users (id) ON DELETE CASCADE,
+    target_id  UUID                     NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    deleted_at TIMESTAMP WITH TIME ZONE,
     CONSTRAINT uk_likes_user_target UNIQUE (user_id, target_id)
 );
 
@@ -436,3 +437,19 @@ CREATE INDEX IF NOT EXISTS idx_likes_user_id ON likes (user_id);
 CREATE INDEX IF NOT EXISTS idx_likes_target_id ON likes (target_id);
 CREATE INDEX IF NOT EXISTS idx_likes_created_at ON likes (created_at);
 CREATE INDEX IF NOT EXISTS idx_likes_deleted_at ON likes (deleted_at) WHERE deleted_at IS NULL;
+
+CREATE TABLE blocklists
+(
+    id              BIGSERIAL PRIMARY KEY,
+    blocker_user_id UUID        NOT NULL,                           -- ブロックしたユーザーのID
+    blocked_user_id UUID        NOT NULL,                           -- ブロックされたユーザーのID
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP, -- ブロック日時
+
+    FOREIGN KEY (blocker_user_id) REFERENCES users (id) ON DELETE CASCADE,
+    FOREIGN KEY (blocked_user_id) REFERENCES users (id) ON DELETE CASCADE,
+    UNIQUE (blocker_user_id, blocked_user_id)                       -- 同一の組み合わせでの重複ブロックを防ぐ
+);
+
+-- パフォーマンス向上のため、必要に応じてインデックスを作成します
+CREATE INDEX idx_blocklists_blocker_user_id ON blocklists (blocker_user_id);
+CREATE INDEX idx_blocklists_blocked_user_id ON blocklists (blocked_user_id);

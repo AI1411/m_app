@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+package blocklist.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+option go_package = "github.com/AI1411/m_app/gen/proto/blocklist/v1;blocklistv1";
+
+// ブロックリストのエントリ
+message BlocklistEntry {
+  string id = 1; // ブロックリストエントリID (UUIDなどを想定)
+  string blocker_user_id = 2; // ブロックしたユーザーID
+  string blocked_user_id = 3; // ブロックされたユーザーID
+  google.protobuf.Timestamp created_at = 4; // ブロック日時
+}
+
+// ユーザーをブロックするリクエスト
+message BlockUserRequest {
+  string blocker_user_id = 1; // ブロックする側のユーザーID
+  string blocked_user_id = 2; // ブロックされる側のユーザーID
+}
+
+// ユーザーブロック解除リクエスト
+message UnblockUserRequest {
+  string blocker_user_id = 1; // ブロックを解除する側のユーザーID
+  string blocked_user_id = 2; // ブロックを解除される側のユーザーID
+}
+
+// 特定のユーザーがブロックしているユーザーリストを取得するリクエスト
+message GetBlockedUsersRequest {
+  string user_id = 1; // ブロックリストを取得したいユーザーID
+  int32 page_size = 2;    // 1ページあたりのアイテム数
+  string page_token = 3;  // 次のページを取得するためのトークン
+}
+
+// 特定のユーザーがブロックしているユーザーリストのレスポンス
+message GetBlockedUsersResponse {
+  repeated BlocklistEntry blocked_users = 1; // ブロックしているユーザーのリスト
+  string next_page_token = 2; // 次のページがある場合のトークン
+}
+
+// ユーザーが指定ユーザーにブロックされているか確認するリクエスト
+message IsBlockedRequest {
+  string checking_user_id = 1; // 確認するユーザーID (自分がブロックされているか確認したいユーザー)
+  string target_user_id = 2;   // 確認対象のユーザーID (相手が自分をブロックしているか確認したいユーザー)
+}
+
+// ユーザーが指定ユーザーにブロックされているか確認するレスポンス
+message IsBlockedResponse {
+  bool is_blocked = 1; // ブロックされていれば true
+}
+
+
+// ブロックリストサービス
+service BlocklistService {
+  // ユーザーをブロックする
+  rpc BlockUser(BlockUserRequest) returns (BlocklistEntry);
+
+  // ユーザーのブロックを解除する
+  rpc UnblockUser(UnblockUserRequest) returns (google.protobuf.Empty);
+
+  // 特定のユーザーがブロックしているユーザーのリストを取得する
+  rpc GetBlockedUsers(GetBlockedUsersRequest) returns (GetBlockedUsersResponse);
+
+  // 指定したユーザーが、もう一方のユーザーによってブロックされているか確認する
+  // (例: AさんがBさんにブロックされているかを確認)
+  rpc CheckIfUserIsBlockedByTarget(IsBlockedRequest) returns (IsBlockedResponse);
+
+  // 指定したユーザーが、もう一方のユーザーをブロックしているか確認する
+  // (例: AさんがBさんをブロックしているかを確認)
+  rpc CheckIfUserHasBlockedTarget(IsBlockedRequest) returns (IsBlockedResponse);
+}
