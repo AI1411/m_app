@@ -9,9 +9,12 @@ import (
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 
+	"connectrpc.com/connect"
+
 	"github.com/AI1411/m_app/gen/community/v1/communityv1connect"
 	"github.com/AI1411/m_app/gen/education/v1/educationv1connect"
 	"github.com/AI1411/m_app/gen/interest/v1/interestv1connect"
+	"github.com/AI1411/m_app/gen/notification/v1/notificationv1connect"
 	"github.com/AI1411/m_app/gen/prefecture/v1/prefecturev1connect"
 	"github.com/AI1411/m_app/gen/region/v1/regionv1connect"
 	"github.com/AI1411/m_app/gen/user/v1/userv1connect"
@@ -90,6 +93,11 @@ var Module = fx.Options(
 		func(sqlHandler *db.SqlHandler) datastore.CommunityRepository {
 			return datastore.NewCommunityRepository(sqlHandler)
 		},
+
+		// NotificationRepository
+		func(sqlHandler *db.SqlHandler) datastore.NotificationRepository {
+			return datastore.NewNotificationRepository(sqlHandler)
+		},
 	),
 
 	// ユースケースの依存関係
@@ -108,6 +116,9 @@ var Module = fx.Options(
 
 		// CommunityUseCase
 		usecase.NewCommunityUseCase,
+
+		// NotificationUseCase
+		usecase.NewNotificationUseCase,
 	),
 
 	// ハンドラーの依存関係
@@ -130,33 +141,46 @@ var Module = fx.Options(
 		// CommunityHandler
 		handler.NewCommunityHandler,
 
+		// NotificationHandler
+		handler.NewNotificationHandler,
+
 		// HTTPサーバーのセットアップ
-		func(userHandler handler.UserHandler, prefectureHandler handler.PrefectureHandler, regionHandler handler.RegionHandler, interestHandler handler.InterestHandler, educationHandler handler.EducationHandler, communityHandler handler.CommunityHandler) *http.ServeMux {
+		func(userHandler handler.UserHandler, prefectureHandler handler.PrefectureHandler, regionHandler handler.RegionHandler, interestHandler handler.InterestHandler, educationHandler handler.EducationHandler, communityHandler handler.CommunityHandler, notificationHandler handler.NotificationHandler) *http.ServeMux {
 			mux := http.NewServeMux()
 
+			// Connectハンドラーのオプション設定
+			// HTTP（JSON）互換性を有効にする
+			connectOpts := []connect.HandlerOption{
+				connect.WithCompressMinBytes(1024),
+			}
+
 			// ユーザーサービスのハンドラー登録
-			userPath, userHttpHandler := userv1connect.NewUserServiceHandler(userHandler)
+			userPath, userHttpHandler := userv1connect.NewUserServiceHandler(userHandler, connectOpts...)
 			mux.Handle(userPath, userHttpHandler)
 
 			// 都道府県サービスのハンドラー登録
-			prefecturePath, prefectureHttpHandler := prefecturev1connect.NewPrefectureServiceHandler(prefectureHandler)
+			prefecturePath, prefectureHttpHandler := prefecturev1connect.NewPrefectureServiceHandler(prefectureHandler, connectOpts...)
 			mux.Handle(prefecturePath, prefectureHttpHandler)
 
 			// リージョンサービスのハンドラー登録
-			regionPath, regionHttpHandler := regionv1connect.NewRegionServiceHandler(regionHandler)
+			regionPath, regionHttpHandler := regionv1connect.NewRegionServiceHandler(regionHandler, connectOpts...)
 			mux.Handle(regionPath, regionHttpHandler)
 
 			// 興味・関心サービスのハンドラー登録
-			interestPath, interestHttpHandler := interestv1connect.NewInterestServiceHandler(interestHandler)
+			interestPath, interestHttpHandler := interestv1connect.NewInterestServiceHandler(interestHandler, connectOpts...)
 			mux.Handle(interestPath, interestHttpHandler)
 
 			// 学歴サービスのハンドラー登録
-			educationPath, educationHttpHandler := educationv1connect.NewEducationServiceHandler(educationHandler)
+			educationPath, educationHttpHandler := educationv1connect.NewEducationServiceHandler(educationHandler, connectOpts...)
 			mux.Handle(educationPath, educationHttpHandler)
 
 			// コミュニティサービスのハンドラー登録
-			communityPath, communityHttpHandler := communityv1connect.NewCommunityServiceHandler(communityHandler)
+			communityPath, communityHttpHandler := communityv1connect.NewCommunityServiceHandler(communityHandler, connectOpts...)
 			mux.Handle(communityPath, communityHttpHandler)
+
+			// 通知サービスのハンドラー登録
+			notificationPath, notificationHttpHandler := notificationv1connect.NewNotificationServiceHandler(notificationHandler, connectOpts...)
+			mux.Handle(notificationPath, notificationHttpHandler)
 
 			return mux
 		},

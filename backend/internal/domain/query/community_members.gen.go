@@ -34,6 +34,17 @@ func newCommunityMember(db *gorm.DB, opts ...gen.DOOption) communityMember {
 	_communityMember.IsApproved = field.NewBool(tableName, "is_approved")
 	_communityMember.JoinedAt = field.NewTime(tableName, "joined_at")
 	_communityMember.UpdatedAt = field.NewTime(tableName, "updated_at")
+	_communityMember.Community = communityMemberBelongsToCommunity{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("Community", "model.Community"),
+	}
+
+	_communityMember.User = communityMemberBelongsToUser{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("User", "model.User"),
+	}
 
 	_communityMember.fillFieldMap()
 
@@ -50,6 +61,9 @@ type communityMember struct {
 	IsApproved  field.Bool   // 承認状態（プライベートコミュニティの場合）
 	JoinedAt    field.Time   // コミュニティ参加日時
 	UpdatedAt   field.Time   // レコード更新日時
+	Community   communityMemberBelongsToCommunity
+
+	User communityMemberBelongsToUser
 
 	fieldMap map[string]field.Expr
 }
@@ -88,23 +102,192 @@ func (c *communityMember) GetFieldByName(fieldName string) (field.OrderExpr, boo
 }
 
 func (c *communityMember) fillFieldMap() {
-	c.fieldMap = make(map[string]field.Expr, 6)
+	c.fieldMap = make(map[string]field.Expr, 8)
 	c.fieldMap["community_id"] = c.CommunityID
 	c.fieldMap["user_id"] = c.UserID
 	c.fieldMap["role"] = c.Role
 	c.fieldMap["is_approved"] = c.IsApproved
 	c.fieldMap["joined_at"] = c.JoinedAt
 	c.fieldMap["updated_at"] = c.UpdatedAt
+
 }
 
 func (c communityMember) clone(db *gorm.DB) communityMember {
 	c.communityMemberDo.ReplaceConnPool(db.Statement.ConnPool)
+	c.Community.db = db.Session(&gorm.Session{Initialized: true})
+	c.Community.db.Statement.ConnPool = db.Statement.ConnPool
+	c.User.db = db.Session(&gorm.Session{Initialized: true})
+	c.User.db.Statement.ConnPool = db.Statement.ConnPool
 	return c
 }
 
 func (c communityMember) replaceDB(db *gorm.DB) communityMember {
 	c.communityMemberDo.ReplaceDB(db)
+	c.Community.db = db.Session(&gorm.Session{})
+	c.User.db = db.Session(&gorm.Session{})
 	return c
+}
+
+type communityMemberBelongsToCommunity struct {
+	db *gorm.DB
+
+	field.RelationField
+}
+
+func (a communityMemberBelongsToCommunity) Where(conds ...field.Expr) *communityMemberBelongsToCommunity {
+	if len(conds) == 0 {
+		return &a
+	}
+
+	exprs := make([]clause.Expression, 0, len(conds))
+	for _, cond := range conds {
+		exprs = append(exprs, cond.BeCond().(clause.Expression))
+	}
+	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
+	return &a
+}
+
+func (a communityMemberBelongsToCommunity) WithContext(ctx context.Context) *communityMemberBelongsToCommunity {
+	a.db = a.db.WithContext(ctx)
+	return &a
+}
+
+func (a communityMemberBelongsToCommunity) Session(session *gorm.Session) *communityMemberBelongsToCommunity {
+	a.db = a.db.Session(session)
+	return &a
+}
+
+func (a communityMemberBelongsToCommunity) Model(m *model.CommunityMember) *communityMemberBelongsToCommunityTx {
+	return &communityMemberBelongsToCommunityTx{a.db.Model(m).Association(a.Name())}
+}
+
+func (a communityMemberBelongsToCommunity) Unscoped() *communityMemberBelongsToCommunity {
+	a.db = a.db.Unscoped()
+	return &a
+}
+
+type communityMemberBelongsToCommunityTx struct{ tx *gorm.Association }
+
+func (a communityMemberBelongsToCommunityTx) Find() (result *model.Community, err error) {
+	return result, a.tx.Find(&result)
+}
+
+func (a communityMemberBelongsToCommunityTx) Append(values ...*model.Community) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Append(targetValues...)
+}
+
+func (a communityMemberBelongsToCommunityTx) Replace(values ...*model.Community) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Replace(targetValues...)
+}
+
+func (a communityMemberBelongsToCommunityTx) Delete(values ...*model.Community) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Delete(targetValues...)
+}
+
+func (a communityMemberBelongsToCommunityTx) Clear() error {
+	return a.tx.Clear()
+}
+
+func (a communityMemberBelongsToCommunityTx) Count() int64 {
+	return a.tx.Count()
+}
+
+func (a communityMemberBelongsToCommunityTx) Unscoped() *communityMemberBelongsToCommunityTx {
+	a.tx = a.tx.Unscoped()
+	return &a
+}
+
+type communityMemberBelongsToUser struct {
+	db *gorm.DB
+
+	field.RelationField
+}
+
+func (a communityMemberBelongsToUser) Where(conds ...field.Expr) *communityMemberBelongsToUser {
+	if len(conds) == 0 {
+		return &a
+	}
+
+	exprs := make([]clause.Expression, 0, len(conds))
+	for _, cond := range conds {
+		exprs = append(exprs, cond.BeCond().(clause.Expression))
+	}
+	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
+	return &a
+}
+
+func (a communityMemberBelongsToUser) WithContext(ctx context.Context) *communityMemberBelongsToUser {
+	a.db = a.db.WithContext(ctx)
+	return &a
+}
+
+func (a communityMemberBelongsToUser) Session(session *gorm.Session) *communityMemberBelongsToUser {
+	a.db = a.db.Session(session)
+	return &a
+}
+
+func (a communityMemberBelongsToUser) Model(m *model.CommunityMember) *communityMemberBelongsToUserTx {
+	return &communityMemberBelongsToUserTx{a.db.Model(m).Association(a.Name())}
+}
+
+func (a communityMemberBelongsToUser) Unscoped() *communityMemberBelongsToUser {
+	a.db = a.db.Unscoped()
+	return &a
+}
+
+type communityMemberBelongsToUserTx struct{ tx *gorm.Association }
+
+func (a communityMemberBelongsToUserTx) Find() (result *model.User, err error) {
+	return result, a.tx.Find(&result)
+}
+
+func (a communityMemberBelongsToUserTx) Append(values ...*model.User) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Append(targetValues...)
+}
+
+func (a communityMemberBelongsToUserTx) Replace(values ...*model.User) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Replace(targetValues...)
+}
+
+func (a communityMemberBelongsToUserTx) Delete(values ...*model.User) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Delete(targetValues...)
+}
+
+func (a communityMemberBelongsToUserTx) Clear() error {
+	return a.tx.Clear()
+}
+
+func (a communityMemberBelongsToUserTx) Count() int64 {
+	return a.tx.Count()
+}
+
+func (a communityMemberBelongsToUserTx) Unscoped() *communityMemberBelongsToUserTx {
+	a.tx = a.tx.Unscoped()
+	return &a
 }
 
 type communityMemberDo struct{ gen.DO }

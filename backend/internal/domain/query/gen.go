@@ -16,59 +16,114 @@ import (
 )
 
 var (
-	Q            = new(Query)
-	Category     *category
-	Community    *community
-	Prefecture   *prefecture
-	Region       *region
-	User         *user
-	UserInterest *userInterest
+	Q               = new(Query)
+	Blocklist       *blocklist
+	Category        *category
+	Community       *community
+	CommunityMember *communityMember
+	Education       *education
+	Footprint       *footprint
+	Interest        *interest
+	Like            *like
+	Match           *match
+	Notification    *notification
+	Prefecture      *prefecture
+	Region          *region
+	Report          *report
+	Tweet           *tweet
+	User            *user
+	UserImage       *userImage
+	UserInterest    *userInterest
 )
 
 func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	*Q = *Use(db, opts...)
+	Blocklist = &Q.Blocklist
 	Category = &Q.Category
 	Community = &Q.Community
+	CommunityMember = &Q.CommunityMember
+	Education = &Q.Education
+	Footprint = &Q.Footprint
+	Interest = &Q.Interest
+	Like = &Q.Like
+	Match = &Q.Match
+	Notification = &Q.Notification
 	Prefecture = &Q.Prefecture
 	Region = &Q.Region
+	Report = &Q.Report
+	Tweet = &Q.Tweet
 	User = &Q.User
+	UserImage = &Q.UserImage
 	UserInterest = &Q.UserInterest
 }
 
 func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 	return &Query{
-		db:           db,
-		Category:     newCategory(db, opts...),
-		Community:    newCommunity(db, opts...),
-		Prefecture:   newPrefecture(db, opts...),
-		Region:       newRegion(db, opts...),
-		User:         newUser(db, opts...),
-		UserInterest: newUserInterest(db, opts...),
+		db:              db,
+		Blocklist:       newBlocklist(db, opts...),
+		Category:        newCategory(db, opts...),
+		Community:       newCommunity(db, opts...),
+		CommunityMember: newCommunityMember(db, opts...),
+		Education:       newEducation(db, opts...),
+		Footprint:       newFootprint(db, opts...),
+		Interest:        newInterest(db, opts...),
+		Like:            newLike(db, opts...),
+		Match:           newMatch(db, opts...),
+		Notification:    newNotification(db, opts...),
+		Prefecture:      newPrefecture(db, opts...),
+		Region:          newRegion(db, opts...),
+		Report:          newReport(db, opts...),
+		Tweet:           newTweet(db, opts...),
+		User:            newUser(db, opts...),
+		UserImage:       newUserImage(db, opts...),
+		UserInterest:    newUserInterest(db, opts...),
 	}
 }
 
 type Query struct {
 	db *gorm.DB
 
-	Category     category
-	Community    community
-	Prefecture   prefecture
-	Region       region
-	User         user
-	UserInterest userInterest
+	Blocklist       blocklist
+	Category        category
+	Community       community
+	CommunityMember communityMember
+	Education       education
+	Footprint       footprint
+	Interest        interest
+	Like            like
+	Match           match
+	Notification    notification
+	Prefecture      prefecture
+	Region          region
+	Report          report
+	Tweet           tweet
+	User            user
+	UserImage       userImage
+	UserInterest    userInterest
 }
 
 func (q *Query) Available() bool { return q.db != nil }
 
 func (q *Query) clone(db *gorm.DB) *Query {
 	return &Query{
-		db:           db,
-		Category:     q.Category.clone(db),
-		Community:    q.Community.clone(db),
-		Prefecture:   q.Prefecture.clone(db),
-		Region:       q.Region.clone(db),
-		User:         q.User.clone(db),
-		UserInterest: q.UserInterest.clone(db),
+		db:              db,
+		Blocklist:       q.Blocklist.clone(db),
+		Category:        q.Category.clone(db),
+		Community:       q.Community.clone(db),
+		CommunityMember: q.CommunityMember.clone(db),
+		Education:       q.Education.clone(db),
+		Footprint:       q.Footprint.clone(db),
+		Interest:        q.Interest.clone(db),
+		Like:            q.Like.clone(db),
+		Match:           q.Match.clone(db),
+		Notification:    q.Notification.clone(db),
+		Prefecture:      q.Prefecture.clone(db),
+		Region:          q.Region.clone(db),
+		Report:          q.Report.clone(db),
+		Tweet:           q.Tweet.clone(db),
+		User:            q.User.clone(db),
+		UserImage:       q.UserImage.clone(db),
+		UserInterest:    q.UserInterest.clone(db),
 	}
 }
 
@@ -82,33 +137,66 @@ func (q *Query) WriteDB() *Query {
 
 func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 	return &Query{
-		db:           db,
-		Category:     q.Category.replaceDB(db),
-		Community:    q.Community.replaceDB(db),
-		Prefecture:   q.Prefecture.replaceDB(db),
-		Region:       q.Region.replaceDB(db),
-		User:         q.User.replaceDB(db),
-		UserInterest: q.UserInterest.replaceDB(db),
+		db:              db,
+		Blocklist:       q.Blocklist.replaceDB(db),
+		Category:        q.Category.replaceDB(db),
+		Community:       q.Community.replaceDB(db),
+		CommunityMember: q.CommunityMember.replaceDB(db),
+		Education:       q.Education.replaceDB(db),
+		Footprint:       q.Footprint.replaceDB(db),
+		Interest:        q.Interest.replaceDB(db),
+		Like:            q.Like.replaceDB(db),
+		Match:           q.Match.replaceDB(db),
+		Notification:    q.Notification.replaceDB(db),
+		Prefecture:      q.Prefecture.replaceDB(db),
+		Region:          q.Region.replaceDB(db),
+		Report:          q.Report.replaceDB(db),
+		Tweet:           q.Tweet.replaceDB(db),
+		User:            q.User.replaceDB(db),
+		UserImage:       q.UserImage.replaceDB(db),
+		UserInterest:    q.UserInterest.replaceDB(db),
 	}
 }
 
 type queryCtx struct {
-	Category     ICategoryDo
-	Community    ICommunityDo
-	Prefecture   IPrefectureDo
-	Region       IRegionDo
-	User         IUserDo
-	UserInterest IUserInterestDo
+	Blocklist       IBlocklistDo
+	Category        ICategoryDo
+	Community       ICommunityDo
+	CommunityMember ICommunityMemberDo
+	Education       IEducationDo
+	Footprint       IFootprintDo
+	Interest        IInterestDo
+	Like            ILikeDo
+	Match           IMatchDo
+	Notification    INotificationDo
+	Prefecture      IPrefectureDo
+	Region          IRegionDo
+	Report          IReportDo
+	Tweet           ITweetDo
+	User            IUserDo
+	UserImage       IUserImageDo
+	UserInterest    IUserInterestDo
 }
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
-		Category:     q.Category.WithContext(ctx),
-		Community:    q.Community.WithContext(ctx),
-		Prefecture:   q.Prefecture.WithContext(ctx),
-		Region:       q.Region.WithContext(ctx),
-		User:         q.User.WithContext(ctx),
-		UserInterest: q.UserInterest.WithContext(ctx),
+		Blocklist:       q.Blocklist.WithContext(ctx),
+		Category:        q.Category.WithContext(ctx),
+		Community:       q.Community.WithContext(ctx),
+		CommunityMember: q.CommunityMember.WithContext(ctx),
+		Education:       q.Education.WithContext(ctx),
+		Footprint:       q.Footprint.WithContext(ctx),
+		Interest:        q.Interest.WithContext(ctx),
+		Like:            q.Like.WithContext(ctx),
+		Match:           q.Match.WithContext(ctx),
+		Notification:    q.Notification.WithContext(ctx),
+		Prefecture:      q.Prefecture.WithContext(ctx),
+		Region:          q.Region.WithContext(ctx),
+		Report:          q.Report.WithContext(ctx),
+		Tweet:           q.Tweet.WithContext(ctx),
+		User:            q.User.WithContext(ctx),
+		UserImage:       q.UserImage.WithContext(ctx),
+		UserInterest:    q.UserInterest.WithContext(ctx),
 	}
 }
 
