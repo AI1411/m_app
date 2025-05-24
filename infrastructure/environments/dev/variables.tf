@@ -9,6 +9,11 @@ variable "project_name" {
   type        = string
 }
 
+variable "env" {
+  description = "Environment (e.g., dev, staging, prod)"
+  type        = string
+}
+
 variable "vpc_cidr" {
   description = "CIDR block for the VPC"
   type        = string
@@ -16,17 +21,17 @@ variable "vpc_cidr" {
 
 variable "public_subnet_cidrs" {
   description = "List of CIDR blocks for public subnets"
-  type        = list(string)
+  type = list(string)
 }
 
 variable "private_subnet_cidrs" {
   description = "List of CIDR blocks for private subnets"
-  type        = list(string)
+  type = list(string)
 }
 
 variable "availability_zones" {
   description = "List of availability zones"
-  type        = list(string)
+  type = list(string)
 }
 
 variable "db_instance_class" {
@@ -74,40 +79,40 @@ variable "rds_preferred_maintenance_window" {
   default     = "sun:04:30-sun:05:30"
 }
 
-# variable "container_image" {
-#   description = "Docker image for the API service"
-#   type        = string
-# }
-#
-# variable "container_port" {
-#   description = "Port the container listens on"
-#   type        = number
-# }
-#
-# variable "ecs_desired_count" {
-#   description = "Desired number of ECS tasks"
-#   type        = number
-#   default     = 1
-# }
-#
-# variable "ecs_cpu" {
-#   description = "CPU units for ECS task"
-#   type        = number
-#   default     = 256
-# }
-#
-# variable "ecs_memory" {
-#   description = "Memory in MiB for ECS task"
-#   type        = number
-#   default     = 512
-# }
-#
-# variable "health_check_path" {
-#   description = "Path for ALB health check"
-#   type        = string
-#   default     = "/"
-# }
-#
+variable "container_image_tag" {
+  description = "Tag for the Docker image in ECR (e.g., latest, v1.0.0)"
+  type        = string
+  default     = "latest"
+}
+
+variable "container_port" {
+  description = "Port the container listens on"
+  type        = number
+}
+
+variable "ecs_desired_count" {
+  description = "Desired number of ECS tasks"
+  type        = number
+  default     = 1
+}
+
+variable "ecs_cpu" {
+  description = "CPU units for ECS task"
+  type        = number
+  default     = 256
+}
+
+variable "ecs_memory" {
+  description = "Memory in MiB for ECS task"
+  type        = number
+  default     = 512
+}
+
+variable "health_check_path" {
+  description = "Path for ALB health check"
+  type        = string
+  default     = "/"
+}
 variable "enable_nat_gateway" {
   description = "Whether to enable NAT Gateway"
   type        = bool
@@ -122,6 +127,6 @@ variable "single_nat_gateway" {
 
 variable "vpc_module_tags" {
   description = "Tags to apply to VPC resources"
-  type        = map(string)
-  default     = {}
+  type = map(string)
+  default = {}
 }

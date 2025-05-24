@@ -3,6 +3,11 @@ variable "project_name" {
   type        = string
 }
 
+variable "env" {
+  description = "Environment (e.g., dev, staging, prod)"
+  type        = string
+}
+
 variable "vpc_id" {
   description = "ID of the VPC"
   type        = string
@@ -10,12 +15,12 @@ variable "vpc_id" {
 
 variable "public_subnet_ids" {
   description = "List of public subnet IDs for ALB"
-  type        = list(string)
+  type = list(string)
 }
 
 variable "private_subnet_ids" {
   description = "List of private subnet IDs for ECS tasks"
-  type        = list(string)
+  type = list(string)
 }
 
 variable "alb_security_group_id" {

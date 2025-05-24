@@ -3,6 +3,11 @@ variable "project_name" {
   type        = string
 }
 
+variable "env" {
+  description = "Environment (e.g., dev, staging, prod)"
+  type        = string
+}
+
 variable "db_instance_class" {
   description = "RDS instance class"
   type        = string
