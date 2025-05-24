@@ -30,7 +30,7 @@ module "security_group" {
   source = "../../modules/security_group"
 
   project_name = var.project_name
-  vpc_id       = ""
+  vpc_id       = module.vpc.vpc_id
 }
 
 # --- RDS Aurora PostgreSQL Module ---
@@ -41,10 +41,10 @@ module "rds" {
   db_instance_class    = var.db_instance_class
   db_name              = var.db_name
   db_username          = var.db_username
-  db_password = var.db_password # Sensitive: tfvarsや環境変数で管理推奨
-  db_security_group_id = ""
-  private_subnet_ids = []
-  vpc_id               = ""
+  db_password          = var.db_password # Sensitive: tfvarsや環境変数で管理推奨
+  db_security_group_id = module.security_group.rds_sg_id
+  private_subnet_ids   = module.vpc.private_subnet_ids
+  vpc_id               = module.vpc.vpc_id
 }
 
 # --- API Service Module (例: ECS Fargate + ALB) ---
@@ -52,18 +52,18 @@ module "api_service" {
   source = "../../modules/api_service"
 
   project_name               = var.project_name
-  vpc_id                     = ""
-  public_subnet_ids = []
-  private_subnet_ids = []
-  alb_security_group_id      = ""
-  ecs_task_security_group_id = ""
+  vpc_id                     = module.vpc.vpc_id
+  public_subnet_ids          = module.vpc.public_subnet_ids
+  private_subnet_ids         = module.vpc.private_subnet_ids
+  alb_security_group_id      = module.security_group.alb_sg_id
+  ecs_task_security_group_id = module.security_group.ecs_task_sg_id
 
   container_image = var.container_image # APIサーバーのDockerイメージ
-  container_port = var.container_port
-  desired_count  = var.ecs_desired_count
-  cpu            = var.ecs_cpu
-  memory         = var.ecs_memory
-  aws_region     = var.aws_region # CloudWatch Logs などで使用
+  container_port  = var.container_port
+  desired_count   = var.ecs_desired_count
+  cpu             = var.ecs_cpu
+  memory          = var.ecs_memory
+  aws_region      = var.aws_region # CloudWatch Logs などで使用
 
   # 環境変数やシークレットなどを渡す
   # environment_variables = {
