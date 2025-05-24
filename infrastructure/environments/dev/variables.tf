@@ -1,7 +1,7 @@
 variable "aws_region" {
   description = "AWS region"
   type        = string
-  default     = "ap-northeast-1" # 例: 東京リージョン
+  default     = "ap-northeast-1"
 }
 
 variable "project_name" {
@@ -9,7 +9,6 @@ variable "project_name" {
   type        = string
 }
 
-# VPC Variables
 variable "vpc_cidr" {
   description = "CIDR block for the VPC"
   type        = string
@@ -30,7 +29,6 @@ variable "availability_zones" {
   type        = list(string)
 }
 
-# RDS Variables
 variable "db_instance_class" {
   description = "RDS instance class"
   type        = string
@@ -49,13 +47,13 @@ variable "db_username" {
 variable "db_password" {
   description = "Database master password"
   type        = string
-  sensitive   = true # パスワードは機密情報として扱う
+  sensitive   = true
 }
 
 variable "rds_skip_final_snapshot" {
   description = "Skip final snapshot on DB deletion"
   type        = bool
-  default     = true # 開発環境などではtrue、本番ではfalse推奨
+  default     = true
 }
 
 variable "rds_backup_retention_period" {
@@ -67,16 +65,15 @@ variable "rds_backup_retention_period" {
 variable "rds_preferred_backup_window" {
   description = "Preferred backup window"
   type        = string
-  default     = "03:00-04:00" # JST 12:00-13:00
+  default     = "03:00-04:00"
 }
 
 variable "rds_preferred_maintenance_window" {
   description = "Preferred maintenance window"
   type        = string
-  default     = "sun:04:30-sun:05:30" # JST Sun 13:30-14:30
+  default     = "sun:04:30-sun:05:30"
 }
 
-# API Service Variables (ECS Fargate例)
 variable "container_image" {
   description = "Docker image for the API service"
   type        = string
@@ -96,13 +93,19 @@ variable "ecs_desired_count" {
 variable "ecs_cpu" {
   description = "CPU units for ECS task"
   type        = number
-  default     = 256 # 0.25 vCPU
+  default     = 256
 }
 
 variable "ecs_memory" {
   description = "Memory in MiB for ECS task"
   type        = number
-  default     = 512 # 0.5 GB
+  default     = 512
+}
+
+variable "health_check_path" {
+  description = "Path for ALB health check"
+  type        = string
+  default     = "/"
 }
 
 variable "enable_nat_gateway" {

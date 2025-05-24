@@ -14,6 +14,12 @@ variable "alb_sg_ingress_cidrs" {
   default = ["0.0.0.0/0"]
 }
 
+variable "api_service_container_port" {
+  description = "Port that the API service container listens on"
+  type        = number
+  default     = 80
+}
+
 # --- ALB Security Group ---
 resource "aws_security_group" "alb" {
   name        = "${var.project_name}-alb-sg"
@@ -53,14 +59,12 @@ resource "aws_security_group" "api_service" {
   vpc_id      = var.vpc_id
 
   # Ingress: Allow traffic from ALB SG on the container port
-  # The port will be passed as a variable or defined in the api_service module
-  # For simplicity, we define a variable here, but it's better to get the port from the api_service module's variables
-  # ingress {
-  #   from_port       = var.api_service_container_port # This should ideally come from api_service module's input
-  #   to_port         = var.api_service_container_port
-  #   protocol        = "tcp"
-  #   security_groups = [aws_security_group.alb.id] # Allow from ALB
-  # }
+  ingress {
+    from_port       = var.api_service_container_port
+    to_port         = var.api_service_container_port
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb.id] # Allow from ALB
+  }
 
   egress {
     from_port = 0
@@ -81,12 +85,12 @@ resource "aws_security_group" "rds" {
   vpc_id      = var.vpc_id
 
   # Ingress: Allow traffic from API Service SG on PostgreSQL port
-  # ingress {
-  #   from_port       = 5432 # PostgreSQL port
-  #   to_port         = 5432
-  #   protocol        = "tcp"
-  #   security_groups = [aws_security_group.api_service.id] # Allow from API service
-  # }
+  ingress {
+    from_port       = 5432 # PostgreSQL port
+    to_port         = 5432
+    protocol        = "tcp"
+    security_groups = [aws_security_group.api_service.id] # Allow from API service
+  }
   # Egress: Not strictly necessary for RDS if all outbound is allowed by default or to specific targets
 
   tags = {
