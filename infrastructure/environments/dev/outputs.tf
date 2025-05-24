@@ -1,7 +1,7 @@
-output "alb_dns_name" {
-  description = "DNS name of the Application Load Balancer"
-  value       = module.api_service.alb_dns_name # api_service モジュールからの出力
-}
+# output "alb_dns_name" {
+#   description = "DNS name of the Application Load Balancer"
+#   value       = module.api_service.alb_dns_name # api_service モジュールからの出力
+# }
 
 output "rds_aurora_endpoint" {
   description = "Endpoint of the RDS Aurora cluster"

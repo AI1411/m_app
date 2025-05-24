@@ -74,40 +74,40 @@ variable "rds_preferred_maintenance_window" {
   default     = "sun:04:30-sun:05:30"
 }
 
-variable "container_image" {
-  description = "Docker image for the API service"
-  type        = string
-}
-
-variable "container_port" {
-  description = "Port the container listens on"
-  type        = number
-}
-
-variable "ecs_desired_count" {
-  description = "Desired number of ECS tasks"
-  type        = number
-  default     = 1
-}
-
-variable "ecs_cpu" {
-  description = "CPU units for ECS task"
-  type        = number
-  default     = 256
-}
-
-variable "ecs_memory" {
-  description = "Memory in MiB for ECS task"
-  type        = number
-  default     = 512
-}
-
-variable "health_check_path" {
-  description = "Path for ALB health check"
-  type        = string
-  default     = "/"
-}
-
+# variable "container_image" {
+#   description = "Docker image for the API service"
+#   type        = string
+# }
+#
+# variable "container_port" {
+#   description = "Port the container listens on"
+#   type        = number
+# }
+#
+# variable "ecs_desired_count" {
+#   description = "Desired number of ECS tasks"
+#   type        = number
+#   default     = 1
+# }
+#
+# variable "ecs_cpu" {
+#   description = "CPU units for ECS task"
+#   type        = number
+#   default     = 256
+# }
+#
+# variable "ecs_memory" {
+#   description = "Memory in MiB for ECS task"
+#   type        = number
+#   default     = 512
+# }
+#
+# variable "health_check_path" {
+#   description = "Path for ALB health check"
+#   type        = string
+#   default     = "/"
+# }
+#
 variable "enable_nat_gateway" {
   description = "Whether to enable NAT Gateway"
   type        = bool

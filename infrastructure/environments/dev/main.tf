@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.0" 
+      version = "~> 5.0"
     }
   }
 }
@@ -47,22 +47,22 @@ module "rds" {
   preferred_backup_window      = var.rds_preferred_backup_window
   preferred_maintenance_window = var.rds_preferred_maintenance_window
 }
-
-module "api_service" {
-  source = "../../modules/api_service"
-
-  project_name               = var.project_name
-  vpc_id                     = module.vpc.vpc_id
-  public_subnet_ids          = module.vpc.public_subnet_ids
-  private_subnet_ids         = module.vpc.private_subnet_ids
-  alb_security_group_id      = module.security_group.alb_sg_id
-  ecs_task_security_group_id = module.security_group.ecs_task_sg_id
-
-  container_image   = var.container_image
-  container_port    = var.container_port
-  desired_count     = var.ecs_desired_count
-  cpu               = var.ecs_cpu
-  memory            = var.ecs_memory
-  aws_region        = var.aws_region
-  health_check_path = var.health_check_path
-}
+#
+# module "api_service" {
+#   source = "../../modules/api_service"
+#
+#   project_name               = var.project_name
+#   vpc_id                     = module.vpc.vpc_id
+#   public_subnet_ids          = module.vpc.public_subnet_ids
+#   private_subnet_ids         = module.vpc.private_subnet_ids
+#   alb_security_group_id      = module.security_group.alb_sg_id
+#   ecs_task_security_group_id = module.security_group.ecs_task_sg_id
+#
+#   container_image   = var.container_image
+#   container_port    = var.container_port
+#   desired_count     = var.ecs_desired_count
+#   cpu               = var.ecs_cpu
+#   memory            = var.ecs_memory
+#   aws_region        = var.aws_region
+#   health_check_path = var.health_check_path
+# }
