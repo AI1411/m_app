@@ -230,7 +230,7 @@ resource "aws_iam_role" "ecs_task_role" {
 
 # Secrets Manager アクセス権限
 resource "aws_iam_policy" "ecs_task_secrets_policy" {
-  count = var.db_password_secret_arn != "" ? 1 : 0
+  count = var.enable_secrets_manager ? 1 : 0
   name = "${var.project_name}-ecs-task-secrets-policy"
 
   policy = jsonencode({
@@ -241,16 +241,18 @@ resource "aws_iam_policy" "ecs_task_secrets_policy" {
         Action = [
           "secretsmanager:GetSecretValue"
         ]
-        Resource = [
-          var.db_password_secret_arn
-        ]
+        Resource = compact([
+          var.db_password_secret_arn != "" ? var.db_password_secret_arn : "arn:aws:secretsmanager:*:*:secret:${var.project_name}-${var.env}-*",
+          var.jwt_secret_arn != "" ? var.jwt_secret_arn : "",
+          var.app_secrets_arn != "" ? var.app_secrets_arn : ""
+        ])
       }
     ]
   })
 }
 
 resource "aws_iam_role_policy_attachment" "ecs_task_secrets_policy" {
-  count      = var.db_password_secret_arn != "" ? 1 : 0
+  count      = var.enable_secrets_manager ? 1 : 0
   role       = aws_iam_role.ecs_task_role.name
   policy_arn = aws_iam_policy.ecs_task_secrets_policy[0].arn
 }
