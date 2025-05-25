@@ -7,6 +7,12 @@ terraform {
   }
 }
 
+locals {
+  project_name = "m-app"
+  env          = "dev"
+  aws_region   = "ap-northeast-1"
+}
+
 provider "aws" {
   region = var.aws_region
 }
@@ -14,7 +20,7 @@ provider "aws" {
 module "vpc" {
   source = "../../modules/vpc"
 
-  project_name         = var.project_name
+  project_name         = local.project_name
   vpc_cidr             = var.vpc_cidr
   public_subnet_cidrs  = var.public_subnet_cidrs
   private_subnet_cidrs = var.private_subnet_cidrs
@@ -59,20 +65,35 @@ module "ecr" {
 module "api_service" {
   source = "../../modules/api_service"
 
-  project_name          = var.project_name
-  env                   = var.env
+  project_name          = local.project_name
+  env                   = local.env
   vpc_id                = module.vpc.vpc_id
   public_subnet_ids     = module.vpc.public_subnet_ids
   private_subnet_ids    = module.vpc.private_subnet_ids
   alb_security_group_id = module.security_group.alb_sg_id
   ecs_task_security_group_id = module.security_group.ecs_task_sg_id
 
-  # Use the ECR repository URL with the image tag
-  container_image   = "${module.ecr.repository_url}:${var.container_image_tag}"
-  container_port    = var.container_port
-  desired_count     = var.ecs_desired_count
-  cpu               = var.ecs_cpu
-  memory            = var.ecs_memory
-  aws_region        = var.aws_region
-  health_check_path = var.health_check_path
+  # コンテナ設定
+  container_image   = "${module.ecr.repository_url}:latest"
+  container_port    = 8080
+  health_check_path = "/health"
+  desired_count     = 1
+  cpu               = 256
+  memory            = 512
+  aws_region        = local.aws_region
+  log_retention_days = 7
+
+  # データベース接続情報
+  db_host = module.rds.db_cluster_endpoint
+  db_port = module.rds.db_cluster_port
+  db_name = "m_app_dev"
+  db_user = "m_app_admin"
+  db_password_secret_arn = "" # Secrets Manager作成後に設定
+
+  depends_on = [
+    module.vpc,
+    module.security_group,
+    module.ecr,
+    module.rds
+  ]
 }

@@ -41,6 +41,7 @@ variable "container_image" {
 variable "container_port" {
   description = "Port the container listens on"
   type        = number
+  default     = 8080
 }
 
 variable "desired_count" {
@@ -52,17 +53,19 @@ variable "desired_count" {
 variable "cpu" {
   description = "CPU units for ECS task (e.g., 256 for 0.25 vCPU)"
   type        = number
+  default     = 256
 }
 
 variable "memory" {
   description = "Memory in MiB for ECS task (e.g., 512 for 0.5GB)"
   type        = number
+  default     = 512
 }
 
 variable "health_check_path" {
   description = "Path for ALB health check"
   type        = string
-  default     = "/"
+  default     = "/health"
 }
 
 variable "aws_region" {
@@ -70,31 +73,47 @@ variable "aws_region" {
   type        = string
 }
 
-# variable "acm_certificate_arn" {
-#   description = "ARN of the ACM certificate for HTTPS listener (optional)"
-#   type        = string
-#   default     = ""
-# }
+variable "log_retention_days" {
+  description = "CloudWatch Logs retention period in days"
+  type        = number
+  default     = 7
+}
 
-# 環境変数やシークレット関連の変数
-# variable "db_host" {
-#   description = "Database host"
-#   type        = string
-# }
-# variable "db_port" {
-#   description = "Database port"
-#   type        = number
-# }
-# variable "db_user" {
-#   description = "Database user"
-#   type        = string
-# }
-# variable "db_name" {
-#   description = "Database name"
-#   type        = string
-# }
-# variable "db_password_secret_arn" {
-#   description = "ARN of the Secrets Manager secret for DB password"
-#   type        = string
-#   sensitive   = true
-# }
+# データベース接続用変数
+variable "db_host" {
+  description = "Database host"
+  type        = string
+  default     = ""
+}
+
+variable "db_port" {
+  description = "Database port"
+  type        = number
+  default     = 5432
+}
+
+variable "db_user" {
+  description = "Database user"
+  type        = string
+  default     = ""
+}
+
+variable "db_name" {
+  description = "Database name"
+  type        = string
+  default     = ""
+}
+
+variable "db_password_secret_arn" {
+  description = "ARN of the Secrets Manager secret for DB password"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+# HTTPS設定（将来使用）
+variable "acm_certificate_arn" {
+  description = "ARN of the ACM certificate for HTTPS listener (optional)"
+  type        = string
+  default     = ""
+}
