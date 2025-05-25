@@ -27,3 +27,25 @@ output "vpc_id" {
   description = "ID of the created VPC"
   value       = module.vpc.vpc_id
 }
+
+# Secrets Manager outputs
+output "db_password_secret_name" {
+  description = "Name of the database password secret in Secrets Manager"
+  value       = module.secrets_manager.db_password_secret_name
+}
+
+output "db_password_secret_arn" {
+  description = "ARN of the database password secret in Secrets Manager"
+  value       = module.secrets_manager.db_password_secret_arn
+  sensitive   = true
+}
+
+output "app_secrets_name" {
+  description = "Name of the application secrets in Secrets Manager"
+  value       = module.secrets_manager.app_secrets_name
+}
+
+output "jwt_secret_name" {
+  description = "Name of the JWT secret in Secrets Manager"
+  value       = module.secrets_manager.jwt_secret_name
+}

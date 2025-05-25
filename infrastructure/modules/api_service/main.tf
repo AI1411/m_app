@@ -79,7 +79,7 @@ resource "aws_ecs_task_definition" "api" {
 
       environment = [
         {
-          name = "PORT"
+          name  = "PORT"
           value = tostring(var.container_port)
         },
         {
@@ -95,7 +95,7 @@ resource "aws_ecs_task_definition" "api" {
           value = var.db_host
         },
         {
-          name = "DB_PORT"
+          name  = "DB_PORT"
           value = tostring(var.db_port)
         },
         {
@@ -108,7 +108,7 @@ resource "aws_ecs_task_definition" "api" {
         }
       ]
 
-      secrets = var.db_password_secret_arn != "" ? [
+      secrets = var.enable_secrets_manager ? [
         {
           name      = "DB_PASSWORD"
           valueFrom = var.db_password_secret_arn
@@ -143,7 +143,7 @@ resource "aws_ecs_task_definition" "api" {
 
       # セキュリティ設定
       readonlyRootFilesystem = false
-      user                   = "0"
+      user = "0"
     }
   ])
 
@@ -231,7 +231,7 @@ resource "aws_iam_role" "ecs_task_role" {
 # Secrets Manager アクセス権限
 resource "aws_iam_policy" "ecs_task_secrets_policy" {
   count = var.db_password_secret_arn != "" ? 1 : 0
-  name  = "${var.project_name}-ecs-task-secrets-policy"
+  name = "${var.project_name}-ecs-task-secrets-policy"
 
   policy = jsonencode({
     Version = "2012-10-17"

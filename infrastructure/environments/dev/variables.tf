@@ -34,6 +34,7 @@ variable "availability_zones" {
   type = list(string)
 }
 
+# RDS関連変数
 variable "db_instance_class" {
   description = "RDS instance class"
   type        = string
@@ -79,6 +80,7 @@ variable "rds_preferred_maintenance_window" {
   default     = "sun:04:30-sun:05:30"
 }
 
+# ECS関連変数
 variable "container_image_tag" {
   description = "Tag for the Docker image in ECR (e.g., latest, v1.0.0)"
   type        = string
@@ -88,6 +90,7 @@ variable "container_image_tag" {
 variable "container_port" {
   description = "Port the container listens on"
   type        = number
+  default     = 8080
 }
 
 variable "ecs_desired_count" {
@@ -111,8 +114,10 @@ variable "ecs_memory" {
 variable "health_check_path" {
   description = "Path for ALB health check"
   type        = string
-  default     = "/"
+  default     = "/health"
 }
+
+# VPC関連変数
 variable "enable_nat_gateway" {
   description = "Whether to enable NAT Gateway"
   type        = bool
@@ -122,11 +127,44 @@ variable "enable_nat_gateway" {
 variable "single_nat_gateway" {
   description = "Whether to use a single NAT Gateway for all private subnets"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "vpc_module_tags" {
   description = "Tags to apply to VPC resources"
   type = map(string)
   default = {}
+}
+
+# Secrets Manager関連変数
+variable "enable_secrets_manager" {
+  description = "Whether to enable Secrets Manager"
+  type        = bool
+  default     = true
+}
+
+variable "app_secrets" {
+  description = "Map of application secrets (key-value pairs)"
+  type        = map(string)
+  default     = {}
+  sensitive   = true
+}
+
+variable "create_jwt_secret" {
+  description = "Whether to create a JWT secret"
+  type        = bool
+  default     = false
+}
+
+variable "jwt_secret_value" {
+  description = "JWT secret value (if empty, a random value will be generated)"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "secrets_recovery_window_days" {
+  description = "Number of days that AWS Secrets Manager waits before it can delete the secret"
+  type        = number
+  default     = 7
 }

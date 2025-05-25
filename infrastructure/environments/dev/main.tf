@@ -4,6 +4,10 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 5.0"
     }
+    random = {
+      source  = "hashicorp/random"
+      version = ">= 3.0.0"
+    }
   }
 }
 
@@ -33,8 +37,9 @@ module "vpc" {
 module "security_group" {
   source = "../../modules/security_group"
 
-  project_name = var.project_name
-  vpc_id       = module.vpc.vpc_id
+  project_name               = var.project_name
+  vpc_id                     = module.vpc.vpc_id
+  api_service_container_port = 8080
 }
 
 module "rds" {
@@ -62,6 +67,38 @@ module "ecr" {
   env          = var.env
 }
 
+# Secrets Manager module
+module "secrets_manager" {
+  source = "../../modules/secrets_manager"
+
+  project_name = local.project_name
+  env          = local.env
+
+  # データベース接続情報
+  db_username             = var.db_username
+  db_password             = var.db_password
+  db_host                 = module.rds.db_cluster_endpoint
+  db_port                 = module.rds.db_cluster_port
+  db_name                 = var.db_name
+  db_instance_identifier = "${local.project_name}-${local.env}-aurora-cluster"
+
+  # アプリケーションシークレット（例）
+  app_secrets = var.app_secrets
+
+  # JWT シークレット
+  create_jwt_secret = var.create_jwt_secret
+  jwt_secret_value  = var.jwt_secret_value
+
+  # 設定
+  recovery_window_in_days = var.secrets_recovery_window_days
+
+  tags = {
+    Environment = local.env
+  }
+
+  depends_on = [module.rds]
+}
+
 module "api_service" {
   source = "../../modules/api_service"
 
@@ -74,26 +111,32 @@ module "api_service" {
   ecs_task_security_group_id = module.security_group.ecs_task_sg_id
 
   # コンテナ設定
-  container_image   = "${module.ecr.repository_url}:latest"
-  container_port    = 8080
-  health_check_path = "/health"
-  desired_count     = 1
-  cpu               = 256
-  memory            = 512
-  aws_region        = local.aws_region
+  container_image    = "${module.ecr.repository_url}:${var.container_image_tag}"
+  container_port     = 8080
+  health_check_path  = "/health"
+  desired_count      = var.ecs_desired_count
+  cpu                = var.ecs_cpu
+  memory             = var.ecs_memory
+  aws_region         = local.aws_region
   log_retention_days = 7
 
   # データベース接続情報
   db_host = module.rds.db_cluster_endpoint
   db_port = module.rds.db_cluster_port
-  db_name = "m_app_dev"
-  db_user = "m_app_admin"
-  db_password_secret_arn = "" # Secrets Manager作成後に設定
+  db_name = var.db_name
+  db_user = var.db_username
+
+  # Secrets Manager ARN
+  enable_secrets_manager = true
+  db_password_secret_arn = module.secrets_manager.db_password_secret_arn
+  app_secrets_arn        = module.secrets_manager.app_secrets_arn
+  jwt_secret_arn         = module.secrets_manager.jwt_secret_arn
 
   depends_on = [
     module.vpc,
     module.security_group,
     module.ecr,
-    module.rds
+    module.rds,
+    module.secrets_manager
   ]
 }

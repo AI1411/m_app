@@ -104,8 +104,28 @@ variable "db_name" {
   default     = ""
 }
 
+variable "enable_secrets_manager" {
+  description = "Whether to enable Secrets Manager integration"
+  type        = bool
+  default     = false
+}
+
 variable "db_password_secret_arn" {
   description = "ARN of the Secrets Manager secret for DB password"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "app_secrets_arn" {
+  description = "ARN of the Secrets Manager secret for application secrets"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "jwt_secret_arn" {
+  description = "ARN of the Secrets Manager secret for JWT"
   type        = string
   default     = ""
   sensitive   = true
