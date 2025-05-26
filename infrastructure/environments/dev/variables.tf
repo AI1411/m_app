@@ -21,17 +21,17 @@ variable "vpc_cidr" {
 
 variable "public_subnet_cidrs" {
   description = "List of CIDR blocks for public subnets"
-  type = list(string)
+  type        = list(string)
 }
 
 variable "private_subnet_cidrs" {
   description = "List of CIDR blocks for private subnets"
-  type = list(string)
+  type        = list(string)
 }
 
 variable "availability_zones" {
   description = "List of availability zones"
-  type = list(string)
+  type        = list(string)
 }
 
 # RDS関連変数
@@ -132,8 +132,8 @@ variable "single_nat_gateway" {
 
 variable "vpc_module_tags" {
   description = "Tags to apply to VPC resources"
-  type = map(string)
-  default = {}
+  type        = map(string)
+  default     = {}
 }
 
 # Secrets Manager関連変数
@@ -161,6 +161,31 @@ variable "jwt_secret_value" {
   type        = string
   default     = ""
   sensitive   = true
+}
+
+# Bastion Host関連変数
+variable "enable_bastion" {
+  description = "Whether to create a bastion host for database access"
+  type        = bool
+  default     = false
+}
+
+variable "bastion_public_key" {
+  description = "Public key for SSH access to bastion host"
+  type        = string
+  default     = ""
+}
+
+variable "bastion_instance_type" {
+  description = "EC2 instance type for bastion host"
+  type        = string
+  default     = "t3.micro"
+}
+
+variable "bastion_allowed_ssh_cidrs" {
+  description = "CIDR blocks allowed to SSH to bastion host"
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
 }
 
 variable "secrets_recovery_window_days" {

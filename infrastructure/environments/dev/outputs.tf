@@ -31,21 +31,21 @@ output "vpc_id" {
 # Secrets Manager outputs
 output "db_password_secret_name" {
   description = "Name of the database password secret in Secrets Manager"
-  value       = module.secrets_manager.db_password_secret_name
+  value       = var.enable_secrets_manager ? module.secrets_manager[0].db_password_secret_name : ""
 }
 
 output "db_password_secret_arn" {
   description = "ARN of the database password secret in Secrets Manager"
-  value       = module.secrets_manager.db_password_secret_arn
+  value       = var.enable_secrets_manager ? module.secrets_manager[0].db_password_secret_arn : ""
   sensitive   = true
 }
 
 output "app_secrets_name" {
   description = "Name of the application secrets in Secrets Manager"
-  value       = module.secrets_manager.app_secrets_name
+  value       = var.enable_secrets_manager ? module.secrets_manager[0].app_secrets_name : ""
 }
 
 output "jwt_secret_name" {
   description = "Name of the JWT secret in Secrets Manager"
-  value       = module.secrets_manager.jwt_secret_name
+  value       = var.enable_secrets_manager ? module.secrets_manager[0].jwt_secret_name : ""
 }

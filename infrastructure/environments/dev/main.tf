@@ -69,17 +69,18 @@ module "ecr" {
 
 # Secrets Manager module
 module "secrets_manager" {
+  count  = var.enable_secrets_manager ? 1 : 0
   source = "../../modules/secrets_manager"
 
   project_name = local.project_name
   env          = local.env
 
   # データベース接続情報
-  db_username             = var.db_username
-  db_password             = var.db_password
-  db_host                 = module.rds.db_cluster_endpoint
-  db_port                 = module.rds.db_cluster_port
-  db_name                 = var.db_name
+  db_username            = var.db_username
+  db_password            = var.db_password
+  db_host                = module.rds.db_cluster_endpoint
+  db_port                = module.rds.db_cluster_port
+  db_name                = var.db_name
   db_instance_identifier = "${local.project_name}-${local.env}-aurora-cluster"
 
   # アプリケーションシークレット（例）
@@ -99,15 +100,34 @@ module "secrets_manager" {
   depends_on = [module.rds]
 }
 
-module "api_service" {
-  source = "../../modules/api_service"
+# Bastion Host module (optional for development)
+module "bastion" {
+  count  = var.enable_bastion ? 1 : 0
+  source = "../../modules/bastion"
 
   project_name          = local.project_name
   env                   = local.env
   vpc_id                = module.vpc.vpc_id
-  public_subnet_ids     = module.vpc.public_subnet_ids
-  private_subnet_ids    = module.vpc.private_subnet_ids
-  alb_security_group_id = module.security_group.alb_sg_id
+  public_subnet_id      = module.vpc.public_subnet_ids[0]
+  rds_security_group_id = module.security_group.rds_sg_id
+  db_endpoint           = module.rds.db_cluster_endpoint
+  public_key            = var.bastion_public_key
+  instance_type         = var.bastion_instance_type
+  allowed_ssh_cidrs     = var.bastion_allowed_ssh_cidrs
+  enable_eip            = true
+
+  depends_on = [module.rds]
+}
+
+module "api_service" {
+  source = "../../modules/api_service"
+
+  project_name               = local.project_name
+  env                        = local.env
+  vpc_id                     = module.vpc.vpc_id
+  public_subnet_ids          = module.vpc.public_subnet_ids
+  private_subnet_ids         = module.vpc.private_subnet_ids
+  alb_security_group_id      = module.security_group.alb_sg_id
   ecs_task_security_group_id = module.security_group.ecs_task_sg_id
 
   # コンテナ設定
@@ -127,16 +147,15 @@ module "api_service" {
   db_user = var.db_username
 
   # Secrets Manager ARN
-  enable_secrets_manager = true
-  db_password_secret_arn = module.secrets_manager.db_password_secret_arn
-  app_secrets_arn        = module.secrets_manager.app_secrets_arn
-  jwt_secret_arn         = module.secrets_manager.jwt_secret_arn
+  enable_secrets_manager = var.enable_secrets_manager
+  db_password_secret_arn = var.enable_secrets_manager ? module.secrets_manager[0].db_password_secret_arn : ""
+  app_secrets_arn        = var.enable_secrets_manager ? module.secrets_manager[0].app_secrets_arn : ""
+  jwt_secret_arn         = var.enable_secrets_manager ? module.secrets_manager[0].jwt_secret_arn : ""
 
   depends_on = [
     module.vpc,
     module.security_group,
     module.ecr,
-    module.rds,
-    module.secrets_manager
+    module.rds
   ]
 }
